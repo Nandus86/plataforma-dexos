@@ -1,0 +1,284 @@
+.period-details-container {
+    padding: 24px;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px;
+
+    p {
+        margin-top: 16px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+}
+
+.details-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    .header-info {
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 500;
+        }
+
+        .subtitle {
+            margin: 4px 0 0 0;
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 16px;
+        }
+    }
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    mat-card-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px !important;
+
+        mat-icon {
+            font-size: 40px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .stat-info {
+            h3 {
+                margin: 0;
+                font-size: 32px;
+                font-weight: 600;
+            }
+
+            p {
+                margin: 4px 0 0 0;
+                color: rgba(0, 0, 0, 0.6);
+                font-size: 14px;
+            }
+        }
+    }
+}
+
+.tabs-card {
+    margin-top: 24px;
+}
+
+.tab-content {
+    padding: 24px;
+    min-height: 300px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.6);
+        font-size: 14px;
+    }
+
+    span {
+        font-size: 16px;
+
+        &.active {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        &.inactive {
+            color: #9e9e9e;
+        }
+    }
+}
+
+.breaks-list {
+    display: grid;
+    gap: 16px;
+}
+
+.break-item {
+    padding: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+
+    .break-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+
+        .break-order {
+            background: var(--mdc-theme-primary, #3f51b5);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+    }
+
+    .break-dates {
+        margin: 0;
+        color: rgba(0, 0, 0, 0.6);
+        padding-left: 56px;
+    }
+}
+
+.non-school-list {
+    display: grid;
+    gap: 12px;
+}
+
+.non-school-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+
+    mat-icon {
+        color: rgba(0, 0, 0, 0.54);
+    }
+
+    .day-info {
+        strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        p {
+            margin: 0;
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 14px;
+        }
+    }
+}
+
+.schedules-list {
+    display: grid;
+    gap: 12px;
+}
+
+.schedule-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+
+    .schedule-order {
+        font-weight: 600;
+        min-width: 80px;
+    }
+
+    .schedule-time {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+
+        mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+            color: rgba(0, 0, 0, 0.54);
+        }
+    }
+
+    .schedule-duration {
+        color: rgba(0, 0, 0, 0.6);
+        font-size: 14px;
+    }
+}
+
+
+
+.actions-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.schedule-item,
+.non-school-item,
+.extra-school-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    background: white;
+
+    .item-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex: 1;
+    }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+.extra-school-list {
+    display: grid;
+    gap: 12px;
+}
+
+.extra-school-item {
+    .day-info {
+        strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        p {
+            margin: 0;
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 14px;
+        }
+    }
+}

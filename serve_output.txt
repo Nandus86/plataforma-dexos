@@ -1,0 +1,42 @@
+﻿[1m[33m
+Warning: This is a simple server for use in testing or debugging Angular applications
+locally. It hasn't been reviewed for security issues.
+System.Management.Automation.RemoteException
+Binding this server to an open connection can result in compromising your application or
+computer. Using a different host than the one passed to the "--host" flag might result in
+websocket connection issues.
+    [39m[22m
+[33mÔØ»[39m Building...
+[32mÔ£ö[39m Building...
+[1mInitial chunk files[22m[2m | [22m[1mNames[22m                  [2m | [22m[1mRaw size[22m
+[32mstyles.css[39m         [2m | [22m[2mstyles[22m                 [2m | [22m[36m11.83 kB[39m[2m | [22m
+[32mmain.js[39m            [2m | [22m[2mmain[22m                   [2m | [22m [36m7.94 kB[39m[2m | [22m
+[32mchunk-CHOWSQVU.js[39m  [2m | [22m[2m-[22m                      [2m | [22m [36m3.00 kB[39m[2m | [22m
+[32mchunk-NNAE4UPH.js[39m  [2m | [22m[2m-[22m                      [2m | [22m [36m2.52 kB[39m[2m | [22m
+
+[1m [22m                  [2m | [22m[1mInitial total[22m          [2m | [22m[1m25.29 kB[22m
+
+[1mLazy chunk files[22m   [2m | [22m[1mNames[22m                  [2m | [22m[1mRaw size[22m
+[32mchunk-UTDSC4BM.js[39m  [2m | [22m[2musers-component[22m        [2m | [22m[36m31.95 kB[39m[2m | [22m
+[32mchunk-5EQKSNLT.js[39m  [2m | [22m[2mlayout-component[22m       [2m | [22m[36m25.45 kB[39m[2m | [22m
+[32mchunk-YP4G7MCT.js[39m  [2m | [22m[2mdashboard-component[22m    [2m | [22m[36m23.59 kB[39m[2m | [22m
+[32mchunk-YIYYRQWI.js[39m  [2m | [22m[2moccurrences-component[22m  [2m | [22m[36m22.95 kB[39m[2m | [22m
+[32mchunk-36B34OSR.js[39m  [2m | [22m[2mlogin-component[22m        [2m | [22m[36m22.08 kB[39m[2m | [22m
+[32mchunk-OSEGXXDN.js[39m  [2m | [22m[2mtenants-component[22m      [2m | [22m[36m21.11 kB[39m[2m | [22m
+[32mchunk-5IQKLXAI.js[39m  [2m | [22m[2mcourses-component[22m      [2m | [22m[36m20.88 kB[39m[2m | [22m
+[32mchunk-5QJVPBZC.js[39m  [2m | [22m[2msubjects-component[22m     [2m | [22m[36m19.93 kB[39m[2m | [22m
+[32mchunk-6FR6HVND.js[39m  [2m | [22m[2mannouncements-component[22m[2m | [22m[36m19.59 kB[39m[2m | [22m
+[32mchunk-JQMV6AAU.js[39m  [2m | [22m[2massignments-component[22m  [2m | [22m[36m19.41 kB[39m[2m | [22m
+[32mchunk-XSKMHG5X.js[39m  [2m | [22m[2mattendance-component[22m   [2m | [22m[36m11.76 kB[39m[2m | [22m
+[32mchunk-HG7SBDG6.js[39m  [2m | [22m[2mgrades-component[22m       [2m | [22m[36m11.22 kB[39m[2m | [22m
+[32mchunk-LBHTA3UY.js[39m  [2m | [22m[2mlesson-plans-component[22m [2m | [22m [36m8.95 kB[39m[2m | [22m
+[32mchunk-HLJDTZOM.js[39m  [2m | [22m[2mmaterials-component[22m    [2m | [22m [36m8.81 kB[39m[2m | [22m
+
+Application bundle generation complete. [5.448 seconds] - 2026-02-12T02:46:54.990Z
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  [32mÔ×£[39m  [1mLocal[22m:   [36mhttp://localhost:[1m4200[22m/[39m
+  [32mÔ×£[39m  [1mNetwork[22m: [36mhttp://10.0.0.139:[1m4200[22m/[39m
+  [32mÔ×£[39m  [1mNetwork[22m: [36mhttp://172.23.240.1:[1m4200[22m/[39m
+[2m[32m  Ô×£[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m

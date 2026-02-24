@@ -1,0 +1,105 @@
+<div class="dashboard">
+    <!-- Header -->
+    <div class="dashboard-header animate-fade-in">
+        <div class="header-content">
+            <h1 class="greeting">{{ greeting }}, <span class="gold-gradient">{{ firstName }}</span>!</h1>
+            <p class="subtitle">
+                <mat-chip class="role-chip">{{ roleLabel }}</mat-chip>
+            </p>
+        </div>
+    </div>
+
+    <!-- Stat Cards -->
+    @if (loadingStats) {
+    <div class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+    } @else {
+    <div class="stats-grid">
+        @for (stat of stats; track stat.label; let i = $index) {
+        <a [routerLink]="stat.route" class="stat-card glass-card" [style.animation-delay]="(i * 0.1) + 's'">
+            <div class="stat-icon" [style.background]="stat.color + '18'" [style.color]="stat.color">
+                <mat-icon>{{ stat.icon }}</mat-icon>
+            </div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stat.value }}</span>
+                <span class="stat-label">{{ stat.label }}</span>
+            </div>
+            <mat-icon class="stat-arrow">chevron_right</mat-icon>
+        </a>
+        }
+    </div>
+    }
+
+    <!-- Quick Actions -->
+    <div class="section animate-fade-in-delay">
+        <h2 class="section-title">
+            <mat-icon>flash_on</mat-icon>
+            Ações Rápidas
+        </h2>
+        <div class="actions-grid">
+            @if (user?.role === 'superadmin' || user?.role === 'admin') {
+            <a routerLink="/users" class="action-card glass-card">
+                <mat-icon class="action-icon">person_add</mat-icon>
+                <span>Cadastrar Usuário</span>
+            </a>
+            <a routerLink="/courses" class="action-card glass-card">
+                <mat-icon class="action-icon">add_circle</mat-icon>
+                <span>Novo Curso</span>
+            </a>
+            <a routerLink="/enrollments" class="action-card glass-card">
+                <mat-icon class="action-icon">how_to_reg</mat-icon>
+                <span>Matrículas</span>
+            </a>
+            <a routerLink="/announcements" class="action-card glass-card">
+                <mat-icon class="action-icon">campaign</mat-icon>
+                <span>Novo Aviso</span>
+            </a>
+            }
+            @if (user?.role === 'coordenacao') {
+            <a routerLink="/coordination" class="action-card glass-card">
+                <mat-icon class="action-icon">supervisor_account</mat-icon>
+                <span>Painel Pedagógico</span>
+            </a>
+            <a routerLink="/enrollments" class="action-card glass-card">
+                <mat-icon class="action-icon">how_to_reg</mat-icon>
+                <span>Matrículas</span>
+            </a>
+            <a routerLink="/export" class="action-card glass-card">
+                <mat-icon class="action-icon">download</mat-icon>
+                <span>Exportar Dados</span>
+            </a>
+            <a routerLink="/grades" class="action-card glass-card">
+                <mat-icon class="action-icon">visibility</mat-icon>
+                <span>Ver Notas</span>
+            </a>
+            }
+            @if (user?.role === 'professor') {
+            <a routerLink="/grades" class="action-card glass-card">
+                <mat-icon class="action-icon">edit_note</mat-icon>
+                <span>Lançar Notas</span>
+            </a>
+            <a routerLink="/attendance" class="action-card glass-card">
+                <mat-icon class="action-icon">fact_check</mat-icon>
+                <span>Registrar Chamada</span>
+            </a>
+            <a routerLink="/assignments" class="action-card glass-card">
+                <mat-icon class="action-icon">assignment_add</mat-icon>
+                <span>Nova Tarefa</span>
+            </a>
+            }
+            @if (user?.role === 'estudante') {
+            <a routerLink="/grades" class="action-card glass-card">
+                <mat-icon class="action-icon">visibility</mat-icon>
+                <span>Ver Notas</span>
+            </a>
+            <a routerLink="/assignments" class="action-card glass-card">
+                <mat-icon class="action-icon">assignment_turned_in</mat-icon>
+                <span>Minhas Tarefas</span>
+            </a>
+            <a routerLink="/announcements" class="action-card glass-card">
+                <mat-icon class="action-icon">notifications</mat-icon>
+                <span>Ver Avisos</span>
+            </a>
+            }
+        </div>
+    </div>
+</div>

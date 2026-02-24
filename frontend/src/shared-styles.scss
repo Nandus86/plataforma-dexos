@@ -1,0 +1,155 @@
+// ============================================================
+// Shared Page Styles - Exousía School by Dexos
+// ============================================================
+
+.page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .page-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 24px;
+        font-weight: 800;
+        color: #F5F5F5;
+        margin: 0;
+
+        mat-icon {
+            color: #D4AF37;
+        }
+    }
+
+    .page-subtitle {
+        color: #999;
+        font-size: 13px;
+        margin: 4px 0 0;
+    }
+}
+
+.btn-gold {
+    background: linear-gradient(135deg, #D4AF37, #F0D97A) !important;
+    color: #0A0A0A !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+}
+
+.filters {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+
+    .filter-field {
+        flex: 1;
+        min-width: 200px;
+    }
+}
+
+.form-card {
+    padding: 24px;
+    margin-bottom: 16px;
+
+    h3 {
+        color: #F5F5F5;
+        font-weight: 700;
+        margin: 0 0 16px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 4px 16px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 16px;
+    }
+}
+
+.table-card {
+    padding: 0;
+    overflow: hidden;
+
+    .dark-table {
+        width: 100%;
+        background: transparent;
+
+        th {
+            color: #D4AF37 !important;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(212, 175, 55, 0.06);
+        }
+
+        td {
+            color: #E5E5E5;
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+        }
+
+        tr:hover td {
+            background: rgba(212, 175, 55, 0.04);
+        }
+    }
+}
+
+.role-chip {
+    --mdc-chip-elevated-container-color: rgba(212, 175, 55, 0.12);
+    --mdc-chip-label-text-color: #D4AF37;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-active {
+    color: #4CAF50;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.status-inactive {
+    color: #F44336;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.loading-center {
+    display: flex;
+    justify-content: center;
+    padding: 48px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px;
+    color: #666;
+
+    mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 12px;
+        color: #4D4D4D;
+    }
+
+    p {
+        font-size: 14px;
+        margin: 0;
+    }
+}

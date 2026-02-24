@@ -1,0 +1,119 @@
+<div class="page-container">
+    <div class="page-header">
+        <div class="header-title">
+            <mat-icon class="title-icon gold-gradient-icon">account_balance</mat-icon>
+            <h1>Minha Instituição</h1>
+        </div>
+        <p class="header-subtitle">
+            Gerencie os dados e informações principais da sua instituição.
+        </p>
+    </div>
+
+    <div class="page-content" *ngIf="!loading">
+        <mat-card class="content-card">
+            <mat-card-header>
+                <div mat-card-avatar>
+                    <mat-icon color="primary">edit_square</mat-icon>
+                </div>
+                <mat-card-title>Dados Principais</mat-card-title>
+                <mat-card-subtitle>Informações básicas do sistema</mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+                <form [formGroup]="form" class="institution-form">
+                    <div class="form-row">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Nome da Instituição</mat-label>
+                            <input matInput formControlName="name" placeholder="Ex: Escola Modelo" />
+                            <mat-icon matPrefix>apartment</mat-icon>
+                            <mat-error *ngIf="form.get('name')?.hasError('required')">O nome da Instituição é
+                                obrigatório.</mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>CNPJ</mat-label>
+                            <input matInput formControlName="cnpj" placeholder="Ex: 00.000.000/0000-00" />
+                            <mat-icon matPrefix>badge</mat-icon>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Diretor(a)</mat-label>
+                            <input matInput formControlName="principal_name" placeholder="Ex: Maria José" />
+                            <mat-icon matPrefix>person</mat-icon>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>E-mail</mat-label>
+                            <input matInput type="email" formControlName="email"
+                                placeholder="Ex: contato@escola.com.br" />
+                            <mat-icon matPrefix>email</mat-icon>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Telefone</mat-label>
+                            <input matInput formControlName="phone" placeholder="Ex: (11) 99999-9999" />
+                            <mat-icon matPrefix>phone</mat-icon>
+                        </mat-form-field>
+                    </div>
+
+                    <h3 class="section-title">Endereço</h3>
+
+                    <div class="form-row">
+                        <mat-form-field appearance="outline" class="full-width" style="flex: 3;">
+                            <mat-label>Logradouro/Rua</mat-label>
+                            <input matInput formControlName="address_street" placeholder="Ex: Rua das Flores" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full-width" style="flex: 1;">
+                            <mat-label>Número</mat-label>
+                            <input matInput formControlName="address_number" placeholder="Ex: 123" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full-width" style="flex: 2;">
+                            <mat-label>Complemento</mat-label>
+                            <input matInput formControlName="address_complement" placeholder="Ex: Bloco B" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Bairro</mat-label>
+                            <input matInput formControlName="address_neighborhood" placeholder="Ex: Centro" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Cidade</mat-label>
+                            <input matInput formControlName="address_city" placeholder="Ex: São Paulo" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>UF</mat-label>
+                            <input matInput formControlName="address_state" placeholder="Ex: SP" maxlength="2" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>CEP</mat-label>
+                            <input matInput formControlName="address_zip" placeholder="Ex: 00000-000" />
+                        </mat-form-field>
+                    </div>
+                </form>
+            </mat-card-content>
+
+            <mat-card-actions align="end">
+                <button mat-flat-button color="primary" [disabled]="form.invalid || saving" (click)="save()">
+                    <mat-icon>save</mat-icon>
+                    {{ saving ? 'Salvando...' : 'Salvar Alterações' }}
+                </button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+
+    <div class="loading-state" *ngIf="loading">
+        <mat-icon class="rotating">sync</mat-icon>
+        <span>Carregando dados da instituição...</span>
+    </div>
+</div>

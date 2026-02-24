@@ -1,0 +1,266 @@
+.page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 24px;
+
+    .page-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 24px;
+        font-weight: 500;
+        margin: 0;
+        color: var(--text-primary, #ffffff);
+
+        mat-icon {
+            font-size: 28px;
+            width: 28px;
+            height: 28px;
+            color: #d4af37;
+        }
+    }
+
+    .page-subtitle {
+        margin: 4px 0 0 40px;
+        color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+        font-size: 14px;
+    }
+}
+
+.glass-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+}
+
+.filter-card {
+    padding: 16px 24px;
+    margin-bottom: 24px;
+
+    .filter-row {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+
+        .filter-field {
+            flex: 1;
+            min-width: 250px;
+        }
+    }
+}
+
+.content-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    min-height: 600px;
+}
+
+// Left Sidebar
+.lessons-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .sidebar-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(0, 0, 0, 0.2);
+
+        h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: #d4af37;
+        }
+    }
+
+    .lessons-list {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+
+        .lesson-item {
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.03);
+            }
+
+            &.active {
+                background: rgba(212, 175, 55, 0.1);
+                border-left: 4px solid #d4af37;
+            }
+
+            .lesson-date {
+                font-size: 13px;
+                color: rgba(255, 255, 255, 0.6);
+                margin-bottom: 4px;
+            }
+
+            .lesson-topic {
+                font-size: 15px;
+                font-weight: 500;
+                margin-bottom: 8px;
+                color: #fff;
+            }
+
+            .lesson-badges {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+
+                .badge {
+                    background: rgba(255, 255, 255, 0.1);
+                    padding: 2px 8px;
+                    border-radius: 12px;
+                    font-size: 11px;
+                    font-weight: 600;
+                    color: #aaa;
+                }
+            }
+        }
+    }
+}
+
+// Right Content (Matrix)
+.attendance-content {
+    flex: 1;
+    min-width: 0; // Prevent flex blowout
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+
+    .matrix-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+
+        .matrix-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.2);
+
+            h3 {
+                margin: 0;
+                font-size: 18px;
+                font-weight: 500;
+                color: #fff;
+            }
+        }
+
+        .table-container {
+            flex: 1;
+            padding: 24px;
+            overflow-x: auto;
+
+            .matrix-table {
+                width: 100%;
+                border-collapse: collapse;
+
+                th,
+                td {
+                    padding: 12px 16px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                    text-align: left;
+                }
+
+                th {
+                    font-size: 13px;
+                    text-transform: uppercase;
+                    color: rgba(255, 255, 255, 0.5);
+                    font-weight: 600;
+
+                    &.text-center {
+                        text-align: center;
+                    }
+                }
+
+                td {
+                    vertical-align: middle;
+                    color: #eee;
+
+                    &.text-center {
+                        text-align: center;
+                    }
+
+                    .cell-content {
+                        display: inline-flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 8px;
+
+                        .obs-input {
+                            width: 80px;
+                            background: transparent;
+                            border: none;
+                            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                            color: rgba(255, 255, 255, 0.8);
+                            font-size: 12px;
+                            text-align: center;
+                            padding: 2px 4px;
+                            transition: all 0.2s;
+
+                            &:focus {
+                                outline: none;
+                                border-bottom-color: #d4af37;
+                            }
+
+                            &::placeholder {
+                                color: rgba(255, 255, 255, 0.3);
+                            }
+                        }
+                    }
+                }
+
+                tr:hover td {
+                    background: rgba(255, 255, 255, 0.02);
+                }
+            }
+        }
+    }
+}
+
+// Utilities
+.loading-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 64px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+
+    mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    p {
+        margin: 0;
+        font-size: 16px;
+    }
+}

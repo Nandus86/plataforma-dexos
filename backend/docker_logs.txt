@@ -1,0 +1,681 @@
+﻿docker :   File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 
+143, in __init__
+No linha:1 caractere:1
++ docker logs exousia-backend --tail 500 2>&1 | Out-File -Encoding utf8 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  File "/usr/lo...43, in __i 
+   nit__:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 
+3309, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 711, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", 
+line 177, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", 
+line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", 
+line 175, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 388, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 673, in __init__
+    self.__connect()
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 899, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", 
+line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/create.py", 
+line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", 
+line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: 
+ignore[no-any-return]  # NOQA: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgr
+esql/asyncpg.py", line 955, in connect
+    await_only(creator_fn(*arg, **kw)),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurren
+cy_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: 
+ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurren
+cy_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", 
+line 2443, in connect
+    return await connect_utils._connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 
+1218, in _connect
+    conn = await _connect_addr(
+           ^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 
+1054, in _connect_addr
+    return await __connect_addr(params, True, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 
+1102, in __connect_addr
+    await connected
+asyncpg.exceptions.CannotConnectNowError: the database system is starting 
+up
+
+ERROR:    Application startup failed. Exiting.
+Traceback (most recent call last):
+  File "/usr/local/bin/uvicorn", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/click/core.py", line 
+1485, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/click/core.py", line 
+1406, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/click/core.py", line 
+1269, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/click/core.py", line 824, 
+in invoke
+    return callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 
+433, in main
+    run(
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 
+601, in run
+    ChangeReload(config, target=server.run, sockets=[sock]).run()
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/supervisors/basere
+load.py", line 52, in run
+    for changes in self:
+                   ^^^^
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/supervisors/basere
+load.py", line 71, in __next__
+    return self.should_restart()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/supervisors/watchf
+ilesreload.py", line 82, in should_restart
+    changes = next(self.watcher)
+              ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/watchfiles/main.py", line 
+130, in watch
+    raw_changes = watcher.watch(debounce, step, rust_timeout, stop_event)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_rust_notify.WatchfilesRustInternalError: error in underlying watcher: 
+Input/output error (os error 5)
+INFO:     Will watch for changes in these directories: ['/app']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [1] using WatchFiles
+INFO:     Started server process [8]
+INFO:     Waiting for application startup.
+Database connection failed. Retrying in 5s... (Attempt 1/5)
+Error: the database system is starting up
+Database connection failed. Retrying in 5s... (Attempt 2/5)
+Error: the database system is starting up
+Database connection failed. Retrying in 5s... (Attempt 3/5)
+Error: the database system is starting up
+Database connection failed. Retrying in 5s... (Attempt 4/5)
+Error: the database system is starting up
+Could not connect to the database after multiple attempts.
+ERROR:    Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", 
+line 694, in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+201, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/main.py", line 39, in lifespan
+    raise e
+  File "/app/main.py", line 29, in lifespan
+    async with engine.begin() as conn:
+               ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/eng
+ine.py", line 1068, in begin
+    async with conn:
+               ^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/base.py", 
+line 121, in __aenter__
+    return await self.start(is_ctxmanager=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Ôä╣´©Å Tenant 'Exous├¡a School' j├í existe.
+Ô£à Dados iniciais criados com sucesso!
+   ­ƒôº Superadmin: admin@exousia.school / admin123
+   ­ƒôº Gestor: gestor@exousia.school / gestor123
+   ­ƒôº Professor: professor@exousia.school / prof123
+   ­ƒôº Coordena├º├úo: coordenacao@exousia.school / coord123
+   ­ƒôº Aluno: aluno@exousia.school / aluno123
+INFO:     172.26.0.1:45328 - "OPTIONS /dashboard/stats HTTP/1.1" 200 OK
+INFO:     172.26.0.1:45322 - "OPTIONS /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:45322 - "GET /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 401 Unauthorized
+INFO:     172.26.0.1:45328 - "GET /dashboard/stats HTTP/1.1" 401 Unauthorized
+INFO:     172.26.0.1:45328 - "OPTIONS /auth/login HTTP/1.1" 200 OK
+INFO:     172.26.0.1:45328 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     172.26.0.1:45328 - "GET /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:45328 - "GET /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:45322 - "GET /dashboard/stats HTTP/1.1" 200 OK
+INFO:     172.26.0.1:52132 - "OPTIONS /class-groups/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:52132 - "GET /class-groups/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:52132 - "OPTIONS /class-groups/be0b3a34-4562-41d4-8baa-fba5d600152a/subjects/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:52132 - "GET /class-groups/be0b3a34-4562-41d4-8baa-fba5d600152a/subjects/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:52132 - "OPTIONS /lesson-plans/?class_group_subject_id=a5d10b40-5597-4c92-9671-00cbd72d7af2 HTTP/1.1" 200 OK
+INFO:     172.26.0.1:52132 - "GET /lesson-plans/?class_group_subject_id=a5d10b40-5597-4c92-9671-00cbd72d7af2 HTTP/1.1" 200 OK
+INFO:     172.26.0.1:38546 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     172.26.0.1:38546 - "GET /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:38546 - "GET /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:38562 - "GET /dashboard/stats HTTP/1.1" 200 OK
+INFO:     172.26.0.1:38562 - "GET /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:45896 - "GET /class-groups/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:45896 - "GET /class-groups/be0b3a34-4562-41d4-8baa-fba5d600152a/subjects/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:45896 - "GET /lesson-plans/?class_group_subject_id=a5d10b40-5597-4c92-9671-00cbd72d7af2 HTTP/1.1" 200 OK
+INFO:     172.26.0.1:52938 - "OPTIONS /lesson-plans/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:52938 - "POST /lesson-plans/ HTTP/1.1" 500 Internal Server Error
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/eng
+ine.py", line 275, in start
+    await greenlet_spawn(self.sync_engine.connect)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurren
+cy_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 
+3285, in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 
+143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 
+3309, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 711, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", 
+line 177, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", 
+line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", 
+line 175, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 388, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 673, in __init__
+    self.__connect()
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 899, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", 
+line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", 
+line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/create.py", 
+line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", 
+line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: 
+ignore[no-any-return]  # NOQA: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgr
+esql/asyncpg.py", line 955, in connect
+    await_only(creator_fn(*arg, **kw)),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurren
+cy_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: 
+ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurren
+cy_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", 
+line 2443, in connect
+    return await connect_utils._connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 
+1218, in _connect
+    conn = await _connect_addr(
+           ^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 
+1054, in _connect_addr
+    return await __connect_addr(params, True, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 
+1102, in __connect_addr
+    await connected
+asyncpg.exceptions.CannotConnectNowError: the database system is starting 
+up
+
+ERROR:    Application startup failed. Exiting.
+INFO:     Stopping reloader process [1]
+INFO:     Will watch for changes in these directories: ['/app']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [1] using WatchFiles
+INFO:     Started server process [8]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/sqltypes.py", 
+line 1709, in _object_value_for_elem
+    return self._object_lookup[elem]  # type: ignore[return-value]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^
+KeyError: 'SEMIANNUAL'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/protocols/http/htt
+ptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/middleware/proxy_h
+eaders.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/applications.py", 
+line 1134, in __call__
+    await super().__call__(scope, receive, send)
+  File 
+"/usr/local/lib/python3.12/site-packages/starlette/applications.py", line 
+107, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File 
+"/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py", 
+line 186, in __call__
+    raise exc
+  File 
+"/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py", 
+line 164, in __call__
+    await self.app(scope, receive, _send)
+  File 
+"/usr/local/lib/python3.12/site-packages/starlette/middleware/cors.py", 
+line 95, in __call__
+    await self.simple_response(scope, receive, send, 
+request_headers=headers)
+  File 
+"/usr/local/lib/python3.12/site-packages/starlette/middleware/cors.py", 
+line 153, in simple_response
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.12/site-packages/starlette/middleware/excep
+tions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, 
+send)
+  File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handl
+er.py", line 53, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handl
+er.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncex
+itstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", 
+line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", 
+line 736, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", 
+line 290, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+119, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handl
+er.py", line 53, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handl
+er.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+105, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+424, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 
+312, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/api/lesson_plans.py", line 38, in create_lesson_plan
+    result = await db.execute(
+             ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/ses
+sion.py", line 449, in execute
+    result = await greenlet_spawn(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurren
+cy_py3k.py", line 203, in greenlet_spawn
+    result = context.switch(value)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 
+2351, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 
+2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 
+309, in orm_execute_statement
+    return cls.orm_setup_cursor_result(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 
+616, in orm_setup_cursor_result
+    return loading.instances(result, querycontext)
+Ôä╣´©Å Tenant 'Exous├¡a School' j├í existe.
+Ô£à Dados iniciais criados com sucesso!
+   ­ƒôº Superadmin: admin@exousia.school / admin123
+   ­ƒôº Gestor: gestor@exousia.school / gestor123
+   ­ƒôº Professor: professor@exousia.school / prof123
+   ­ƒôº Coordena├º├úo: coordenacao@exousia.school / coord123
+   ­ƒôº Aluno: aluno@exousia.school / aluno123
+INFO:     172.26.0.1:45560 - "OPTIONS /lesson-plans/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:45560 - "POST /lesson-plans/ HTTP/1.1" 400 Bad Request
+INFO:     172.26.0.1:54778 - "POST /lesson-plans/ HTTP/1.1" 400 Bad Request
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/loading.py", line 
+262, in instances
+    _prebuffered = list(chunks(None))
+                   ^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/loading.py", line 
+247, in chunks
+    post_load.invoke(context, path)
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/loading.py", line 
+1564, in invoke
+    loader(
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/strategies.py", 
+line 3329, in _load_for_path
+    self._load_via_child(
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/strategies.py", 
+line 3360, in _load_via_child
+    for k, v in context.session.execute(
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 
+2351, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 
+2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 
+309, in orm_execute_statement
+    return cls.orm_setup_cursor_result(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 
+616, in orm_setup_cursor_result
+    return loading.instances(result, querycontext)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/loading.py", line 
+262, in instances
+    _prebuffered = list(chunks(None))
+                   ^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/loading.py", line 
+220, in chunks
+    fetch = cursor._raw_all_rows()
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/result.py", 
+line 553, in _raw_all_rows
+    return [make_row(row) for row in rows]
+INFO:     172.26.0.1:52644 - "POST /lesson-plans/ HTTP/1.1" 400 Bad Request
+INFO:     172.26.0.1:56326 - "POST /lesson-plans/ HTTP/1.1" 400 Bad Request
+INFO:     172.26.0.1:58864 - "OPTIONS /auth/login HTTP/1.1" 200 OK
+INFO:     172.26.0.1:58864 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     172.26.0.1:58864 - "OPTIONS /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:58880 - "OPTIONS /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:58896 - "OPTIONS /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:58896 - "OPTIONS /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:58896 - "OPTIONS /dashboard/stats HTTP/1.1" 200 OK
+INFO:     172.26.0.1:58896 - "GET /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:58880 - "GET /dashboard/stats HTTP/1.1" 200 OK
+INFO:     172.26.0.1:58896 - "GET /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:58896 - "GET /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:58896 - "GET /tenants/2e31a451-a2e5-42b6-86fc-ea6bbe7823bf/features HTTP/1.1" 200 OK
+INFO:     172.26.0.1:51380 - "OPTIONS /academic/enrollments/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:51396 - "OPTIONS /courses/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:51382 - "OPTIONS /users/?role=aluno HTTP/1.1" 200 OK
+INFO:     172.26.0.1:51380 - "GET /courses/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:51382 - "GET /academic/enrollments/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:51396 - "GET /users/?role=aluno HTTP/1.1" 200 OK
+INFO:     172.26.0.1:51420 - "OPTIONS /courses/subjects/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:51406 - "GET /courses/ HTTP/1.1" 200 OK
+            ^^^^^^^^^^^^^
+INFO:     172.26.0.1:51406 - "GET /courses/subjects/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:51406 - "GET /courses/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:51406 - "OPTIONS /academic-periods HTTP/1.1" 200 OK
+INFO:     172.26.0.1:51406 - "GET /academic-periods HTTP/1.1" 404 Not Found
+INFO:     172.26.0.1:54466 - "OPTIONS /users/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:54466 - "GET /users/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:54466 - "GET /academic-periods HTTP/1.1" 404 Not Found
+INFO:     172.26.0.1:42842 - "GET /users/ HTTP/1.1" 200 OK
+INFO:     172.26.0.1:42842 - "GET /academic-periods HTTP/1.1" 404 Not Found
+  File "lib/sqlalchemy/cyextension/resultproxy.pyx", line 22, in 
+sqlalchemy.cyextension.resultproxy.BaseRow.__init__
+  File "lib/sqlalchemy/cyextension/resultproxy.pyx", line 79, in 
+sqlalchemy.cyextension.resultproxy._apply_processors
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/sqltypes.py", 
+line 1829, in process
+    value = self._object_value_for_elem(value)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File 
+"/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/sqltypes.py", 
+line 1711, in _object_value_for_elem
+    raise LookupError(
+LookupError: 'SEMIANNUAL' is not among the defined enum values. Enum 
+name: breaktype. Possible values: mensal, bimestral, trimestral, ..., 
+anual
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [8]
+INFO:     Stopping reloader process [1]
+INFO:     Will watch for changes in these directories: ['/app']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [1] using WatchFiles
+INFO:     Started server process [8]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

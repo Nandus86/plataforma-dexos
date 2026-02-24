@@ -1,0 +1,223 @@
+<div class="period-details-container">
+    <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Carregando detalhes...</p>
+    </div>
+
+    <div *ngIf="!loading && period" class="details-content">
+        <!-- Header -->
+        <div class="header">
+            <button mat-icon-button (click)="goBack()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <div class="header-info">
+                <h1>{{ period.name }}</h1>
+                <p class="subtitle">
+                    {{ formatDate(period.start_date) }} - {{ formatDate(period.end_date) }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid" *ngIf="statistics">
+            <mat-card class="stat-card">
+                <mat-card-content>
+                    <mat-icon color="primary">calendar_today</mat-icon>
+                    <div class="stat-info">
+                        <h3>{{ statistics.total_days }}</h3>
+                        <p>Total de Dias</p>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="stat-card">
+                <mat-card-content>
+                    <mat-icon color="accent">school</mat-icon>
+                    <div class="stat-info">
+                        <h3>{{ statistics.school_days }}</h3>
+                        <p>Dias Letivos</p>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="stat-card">
+                <mat-card-content>
+                    <mat-icon color="warn">event_busy</mat-icon>
+                    <div class="stat-info">
+                        <h3>{{ statistics.non_school_days_count }}</h3>
+                        <p>Dias sem Aula</p>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="stat-card">
+                <mat-card-content>
+                    <mat-icon style="color: #4caf50">class</mat-icon>
+                    <div class="stat-info">
+                        <h3>{{ statistics.total_classes_available }}</h3>
+                        <p>Aulas Disponíveis</p>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <!-- Tabs -->
+        <mat-card class="tabs-card">
+            <mat-tab-group>
+                <mat-tab label="Informações">
+                    <div class="tab-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Ano:</label>
+                                <span>{{ period.year }}</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Tipo de Quebra:</label>
+                                <span>{{ getBreakTypeLabel(period.break_type) }}</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Aulas por Dia:</label>
+                                <span>{{ period.classes_per_day }}</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Status:</label>
+                                <span [class.active]="period.is_active" [class.inactive]="!period.is_active">
+                                    {{ period.is_active ? 'Ativo' : 'Inativo' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </mat-tab>
+
+                <mat-tab label="Quebras do Período">
+                    <div class="tab-content">
+                        <div *ngIf="period.period_breaks && period.period_breaks.length > 0" class="breaks-list">
+                            <div *ngFor="let break of period.period_breaks" class="break-item">
+                                <div class="break-header">
+                                    <span class="break-order">{{ break.order }}º</span>
+                                    <h3>{{ break.name }}</h3>
+                                </div>
+                                <p class="break-dates">
+                                    {{ formatDate(break.start_date) }} - {{ formatDate(break.end_date) }}
+                                </p>
+                            </div>
+                        </div>
+                        <div *ngIf="!period.period_breaks || period.period_breaks.length === 0" class="empty-state">
+                            <mat-icon>event_note</mat-icon>
+                            <p>Nenhuma quebra definida</p>
+                        </div>
+                    </div>
+                </mat-tab>
+
+                <mat-tab label="Dias sem Aula">
+                    <div class="tab-content">
+                        <div class="actions-bar">
+                            <button mat-raised-button color="accent" (click)="importHolidays()">
+                                <mat-icon>cloud_download</mat-icon>
+                                Importar Feriados (BR)
+                            </button>
+                            <button mat-raised-button color="primary" (click)="openDayDialog('non-school')">
+                                <mat-icon>add</mat-icon>
+                                Adicionar Dia
+                            </button>
+                        </div>
+
+                        <div *ngIf="period.non_school_days && period.non_school_days.length > 0"
+                            class="non-school-list">
+                            <div *ngFor="let day of period.non_school_days" class="non-school-item">
+                                <div class="item-content">
+                                    <mat-icon>event_busy</mat-icon>
+                                    <div class="day-info">
+                                        <strong>{{ formatDate(day.date) }}</strong>
+                                        <p>{{ day.description || 'Sem descrição' }}</p>
+                                    </div>
+                                </div>
+                                <div class="actions">
+                                    <button mat-icon-button color="warn" (click)="deleteNonSchoolDay(day)">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="!period.non_school_days || period.non_school_days.length === 0" class="empty-state">
+                            <mat-icon>check_circle</mat-icon>
+                            <p>Nenhum dia sem aula definido</p>
+                        </div>
+                    </div>
+                </mat-tab>
+
+                <mat-tab label="Sábados Letivos / Extras">
+                    <div class="tab-content">
+                        <div class="actions-bar">
+                            <button mat-raised-button color="primary" (click)="openDayDialog('extra')">
+                                <mat-icon>add</mat-icon>
+                                Adicionar Dia Extra
+                            </button>
+                        </div>
+
+                        <div *ngIf="period.extra_school_days && period.extra_school_days.length > 0"
+                            class="extra-school-list">
+                            <div *ngFor="let day of period.extra_school_days" class="extra-school-item">
+                                <div class="item-content">
+                                    <mat-icon color="primary">event_available</mat-icon>
+                                    <div class="day-info">
+                                        <strong>{{ formatDate(day.date) }}</strong>
+                                        <p>{{ day.description || 'Sem descrição' }}</p>
+                                    </div>
+                                </div>
+                                <div class="actions">
+                                    <button mat-icon-button color="warn" (click)="deleteExtraDay(day)">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="!period.extra_school_days || period.extra_school_days.length === 0"
+                            class="empty-state">
+                            <mat-icon>event_available</mat-icon>
+                            <p>Nenhum dia extra definido</p>
+                        </div>
+                    </div>
+                </mat-tab>
+
+                <mat-tab label="Horários de Aula">
+                    <div class="tab-content">
+                        <div class="actions-bar">
+                            <button mat-raised-button color="primary" (click)="openScheduleDialog()">
+                                <mat-icon>add</mat-icon>
+                                Adicionar Horário
+                            </button>
+                        </div>
+
+                        <div *ngIf="period.class_schedules && period.class_schedules.length > 0" class="schedules-list">
+                            <div *ngFor="let schedule of period.class_schedules" class="schedule-item">
+                                <div class="item-content">
+                                    <span class="schedule-order">{{ schedule.order }}ª Aula</span>
+                                    <div class="schedule-time">
+                                        <mat-icon>schedule</mat-icon>
+                                        <span>{{ schedule.start_time }} - {{ schedule.end_time }}</span>
+                                    </div>
+                                    <span class="schedule-duration" *ngIf="schedule.duration_minutes">
+                                        {{ schedule.duration_minutes }} min
+                                    </span>
+                                </div>
+                                <div class="actions">
+                                    <button mat-icon-button color="primary" (click)="openScheduleDialog(schedule)">
+                                        <mat-icon>edit</mat-icon>
+                                    </button>
+                                    <button mat-icon-button color="warn" (click)="deleteSchedule(schedule)">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="!period.class_schedules || period.class_schedules.length === 0" class="empty-state">
+                            <mat-icon>access_time</mat-icon>
+                            <p>Nenhum horário definido</p>
+                        </div>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-card>
+    </div>
+</div>

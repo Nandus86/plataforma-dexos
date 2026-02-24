@@ -1,0 +1,111 @@
+<div class="page">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><mat-icon>event_available</mat-icon> Chamada / Frequência</h1>
+            <p class="page-subtitle">Gerencie a frequência dos estudantes nas aulas registradas</p>
+        </div>
+    </div>
+
+    <div class="filter-card glass-card">
+        <div class="filter-row">
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Turma</mat-label>
+                <mat-select [(ngModel)]="selectedGroupId" (selectionChange)="onGroupChange()">
+                    <mat-option *ngFor="let g of groups" [value]="g.id">
+                        {{ g.name }} ({{ g.course_name }})
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Disciplina</mat-label>
+                <mat-select [(ngModel)]="selectedSubjectId" [disabled]="!selectedGroupId"
+                    (selectionChange)="onSubjectChange()">
+                    <mat-option *ngFor="let sub of subjects" [value]="sub.id">
+                        {{ sub.subject_name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="content-row" *ngIf="selectedSubjectId">
+
+        <!-- Left Sidebar: Lessons List -->
+        <div class="lessons-sidebar glass-card">
+            <div class="sidebar-header">
+                <h3>Aulas Registradas</h3>
+            </div>
+
+            <div class="loading-center" *ngIf="loadingLessons">
+                <mat-spinner diameter="30"></mat-spinner>
+            </div>
+
+            <div class="lessons-list" *ngIf="!loadingLessons">
+                <div class="empty-state" *ngIf="lessons.length === 0">
+                    <mat-icon>event_busy</mat-icon>
+                    <p>Nenhuma aula registrada nesta disciplina.</p>
+                </div>
+
+                <div class="lesson-item" *ngFor="let l of lessons" [class.active]="selectedLesson?.id === l.id"
+                    (click)="selectLesson(l)">
+                    <div class="lesson-date">{{ l.date | date:'dd/MM/yyyy' }}</div>
+                    <div class="lesson-topic">{{ l.topic }}</div>
+                    <div class="lesson-badges">
+                        <span class="badge" *ngFor="let order of l.class_orders">{{ order }}ª Aula</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Content: Attendance Matrix -->
+        <div class="attendance-content glass-card">
+            <div class="empty-state" *ngIf="!selectedLesson">
+                <mat-icon>touch_app</mat-icon>
+                <p>Selecione uma aula ao lado para ver/realizar a chamada.</p>
+            </div>
+
+            <div *ngIf="selectedLesson" class="matrix-container">
+                <div class="matrix-header">
+                    <h3>Frequência: {{ selectedLesson.date | date:'dd/MM' }} - {{ selectedLesson.topic }}</h3>
+                </div>
+
+                <div class="loading-center" *ngIf="loadingDetails">
+                    <mat-spinner diameter="40"></mat-spinner>
+                </div>
+
+                <div *ngIf="!loadingDetails" class="table-container">
+                    <div class="empty-state" *ngIf="attendanceMatrix.length === 0">
+                        Nenhum aluno matriculado nesta disciplina.
+                    </div>
+
+                    <table class="matrix-table" *ngIf="attendanceMatrix.length > 0">
+                        <thead>
+                            <tr>
+                                <th>Estudante</th>
+                                <th class="text-center" *ngFor="let order of selectedLesson.class_orders">{{ order }}ª
+                                    Aula</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let row of attendanceMatrix">
+                                <td>{{ row.student_name }}</td>
+                                <td class="text-center" *ngFor="let order of selectedLesson.class_orders">
+                                    <div class="cell-content">
+                                        <mat-slide-toggle [(ngModel)]="row.attendances[order].present"
+                                            (change)="updateAttendance(row.attendances[order], order)">
+                                        </mat-slide-toggle>
+                                        <input type="text" class="obs-input" placeholder="Obs..."
+                                            [(ngModel)]="row.attendances[order].observation"
+                                            (blur)="updateAttendance(row.attendances[order], order)">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

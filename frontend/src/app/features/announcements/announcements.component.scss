@@ -1,0 +1,33 @@
+// Component-specific styles (shared styles are in global styles.scss)
+
+.announcements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.announcement-card {
+    position: relative;
+
+    &.pinned {
+        border-left: 3px solid var(--accent-gold);
+    }
+
+    .pin-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--accent-gold);
+        font-size: 11px;
+        font-weight: 600;
+
+        mat-icon {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+        }
+    }
+}

@@ -1,0 +1,67 @@
+<div class="login-page">
+    <!-- Background decoration -->
+    <div class="bg-decoration">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="login-container animate-fade-in">
+        <!-- Brand Section -->
+        <div class="brand-section">
+            <div class="brand-icon-large">
+                <mat-icon>auto_stories</mat-icon>
+            </div>
+            <h1 class="brand-title gold-gradient">{{ appName }}</h1>
+            <p class="brand-subtitle">{{ appSubtitle }}</p>
+            <p class="brand-desc">Plataforma de Gestão Educacional</p>
+        </div>
+
+        <!-- Login Card -->
+        <mat-card class="login-card glass-card">
+            <mat-card-content>
+                <h2 class="login-title">Entrar</h2>
+                <p class="login-subtitle">Acesse sua conta para continuar</p>
+
+                <form (ngSubmit)="onSubmit()" class="login-form">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>E-mail</mat-label>
+                        <mat-icon matPrefix>email</mat-icon>
+                        <input matInput type="email" [(ngModel)]="email" name="email" placeholder="seu@email.com"
+                            required autocomplete="email" id="login-email" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Senha</mat-label>
+                        <mat-icon matPrefix>lock</mat-icon>
+                        <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="password"
+                            name="password" placeholder="Sua senha" required autocomplete="current-password"
+                            id="login-password" />
+                        <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+                            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                    </mat-form-field>
+
+                    <button mat-raised-button color="primary" class="login-button" type="submit"
+                        [disabled]="loading || !email || !password" id="login-submit">
+                        @if (loading) {
+                        <ng-container>
+                            <mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
+                            <span>Entrando...</span>
+                        </ng-container>
+                        } @else {
+                        <ng-container>
+                            <mat-icon>login</mat-icon>
+                            <span>Entrar</span>
+                        </ng-container>
+                        }
+                    </button>
+                </form>
+            </mat-card-content>
+        </mat-card>
+
+        <p class="footer-text">
+            &copy; 2026 Dexos. Todos os direitos reservados.
+        </p>
+    </div>
+</div>

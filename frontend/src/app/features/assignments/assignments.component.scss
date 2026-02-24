@@ -1,0 +1,32 @@
+// Component-specific styles (shared styles are in global styles.scss)
+
+.assignment-card {
+    cursor: pointer;
+
+    .card-avatar {
+        color: var(--accent-gold);
+        font-size: 32px;
+    }
+
+    .card-desc {
+        color: var(--text-muted);
+        font-size: 13px;
+        margin: 8px 0;
+        line-height: 1.5;
+    }
+
+    .card-due {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--accent-gold-light);
+        font-size: 12px;
+        font-weight: 500;
+
+        mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+        }
+    }
+}

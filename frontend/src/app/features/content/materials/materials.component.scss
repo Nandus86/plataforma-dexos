@@ -1,0 +1,10 @@
+// Component-specific styles (shared styles are in global styles.scss)
+
+.material-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+}

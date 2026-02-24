@@ -1,0 +1,214 @@
+.dialog-container {
+    padding: 0;
+    margin: 0;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h2 {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    color: var(--primary-light);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dialog-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+    margin-top: 10px;
+
+    .user-info {
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .registration {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+    }
+}
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    padding-left: 20px;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 28px;
+        width: 2px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+.timeline-item {
+    display: flex;
+    gap: 20px;
+    position: relative;
+
+    .timeline-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--surface-light);
+        color: white;
+        z-index: 1;
+        border: 2px solid var(--surface-dark);
+
+        mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+        }
+
+        &.status-active {
+            background: #4caf50;
+        }
+
+        &.status-completed {
+            background: #2196f3;
+        }
+
+        &.status-failed {
+            background: #f44336;
+        }
+
+        &.status-locked {
+            background: #ff9800;
+        }
+
+        &.status-inactive {
+            background: #9e9e9e;
+        }
+
+        &.status-transferred {
+            background: #9c27b0;
+        }
+    }
+
+    .timeline-content {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 16px;
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+
+            h4 {
+                margin: 0;
+                color: var(--primary-color);
+                font-family: 'Outfit', sans-serif;
+            }
+        }
+
+        p {
+            margin: 0 0 8px 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+
+            strong {
+                color: white;
+            }
+        }
+
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+
+            .break-chip {
+                background: rgba(var(--primary-rgb), 0.15);
+                color: var(--primary-light);
+                border: 1px solid rgba(var(--primary-rgb), 0.3);
+                padding: 4px 12px;
+                border-radius: 16px;
+                font-size: 0.85rem;
+            }
+        }
+    }
+}
+
+.status-chip {
+    min-height: 24px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: white;
+
+    &.status-active {
+        background-color: rgba(76, 175, 80, 0.2);
+        color: #81c784;
+        border: 1px solid #4caf50;
+    }
+
+    &.status-completed {
+        background-color: rgba(33, 150, 243, 0.2);
+        color: #64b5f6;
+        border: 1px solid #2196f3;
+    }
+
+    &.status-failed {
+        background-color: rgba(244, 67, 54, 0.2);
+        color: #e57373;
+        border: 1px solid #f44336;
+    }
+
+    &.status-locked {
+        background-color: rgba(255, 152, 0, 0.2);
+        color: #ffb74d;
+        border: 1px solid #ff9800;
+    }
+
+    &.status-inactive {
+        background-color: rgba(158, 158, 158, 0.2);
+        color: #e0e0e0;
+        border: 1px solid #9e9e9e;
+    }
+
+    &.status-transferred {
+        background-color: rgba(156, 39, 176, 0.2);
+        color: #ba68c8;
+        border: 1px solid #9c27b0;
+    }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+}

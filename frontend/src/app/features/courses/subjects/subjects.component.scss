@@ -1,0 +1,14 @@
+// Subjects Component Styles
+
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    margin-bottom: 16px;
+
+    .filter-field {
+        min-width: 280px;
+        margin-bottom: -20px; // compensate mat-form-field bottom margin
+    }
+}

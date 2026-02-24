@@ -1,0 +1,128 @@
+<div class="page-container">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Matrizes Curriculares</h1>
+            <p>Abaixo estão listados todos os cursos com suas respectivas matrizes curriculares ativas.</p>
+        </div>
+        <div class="header-actions">
+        </div>
+    </div>
+
+    <div class="content">
+        <ng-container *ngIf="loading">
+            <div class="loading-state loading-center">
+                <mat-spinner diameter="40"></mat-spinner>
+                <p>Carregando árvore de matrizes...</p>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="!loading && courses.length === 0">
+            <div class="empty-state">
+                <mat-icon>school</mat-icon>
+                <p>Nenhum curso encontrado no sistema. Cadastre um curso primeiro.</p>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="!loading && courses.length > 0">
+            <mat-accordion class="course-accordion" multi>
+                <mat-expansion-panel *ngFor="let course of courses" [expanded]="true" class="course-panel mb-3">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <mat-icon color="primary" class="mr-2">school</mat-icon>
+                            <strong>{{ course.name }}</strong> &nbsp;(Cód: {{ course.code || '-' }})
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div *ngIf="!course.matrices || course.matrices.length === 0">
+                        <div class="empty-state-small">
+                            <mat-icon>inbox</mat-icon>
+                            <p>Este curso não possui nenhuma matriz cadastrada.</p>
+                        </div>
+                    </div>
+
+                    <div *ngIf="course.matrices && course.matrices.length > 0">
+                        <mat-accordion class="matrix-accordion" multi>
+                            <mat-expansion-panel *ngFor="let matrix of course.matrices" [expanded]="true"
+                                class="matrix-panel outline-panel mb-2">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title class="text-gold">
+                                        <mat-icon class="mr-2 text-gold">view_agenda</mat-icon>
+                                        {{ matrix.name }} ({{ matrix.year }})
+                                    </mat-panel-title>
+                                    <mat-panel-description>
+                                        <span class="status-badge" [class.active]="matrix.is_active"
+                                            [class.inactive]="!matrix.is_active">
+                                            {{ matrix.is_active ? 'Ativa' : 'Inativa' }}
+                                        </span>
+                                    </mat-panel-description>
+                                </mat-expansion-panel-header>
+
+                                <!-- Subjects inside matrix -->
+                                <div class="table-container table-card"
+                                    *ngIf="matrix.subjects && matrix.subjects.length > 0; else noSubjects">
+                                    <table mat-table [dataSource]="matrix.subjects" class="dark-table">
+
+                                        <!-- Semestre Column -->
+                                        <ng-container matColumnDef="semester">
+                                            <th mat-header-cell *matHeaderCellDef>Semestre</th>
+                                            <td mat-cell *matCellDef="let ms">
+                                                <span class="semester-chip">{{ ms.semester }}º Semestre</span>
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Código Column -->
+                                        <ng-container matColumnDef="code">
+                                            <th mat-header-cell *matHeaderCellDef>Código</th>
+                                            <td mat-cell *matCellDef="let ms">
+                                                <strong>{{ ms.subject_code || '-' }}</strong>
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Disciplina Column -->
+                                        <ng-container matColumnDef="subject">
+                                            <th mat-header-cell *matHeaderCellDef>Disciplina</th>
+                                            <td mat-cell *matCellDef="let ms">{{ ms.subject_name || 'Não definida' }}
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Carga Horária Column -->
+                                        <ng-container matColumnDef="workload">
+                                            <th mat-header-cell *matHeaderCellDef>Carga Horária</th>
+                                            <td mat-cell *matCellDef="let ms">{{ ms.workload_hours || 0 }}h</td>
+                                        </ng-container>
+
+                                        <!-- Status Column -->
+                                        <ng-container matColumnDef="status">
+                                            <th mat-header-cell *matHeaderCellDef>Status</th>
+                                            <td mat-cell *matCellDef="let ms">
+                                                <mat-icon [class.text-success]="ms.is_active"
+                                                    [class.text-danger]="!ms.is_active" class="icon-sm">
+                                                    {{ ms.is_active ? 'check_circle' : 'cancel' }}
+                                                </mat-icon>
+                                            </td>
+                                        </ng-container>
+
+                                        <tr mat-header-row
+                                            *matHeaderRowDef="['semester', 'code', 'subject', 'workload', 'status']">
+                                        </tr>
+                                        <tr mat-row
+                                            *matRowDef="let row; columns: ['semester', 'code', 'subject', 'workload', 'status'];">
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <ng-template #noSubjects>
+                                    <div class="empty-state-small">
+                                        <mat-icon>warning</mat-icon>
+                                        <p>Esta matriz não possui disciplinas vinculadas.</p>
+                                    </div>
+                                </ng-template>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </div>
+
+                </mat-expansion-panel>
+            </mat-accordion>
+        </ng-container>
+    </div>
+</div>

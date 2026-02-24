@@ -1,0 +1,17 @@
+.period-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 500px;
+    padding: 16px 0;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+mat-form-field {
+    width: 100%;
+}

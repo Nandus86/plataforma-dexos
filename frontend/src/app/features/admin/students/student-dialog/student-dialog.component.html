@@ -1,0 +1,185 @@
+<h2 mat-dialog-title>
+    {{ isEditing ? 'Editar Estudante' : 'Novo Estudante' }}
+</h2>
+
+<mat-dialog-content>
+    <div *ngIf="loading" class="loading-overlay">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <form *ngIf="form" [formGroup]="form" class="form-container">
+        <mat-tab-group>
+            <!-- Tab 1: Base Configuration -->
+            <mat-tab label="Acesso">
+                <div class="tab-content">
+                    <div class="form-grid">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Nome Completo</mat-label>
+                            <input matInput formControlName="name" placeholder="Ex: João da Silva">
+                            <mat-error *ngIf="form.get('name')?.hasError('required')">Nome é obrigatório</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>E-mail</mat-label>
+                            <input matInput type="email" formControlName="email">
+                            <mat-error *ngIf="form.get('email')?.hasError('required')">E-mail é obrigatório</mat-error>
+                            <mat-error *ngIf="form.get('email')?.hasError('email')">E-mail inválido</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>{{ isEditing ? 'Nova Senha (opcional)' : 'Senha' }}</mat-label>
+                            <input matInput type="password" formControlName="password">
+                            <mat-error *ngIf="form.get('password')?.hasError('required')">Senha é
+                                obrigatória</mat-error>
+                            <mat-error *ngIf="form.get('password')?.hasError('minlength')">Mínimo de 6
+                                caracteres</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" *ngIf="isEditing">
+                            <mat-label>Registro Acadêmico (RA)</mat-label>
+                            <input matInput formControlName="registration_number" readonly>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Visão Global/Contato</mat-label>
+                            <input matInput formControlName="phone" placeholder="(00) 0000-0000">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </mat-tab>
+
+            <!-- Tab 2: Pessoal -->
+            <mat-tab label="Pessoal">
+                <div class="tab-content" formGroupName="profile">
+                    <div class="form-grid">
+                        <mat-form-field appearance="outline">
+                            <mat-label>CPF</mat-label>
+                            <input matInput formControlName="cpf">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>RG</mat-label>
+                            <input matInput formControlName="rg">
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Data de Nascimento</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="birth_date">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Gênero</mat-label>
+                            <mat-select formControlName="gender">
+                                <mat-option value="Masculino">Masculino</mat-option>
+                                <mat-option value="Feminino">Feminino</mat-option>
+                                <mat-option value="Outro">Outro</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Estado Civil</mat-label>
+                            <mat-select formControlName="marital_status">
+                                <mat-option value="Solteiro">Solteiro</mat-option>
+                                <mat-option value="Casado">Casado</mat-option>
+                                <mat-option value="Divorciado">Divorciado</mat-option>
+                                <mat-option value="Viúvo">Viúvo</mat-option>
+                                <mat-option value="União Estável">União Estável</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Celular</mat-label>
+                            <input matInput formControlName="cell_phone" placeholder="(00) 90000-0000">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Cor/Raça</mat-label>
+                            <input matInput formControlName="race">
+                        </mat-form-field>
+                    </div>
+                    <div class="form-grid">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Naturalidade</mat-label>
+                            <input matInput formControlName="naturalness">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Religião</mat-label>
+                            <input matInput formControlName="religion">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Profissão</mat-label>
+                            <input matInput formControlName="profession">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Escolaridade</mat-label>
+                            <input matInput formControlName="education_level">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </mat-tab>
+
+            <!-- Tab 3: Endereço -->
+            <mat-tab label="Endereço">
+                <div class="tab-content" formGroupName="profile">
+                    <div class="form-grid">
+                        <mat-form-field appearance="outline">
+                            <mat-label>CEP</mat-label>
+                            <input matInput formControlName="zip_code">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Logradouro / Rua</mat-label>
+                            <input matInput formControlName="address_line">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Número</mat-label>
+                            <input matInput formControlName="address_number">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Complemento</mat-label>
+                            <input matInput formControlName="address_complement">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Bairro</mat-label>
+                            <input matInput formControlName="neighborhood">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Cidade</mat-label>
+                            <input matInput formControlName="city">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Estado (UF)</mat-label>
+                            <input matInput formControlName="state">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </mat-tab>
+
+            <!-- Tab 4: Filiação -->
+            <mat-tab label="Filiação">
+                <div class="tab-content" formGroupName="profile">
+                    <div class="form-grid">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Nome do Pai</mat-label>
+                            <input matInput formControlName="father_name">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Nome da Mãe</mat-label>
+                            <input matInput formControlName="mother_name">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Nome do Cônjuge</mat-label>
+                            <input matInput formControlName="spouse_name">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="close()" [disabled]="loading">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="save()" [disabled]="form?.invalid || loading" class="btn-gold">
+        Salvar
+    </button>
+</mat-dialog-actions>

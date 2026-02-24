@@ -1,0 +1,80 @@
+<div class="page animate-fade-in">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><mat-icon>people</mat-icon> Estudantes</h1>
+            <p class="page-subtitle">Gerencie os estudantes e seus perfis acadêmicos</p>
+        </div>
+        <button mat-raised-button color="primary" (click)="openDialog()" class="btn-gold">
+            <mat-icon>person_add</mat-icon> Novo Estudante
+        </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters glass-card">
+        <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Buscar</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput [(ngModel)]="searchQuery" (keyup.enter)="loadStudents()" placeholder="Nome, email...">
+        </mat-form-field>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card glass-card relative">
+        <div *ngIf="loading" class="loading-overlay">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+
+        <table mat-table [dataSource]="dataSource" matSort class="dark-table">
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
+                <td mat-cell *matCellDef="let u">{{ u.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>E-mail</th>
+                <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+            </ng-container>
+            <ng-container matColumnDef="registration_number">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Registro (RA)</th>
+                <td mat-cell *matCellDef="let u">{{ u.registration_number || '-' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                <td mat-cell *matCellDef="let u">
+                    <span [class]="u.is_active ? 'status-active' : 'status-inactive'">{{ u.is_active ? 'Ativo' :
+                        'Inativo' }}</span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let u">
+                    <button mat-icon-button color="accent" (click)="openHistoryDialog(u)"
+                        matTooltip="Vida Acadêmica"><mat-icon>history</mat-icon></button>
+                    <button mat-icon-button (click)="openDialog(u)"
+                        matTooltip="Editar"><mat-icon>edit</mat-icon></button>
+                    <button mat-icon-button (click)="toggleActive(u)"
+                        [matTooltip]="u.is_active ? 'Desativar' : 'Ativar'">
+                        <mat-icon [class.text-danger]="u.is_active" [class.text-success]="!u.is_active">
+                            {{ u.is_active ? 'block' : 'check_circle' }}
+                        </mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <!-- Row shown when there is no matching data. -->
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell empty-cell" colspan="5">
+                    <div class="empty-state">
+                        <mat-icon>people_outline</mat-icon>
+                        <p>Nenhum estudante encontrado</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons
+            aria-label="Selecione a página"></mat-paginator>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+.filters {
+    padding: 24px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    .filter-field {
+        margin-bottom: -1.25em;
+        flex: 1;
+        max-width: 300px;
+    }
+}
+
+.table-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.empty-cell {
+    padding: 48px;
+    text-align: center;
+}
+
+.status-active {
+    background: rgba(46, 125, 50, 0.2);
+    color: #4caf50;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.status-inactive {
+    background: rgba(211, 47, 47, 0.2);
+    color: #ef5350;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.role-chip {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-weight: 500;
+}

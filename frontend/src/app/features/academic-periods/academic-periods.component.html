@@ -1,0 +1,103 @@
+<div class="periods-container">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>
+                <div class="header-wrapper">
+                    <div class="title-section">
+                        <mat-icon class="title-icon">calendar_month</mat-icon>
+                        <span>Períodos Letivos</span>
+                    </div>
+                    <button mat-raised-button color="primary" (click)="openCreateDialog()">
+                        <mat-icon>add</mat-icon>
+                        Novo Período
+                    </button>
+                </div>
+            </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+            <div class="table-container">
+                <table mat-table [dataSource]="periods" class="periods-table">
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef>Nome</th>
+                        <td mat-cell *matCellDef="let period">
+                            <strong>{{ period.name }}</strong>
+                        </td>
+                    </ng-container>
+
+                    <!-- Year Column -->
+                    <ng-container matColumnDef="year">
+                        <th mat-header-cell *matHeaderCellDef>Ano</th>
+                        <td mat-cell *matCellDef="let period">{{ period.year }}</td>
+                    </ng-container>
+
+                    <!-- Dates Column -->
+                    <ng-container matColumnDef="dates">
+                        <th mat-header-cell *matHeaderCellDef>Período</th>
+                        <td mat-cell *matCellDef="let period">
+                            {{ formatDate(period.start_date) }} - {{ formatDate(period.end_date) }}
+                        </td>
+                    </ng-container>
+
+                    <!-- Break Type Column -->
+                    <ng-container matColumnDef="break_type">
+                        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                        <td mat-cell *matCellDef="let period">
+                            <mat-chip>{{ getBreakTypeLabel(period.break_type) }}</mat-chip>
+                        </td>
+                    </ng-container>
+
+                    <!-- Classes per Day Column -->
+                    <ng-container matColumnDef="classes_per_day">
+                        <th mat-header-cell *matHeaderCellDef>Aulas/Dia</th>
+                        <td mat-cell *matCellDef="let period">{{ period.classes_per_day }}</td>
+                    </ng-container>
+
+                    <!-- Status Column -->
+                    <ng-container matColumnDef="status">
+                        <th mat-header-cell *matHeaderCellDef>Status</th>
+                        <td mat-cell *matCellDef="let period">
+                            <mat-chip [class.active-chip]="period.is_active" [class.inactive-chip]="!period.is_active">
+                                {{ period.is_active ? 'Ativo' : 'Inativo' }}
+                            </mat-chip>
+                        </td>
+                    </ng-container>
+
+                    <!-- Actions Column -->
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef>Ações</th>
+                        <td mat-cell *matCellDef="let period">
+                            <button mat-icon-button color="primary" (click)="viewDetails(period)"
+                                matTooltip="Ver detalhes">
+                                <mat-icon>visibility</mat-icon>
+                            </button>
+                            <button mat-icon-button color="accent" (click)="openEditDialog(period)" matTooltip="Editar">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" (click)="deletePeriod(period)" matTooltip="Excluir">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+
+                <div *ngIf="periods.length === 0 && !loading" class="no-data">
+                    <mat-icon>calendar_today</mat-icon>
+                    <p>Nenhum período letivo cadastrado</p>
+                    <button mat-raised-button color="primary" (click)="openCreateDialog()">
+                        Criar Primeiro Período
+                    </button>
+                </div>
+
+                <div *ngIf="loading" class="loading">
+                    <mat-icon class="spin">autorenew</mat-icon>
+                    <p>Carregando períodos...</p>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

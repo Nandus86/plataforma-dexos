@@ -1,0 +1,290 @@
+.page {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 24px;
+
+    .page-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 24px;
+        font-weight: 500;
+        margin: 0;
+        color: var(--text-primary, #fff);
+
+        mat-icon {
+            font-size: 28px;
+            width: 28px;
+            height: 28px;
+            color: #D4AF37;
+        }
+    }
+
+    .page-subtitle {
+        margin: 4px 0 0 40px;
+        color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+        font-size: 14px;
+    }
+}
+
+.glass-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+}
+
+.filter-card {
+    padding: 16px;
+    margin-bottom: 24px;
+
+    .filter-row {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+
+        .filter-field {
+            flex: 1;
+            min-width: 200px;
+        }
+    }
+
+    button {
+        height: 56px; // Match form field height
+        padding: 0 24px;
+    }
+}
+
+.btn-gold {
+    background: linear-gradient(135deg, #D4AF37, #C5A028) !important;
+    color: #000 !important;
+    font-weight: 500;
+}
+
+.loading-center {
+    display: flex;
+    justify-content: center;
+    padding: 48px;
+}
+
+.form-section {
+    margin-bottom: 24px;
+}
+
+.form-card {
+    padding: 24px;
+
+    mat-card-header {
+        margin-bottom: 16px;
+
+        mat-card-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+    }
+}
+
+.lessons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.lesson-panel {
+    background: rgba(40, 40, 40, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px !important;
+    margin-bottom: 8px;
+
+    &.activity-highlight {
+        border-left: 4px solid #D4AF37;
+    }
+
+    mat-expansion-panel-header {
+        height: 64px;
+        padding: 0 24px;
+    }
+
+    mat-panel-title {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .date-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #aaa;
+        }
+
+        .topic-text {
+            font-weight: 500;
+            font-size: 16px;
+        }
+    }
+
+    mat-panel-description {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+
+        .class-orders-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(212, 175, 55, 0.15);
+            color: #D4AF37;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            white-space: nowrap;
+        }
+    }
+}
+
+.activity-tag {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &.exam {
+        background: rgba(244, 67, 54, 0.2);
+        color: #ff8a80;
+        border: 1px solid rgba(244, 67, 54, 0.3);
+    }
+
+    &.work {
+        background: rgba(33, 150, 243, 0.2);
+        color: #90caf9;
+        border: 1px solid rgba(33, 150, 243, 0.3);
+    }
+
+    &.other {
+        background: rgba(156, 39, 176, 0.2);
+        color: #ce93d8;
+        border: 1px solid rgba(156, 39, 176, 0.3);
+    }
+}
+
+.tab-content {
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 8px 8px;
+}
+
+.simple-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    th {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #888;
+        font-weight: 600;
+    }
+
+    tr.absent {
+        background: rgba(244, 67, 54, 0.05);
+
+        td {
+            color: #aaa;
+        }
+    }
+
+    .text-center {
+        text-align: center;
+    }
+}
+
+.bare-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    width: 100%;
+    padding: 8px;
+    font-size: 13px;
+    transition: all 0.2s;
+
+    &:focus {
+        outline: none;
+        border-bottom-color: #D4AF37;
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+.grade-input {
+    @extend .bare-input;
+    width: 60px;
+    text-align: center;
+}
+
+.spinner-sm {
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 24px;
+    color: #666;
+
+    mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    p {
+        font-size: 16px;
+        margin: 0;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}

@@ -1,0 +1,71 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+
+<mat-dialog-content>
+    <form [formGroup]="form" class="period-form">
+        <mat-form-field appearance="outline">
+            <mat-label>Nome do Período</mat-label>
+            <input matInput formControlName="name" placeholder="Ex: Período 2026.1">
+            <mat-error *ngIf="form.get('name')?.hasError('required')">Nome é obrigatório</mat-error>
+            <mat-error *ngIf="form.get('name')?.hasError('maxlength')">Máximo 255 caracteres</mat-error>
+        </mat-form-field>
+
+        <div class="form-row">
+            <mat-form-field appearance="outline">
+                <mat-label>Ano</mat-label>
+                <input matInput type="number" formControlName="year">
+                <mat-error *ngIf="form.get('year')?.hasError('required')">Ano é obrigatório</mat-error>
+                <mat-error *ngIf="form.get('year')?.hasError('min') || form.get('year')?.hasError('max')">
+                    Ano inválido (2000-2100)
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Tipo de Quebra</mat-label>
+                <mat-select formControlName="break_type">
+                    <mat-option *ngFor="let type of breakTypes" [value]="type.value">
+                        {{ type.label }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('break_type')?.hasError('required')">Tipo é obrigatório</mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="form-row">
+            <mat-form-field appearance="outline">
+                <mat-label>Data de Início</mat-label>
+                <input matInput [matDatepicker]="startPicker" formControlName="start_date">
+                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                <mat-datepicker #startPicker></mat-datepicker>
+                <mat-error *ngIf="form.get('start_date')?.hasError('required')">Data é obrigatória</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Data de Término</mat-label>
+                <input matInput [matDatepicker]="endPicker" formControlName="end_date">
+                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                <mat-datepicker #endPicker></mat-datepicker>
+                <mat-error *ngIf="form.get('end_date')?.hasError('required')">Data é obrigatória</mat-error>
+            </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Quantidade de Aulas por Dia</mat-label>
+            <input matInput type="number" formControlName="classes_per_day" min="1" max="10">
+            <mat-hint>Número padrão de aulas por dia letivo</mat-hint>
+            <mat-error *ngIf="form.get('classes_per_day')?.hasError('required')">Obrigatório</mat-error>
+            <mat-error
+                *ngIf="form.get('classes_per_day')?.hasError('min') || form.get('classes_per_day')?.hasError('max')">
+                Deve estar entre 1 e 10
+            </mat-error>
+        </mat-form-field>
+
+        <mat-checkbox formControlName="is_active">Período Ativo</mat-checkbox>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="loading">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="loading">
+        {{ isEditMode ? 'Atualizar' : 'Criar' }}
+    </button>
+</mat-dialog-actions>

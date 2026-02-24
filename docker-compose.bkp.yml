@@ -1,0 +1,124 @@
+services:
+  exousia-postgres:
+    image: postgres:16-alpine
+    container_name: exousia-postgres
+    restart: unless-stopped
+    ports:
+      - "5534:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-exousia}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-exousia123}
+      POSTGRES_DB: ${POSTGRES_DB:-exousia_db}
+    volumes:
+      - exousia_postgres_data:/var/lib/postgresql/data
+    networks:
+      - exousia-network
+
+  exousia-redis:
+    image: redis:7-alpine
+    container_name: exousia-redis
+    restart: unless-stopped
+    ports:
+      - "6481:6379"
+    volumes:
+      - exousia_redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - exousia-network
+
+  exousia-t2v-transformers:
+    image: semitechnologies/transformers-inference:sentence-transformers-paraphrase-multilingual-MiniLM-L12-v2
+    container_name: exousia-t2v-transformers
+    restart: unless-stopped
+    ports:
+      - "8091:8080"
+    environment:
+      ENABLE_CUDA: '0'
+    networks:
+      - exousia-network
+
+  exousia-weaviate:
+    image: semitechnologies/weaviate:1.28.4
+    container_name: exousia-weaviate
+    restart: unless-stopped
+    depends_on:
+      - exousia-t2v-transformers
+    ports:
+      - "8087:8080"
+      - "50057:50051"
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'text2vec-transformers'
+      ENABLE_MODULES: 'text2vec-transformers'
+      TRANSFORMERS_INFERENCE_API: 'http://exousia-t2v-transformers:8080'
+      CLUSTER_HOSTNAME: 'node1'
+    volumes:
+      - exousia_weaviate_data:/var/lib/weaviate
+    networks:
+      - exousia-network
+
+  exousia-minio:
+    image: minio/minio:latest
+    container_name: exousia-minio
+    restart: unless-stopped
+    ports:
+      - "9100:9000"
+      - "9101:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-exousia}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-exousia123}
+    volumes:
+      - exousia_minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - exousia-network
+
+  exousia-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: exousia-backend
+    restart: unless-stopped
+    ports:
+      - "8010:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-exousia}:${POSTGRES_PASSWORD:-exousia123}@exousia-postgres:5432/${POSTGRES_DB:-exousia_db}
+      - REDIS_URL=redis://exousia-redis:6379
+      - WEAVIATE_URL=http://exousia-weaviate:8080
+      - MINIO_ENDPOINT=exousia-minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER:-exousia}
+      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD:-exousia123}
+      - SECRET_KEY=${SECRET_KEY:-exousia-secret-key-change-in-production}
+    depends_on:
+      - exousia-postgres
+      - exousia-redis
+    volumes:
+      - ./backend:/app
+    networks:
+      - exousia-network
+
+  exousia-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: exousia-frontend
+    restart: unless-stopped
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend/src:/app/src
+    networks:
+      - exousia-network
+
+volumes:
+  exousia_postgres_data:
+  exousia_redis_data:
+  exousia_weaviate_data:
+  exousia_minio_data:
+
+
+networks:
+  exousia-network:
+    driver: bridge

@@ -1,0 +1,36 @@
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(30, 30, 30, 0.7);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+}
+
+.form-container {
+    position: relative;
+    padding-top: 10px;
+}
+
+.tab-content {
+    padding: 20px 0;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+}
+
+mat-dialog-content {
+    min-height: 400px;
+}

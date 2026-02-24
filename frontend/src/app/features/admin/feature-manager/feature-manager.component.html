@@ -1,0 +1,90 @@
+<div class="page animate-fade-in">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><mat-icon>security</mat-icon> Gerenciar Permissões</h1>
+            <p class="page-subtitle">Configure o acesso aos módulos do sistema por nível de usuário</p>
+        </div>
+        <button mat-raised-button color="primary" (click)="save()" [disabled]="loading" class="btn-gold">
+            <mat-icon>save</mat-icon> Salvar Alterações
+        </button>
+    </div>
+
+    @for (group of featureGroups; track group.name) {
+    <div class="table-card glass-card" style="margin-bottom: 1.5rem;">
+        <h3 style="margin: 0 0 12px 0; color: var(--gold-primary, #D4AF37); font-weight: 600; font-size: 1.1rem;">
+            {{ group.name || 'Geral' }}
+        </h3>
+        <table mat-table [dataSource]="group.items" class="dark-table">
+
+            <!-- Feature Column -->
+            <ng-container matColumnDef="feature">
+                <th mat-header-cell *matHeaderCellDef> Funcionalidade </th>
+                <td mat-cell *matCellDef="let element">
+                    <div class="feature-info">
+                        <span class="feature-label">{{element.label}}</span>
+                        <span class="feature-desc">{{element.description}}</span>
+                    </div>
+                </td>
+            </ng-container>
+
+            <!-- Enabled Column -->
+            <ng-container matColumnDef="enabled">
+                <th mat-header-cell *matHeaderCellDef> Ativo </th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-slide-toggle [(ngModel)]="element.enabled" [disabled]="element.locked" color="primary">
+                    </mat-slide-toggle>
+                </td>
+            </ng-container>
+
+            <!-- Role Columns -->
+            <ng-container matColumnDef="superadmin">
+                <th mat-header-cell *matHeaderCellDef> Super Admin </th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [checked]="hasRole(element, 'superadmin')"
+                        (change)="toggleRole(element, 'superadmin')" disabled="true">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="admin">
+                <th mat-header-cell *matHeaderCellDef> Gestor </th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [checked]="hasRole(element, 'admin')" (change)="toggleRole(element, 'admin')"
+                        [disabled]="!element.enabled">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="coordenacao">
+                <th mat-header-cell *matHeaderCellDef> Coordenação </th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [checked]="hasRole(element, 'coordenacao')"
+                        (change)="toggleRole(element, 'coordenacao')" [disabled]="!element.enabled">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="professor">
+                <th mat-header-cell *matHeaderCellDef> Professor </th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [checked]="hasRole(element, 'professor')" (change)="toggleRole(element, 'professor')"
+                        [disabled]="!element.enabled">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="estudante">
+                <th mat-header-cell *matHeaderCellDef> Estudante </th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [checked]="hasRole(element, 'estudante')" (change)="toggleRole(element, 'estudante')"
+                        [disabled]="!element.enabled">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </div>
+    }
+</div>

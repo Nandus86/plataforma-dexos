@@ -1,0 +1,126 @@
+<mat-sidenav-container class="layout-container">
+  <!-- Sidebar -->
+  <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile" class="sidebar"
+    [class.collapsed]="sidebarCollapsed && !isMobile">
+    <!-- Brand -->
+    <div class="sidebar-brand" *ngIf="!sidebarCollapsed || isMobile">
+      <div class="brand-icon">
+        <mat-icon class="brand-logo">auto_stories</mat-icon>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name gold-gradient">{{ appName }}</span>
+        <span class="brand-subtitle">{{ appSubtitle }}</span>
+      </div>
+    </div>
+    <div class="sidebar-brand-collapsed" *ngIf="sidebarCollapsed && !isMobile">
+      <div class="brand-icon-small">
+        <mat-icon class="brand-logo">auto_stories</mat-icon>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Navigation -->
+    <nav class="nav-list">
+      <!-- Dashboard (top-level) -->
+      @if (showDashboard) {
+      <a class="nav-item" [routerLink]="dashboardItem.route" routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{ exact: true }" (click)="onNavClick()"
+        [matTooltip]="sidebarCollapsed && !isMobile ? dashboardItem.label : ''" matTooltipPosition="right">
+        <mat-icon class="nav-icon">{{ dashboardItem.icon }}</mat-icon>
+        <span class="nav-label" *ngIf="!sidebarCollapsed || isMobile">{{ dashboardItem.label }}</span>
+      </a>
+      }
+
+      <div class="nav-divider"></div>
+
+      <!-- Grouped Nav Items -->
+      @for (group of filteredNavGroups; track group.label) {
+      <div class="nav-group" [class.expanded]="group.expanded">
+        <!-- Group Header -->
+        <button class="nav-group-header" (click)="toggleGroup(group)"
+          [matTooltip]="sidebarCollapsed && !isMobile ? group.label : ''" matTooltipPosition="right">
+          <mat-icon class="nav-icon">{{ group.icon }}</mat-icon>
+          <span class="nav-label" *ngIf="!sidebarCollapsed || isMobile">{{ group.label }}</span>
+          <mat-icon class="expand-arrow" *ngIf="!sidebarCollapsed || isMobile">
+            {{ group.expanded ? 'expand_less' : 'expand_more' }}
+          </mat-icon>
+        </button>
+
+        <!-- Group Items -->
+        <div class="nav-group-items" *ngIf="group.expanded && (!sidebarCollapsed || isMobile)">
+          @for (item of getVisibleItems(group); track item.route) {
+          <a class="nav-item sub-item" [routerLink]="item.route" routerLinkActive="active-link" (click)="onNavClick()">
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+          }
+        </div>
+      </div>
+      }
+    </nav>
+
+    <!-- User card at bottom -->
+    <div class="sidebar-footer">
+      <mat-divider></mat-divider>
+      <div class="sidebar-version" *ngIf="(!sidebarCollapsed || isMobile) && appVersion">
+        <span class="version-text">v{{ appVersion }}</span>
+      </div>
+      <mat-divider *ngIf="(!sidebarCollapsed || isMobile) && appVersion"></mat-divider>
+
+      <div class="user-card" [matMenuTriggerFor]="userMenu" *ngIf="!sidebarCollapsed || isMobile">
+        <div class="user-avatar">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <div class="user-info">
+          <span class="user-name">{{ user?.name }}</span>
+          <span class="user-role">{{ roleLabel }}</span>
+        </div>
+        <mat-icon class="expand-icon">expand_more</mat-icon>
+      </div>
+      <div class="user-card-collapsed" [matMenuTriggerFor]="userMenu" *ngIf="sidebarCollapsed && !isMobile">
+        <mat-icon class="user-avatar-icon">account_circle</mat-icon>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <!-- Main Content -->
+  <mat-sidenav-content class="main-content">
+    <!-- Top Toolbar (always visible) -->
+    <mat-toolbar class="top-toolbar">
+      <button mat-icon-button (click)="toggleSidebar()" class="menu-toggle" matTooltip="Menu">
+        <mat-icon>{{ sidebarCollapsed && !isMobile ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
+      <span class="gold-gradient toolbar-title">{{ appName }}</span>
+      <span class="spacer"></span>
+
+      <!-- Theme Toggle -->
+      <button mat-icon-button (click)="toggleTheme()" class="theme-toggle" matTooltip="Alternar tema">
+        <mat-icon>{{ themeService.isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+
+      <!-- User Menu (toolbar) -->
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="toolbar-user">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <!-- Page Content -->
+    <main class="page-content">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<!-- User Menu -->
+<mat-menu #userMenu="matMenu">
+  <button mat-menu-item disabled>
+    <mat-icon>person</mat-icon>
+    <span>{{ user?.email }}</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button mat-menu-item (click)="logout()">
+    <mat-icon>logout</mat-icon>
+    <span>Sair</span>
+  </button>
+</mat-menu>
