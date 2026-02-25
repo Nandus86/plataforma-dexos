@@ -157,7 +157,6 @@ async def checkin_biometric(
         else:
             checkin_time = data.timestamp
     else:
-        from datetime import datetime
         checkin_time = datetime.now(tz=tz_sp).replace(tzinfo=None)
 
     checkin_date = checkin_time.date()
