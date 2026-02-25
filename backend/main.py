@@ -73,11 +73,7 @@ app = FastAPI(
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://esd.nandus.com.br",
-        "http://esd.nandus.com.br",
-        "http://localhost:4200",
-    ],
+    allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
