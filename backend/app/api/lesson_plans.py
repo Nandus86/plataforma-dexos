@@ -57,13 +57,10 @@ async def create_lesson_plan(
         if plan_date < academic_period.start_date or plan_date > academic_period.end_date:
              raise HTTPException(status_code=400, detail=f"A data do plano de aula deve estar dentro do período letivo ({academic_period.start_date} - {academic_period.end_date})")
 
-             raise HTTPException(status_code=400, detail=f"A data do plano de aula deve estar dentro do período letivo ({academic_period.start_date} - {academic_period.end_date})")
-
-    # Ensure date is naive UTC (DB expects naive)
     if data.date.tzinfo is not None:
-        import datetime as dt
-        # Convert to UTC then strip tzinfo
-        data.date = data.date.astimezone(dt.timezone.utc).replace(tzinfo=None)
+        import zoneinfo
+        tz_sp = zoneinfo.ZoneInfo("America/Sao_Paulo")
+        data.date = data.date.astimezone(tz_sp).replace(tzinfo=None)
 
     # 3. Resolve matrix_subject_id if missing
     if not data.matrix_subject_id:
@@ -209,8 +206,18 @@ async def update_lesson_plan(
         
     if current_user.role == UserRole.PROFESSOR and plan.professor_id != current_user.id:
         raise HTTPException(status_code=403, detail="Acesso negado: Plano de aula de outro professor")
-    for key, value in data.model_dump(exclude_unset=True).items():
+    import zoneinfo
+    tz_sp = zoneinfo.ZoneInfo("America/Sao_Paulo")
+    
+    update_data = data.model_dump(exclude_unset=True)
+    if "date" in update_data and update_data["date"]:
+        dt = update_data["date"]
+        if dt.tzinfo is not None:
+            update_data["date"] = dt.astimezone(tz_sp).replace(tzinfo=None)
+
+    for key, value in update_data.items():
         setattr(plan, key, value)
+        
     await db.commit()
     await db.refresh(plan)
     return plan
