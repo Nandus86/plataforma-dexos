@@ -253,7 +253,6 @@ async def checkin_biometric(
         start_time = period_schedules[0].start_time
         end_time = period_schedules[-1].end_time
         
-        from datetime import datetime, timedelta
         start_dt = datetime.combine(checkin_date, start_time) - timedelta(minutes=TOLERANCE_MINUTES)
         end_dt = datetime.combine(checkin_date, end_time) + timedelta(minutes=TOLERANCE_MINUTES)
         
