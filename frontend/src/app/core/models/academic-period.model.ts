@@ -46,7 +46,7 @@ export interface ExtraSchoolDay {
 
 export interface ClassSchedule {
     id: string;
-    academic_period_id: string;
+    class_group_id: string;
     order: number;
     start_time: string;
     end_time: string;
@@ -67,7 +67,6 @@ export interface AcademicPeriod {
     updated_at: string;
     period_breaks?: PeriodBreak[];
     non_school_days?: NonSchoolDay[];
-    class_schedules?: ClassSchedule[];
     extra_school_days?: ExtraSchoolDay[];
 }
 

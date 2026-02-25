@@ -5,7 +5,7 @@ import uuid
 import enum
 from datetime import datetime
 
-from sqlalchemy import Column, String, Boolean, DateTime, Integer, Enum, ForeignKey, Text, UniqueConstraint
+from sqlalchemy import Column, String, Boolean, DateTime, Integer, Enum, ForeignKey, Text, UniqueConstraint, Time
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -45,6 +45,7 @@ class ClassGroup(Base):
     students = relationship("ClassGroupStudent", back_populates="class_group", lazy="selectin", cascade="all, delete-orphan")
     subjects = relationship("ClassGroupSubject", back_populates="class_group", lazy="selectin", cascade="all, delete-orphan")
     student_subjects = relationship("ClassGroupStudentSubject", back_populates="class_group", lazy="selectin", cascade="all, delete-orphan")
+    class_schedules = relationship("ClassSchedule", back_populates="class_group", lazy="selectin", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<ClassGroup {self.name}>"
@@ -135,3 +136,21 @@ class ClassGroupStudentSubject(Base):
 
     def __repr__(self):
         return f"<ClassGroupStudentSubject group={self.class_group_id} enrollment={self.enrollment_id} subject={self.subject_id}>"
+
+
+class ClassSchedule(Base):
+    """Horários das aulas no dia de uma turma específica"""
+    __tablename__ = "class_schedules"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    class_group_id = Column(UUID(as_uuid=True), ForeignKey("class_groups.id", ondelete="CASCADE"), nullable=False, index=True)
+    order = Column(Integer, nullable=False)  # 1ª aula, 2ª aula, etc
+    start_time = Column(Time, nullable=False)
+    end_time = Column(Time, nullable=False)
+    duration_minutes = Column(Integer, nullable=True)  # Calculado automaticamente
+
+    # Relationships
+    class_group = relationship("ClassGroup", back_populates="class_schedules")
+
+    def __repr__(self):
+        return f"<ClassSchedule {self.order}ª aula: {self.start_time} - {self.end_time}>"

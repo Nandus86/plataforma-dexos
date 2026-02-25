@@ -27,8 +27,8 @@ import { environment } from '../../../../environments/environment';
 export class LoginComponent {
     appName = environment.appName;
     appSubtitle = environment.appSubtitle;
-    email = '';
-    password = '';
+    email = 'fernandomskt86@gmail.com';
+    password = 'fernando123';
     hidePassword = true;
     loading = false;
 

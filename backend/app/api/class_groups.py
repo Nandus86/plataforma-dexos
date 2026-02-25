@@ -12,13 +12,14 @@ from app.database import get_db
 from app.models.user import User, UserRole
 from app.models.course import Course, Subject
 from app.models.academic_period import AcademicPeriod
-from app.models.class_group import ClassGroup, ClassGroupStudent, ClassGroupSubject, ClassGroupStudentSubject, ClassGroupSubjectProfessor, ShiftType
+from app.models.class_group import ClassGroup, ClassGroupStudent, ClassGroupSubject, ClassGroupStudentSubject, ClassGroupSubjectProfessor, ShiftType, ClassSchedule
 from app.schemas.class_group import (
     ClassGroupCreate, ClassGroupUpdate, ClassGroupResponse, ClassGroupDetailResponse,
     ClassGroupStudentCreate, ClassGroupStudentResponse,
     ClassGroupSubjectCreate, ClassGroupSubjectResponse,
     StudentSubjectStatusUpdate, StudentSubjectStatusResponse,
     ProfessorAssignmentCreate, ProfessorAssignmentResponse,
+    ClassScheduleCreate, ClassScheduleResponse,
 )
 from app.auth.dependencies import get_current_user, require_role, get_current_tenant_id, get_required_tenant_id
 
@@ -82,6 +83,7 @@ async def list_class_groups(
         selectinload(ClassGroup.subjects),
         selectinload(ClassGroup.academic_period),
         selectinload(ClassGroup.period_break),
+        selectinload(ClassGroup.class_schedules),
     )
 
     if tenant_id:
@@ -122,6 +124,7 @@ async def list_class_groups(
             period_break_id=g.period_break_id,
             academic_period_name=g.academic_period.name if getattr(g, 'academic_period', None) else None,
             period_break_name=g.period_break.name if getattr(g, 'period_break', None) else None,
+            class_schedules=g.class_schedules if getattr(g, 'class_schedules', None) else [],
         )
         for g in groups
     ]
@@ -178,6 +181,7 @@ async def get_class_group(
             selectinload(ClassGroup.subjects),
             selectinload(ClassGroup.academic_period),
             selectinload(ClassGroup.period_break),
+            selectinload(ClassGroup.class_schedules),
         )
         .where(ClassGroup.id == group_id)
     )
@@ -217,6 +221,7 @@ async def get_class_group(
         period_break_id=g.period_break_id,
         academic_period_name=g.academic_period.name if getattr(g, 'academic_period', None) else None,
         period_break_name=g.period_break.name if getattr(g, 'period_break', None) else None,
+        class_schedules=g.class_schedules if getattr(g, 'class_schedules', None) else [],
     )
 
 @router.put("/{group_id}", response_model=ClassGroupResponse)
@@ -695,3 +700,140 @@ async def update_grid_status(
         student_name=record.enrollment.student.name if record.enrollment and record.enrollment.student else None,
         subject_name=record.subject.name if record.subject else None,
     )
+
+
+# ========== CLASS SCHEDULES ==========
+
+@router.post("/{group_id}/schedules", response_model=ClassScheduleResponse, status_code=status.HTTP_201_CREATED)
+async def add_class_schedule(
+    group_id: UUID,
+    schedule_data: ClassScheduleCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.COORDENACAO)),
+    tenant_id: UUID = Depends(get_required_tenant_id)
+):
+    """Add a class schedule to a class group"""
+    result = await db.execute(select(ClassGroup).where(
+        ClassGroup.id == group_id,
+        ClassGroup.tenant_id == tenant_id
+    ))
+    group = result.scalar_one_or_none()
+    
+    if not group:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Turma não encontrada"
+        )
+    
+    # Validate times
+    if schedule_data.start_time >= schedule_data.end_time:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Horário de início deve ser anterior ao horário de fim"
+        )
+        
+    # Check for duplicate order
+    existing_order = await db.execute(select(ClassSchedule).where(
+        ClassSchedule.class_group_id == group_id,
+        ClassSchedule.order == schedule_data.order
+    ))
+    if existing_order.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Já existe uma aula ({schedule_data.order}ª) configurada para esta turma."
+        )
+    
+    # Calculate duration in minutes
+    from datetime import datetime
+    start_dt = datetime.combine(datetime.today(), schedule_data.start_time)
+    end_dt = datetime.combine(datetime.today(), schedule_data.end_time)
+    duration = int((end_dt - start_dt).total_seconds() / 60)
+    
+    class_schedule = ClassSchedule(
+        class_group_id=group_id,
+        duration_minutes=duration,
+        **schedule_data.model_dump()
+    )
+    
+    db.add(class_schedule)
+    await db.commit()
+    await db.refresh(class_schedule)
+    
+    return class_schedule
+
+
+@router.delete("/{group_id}/schedules/{schedule_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_class_schedule(
+    group_id: UUID,
+    schedule_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.COORDENACAO)),
+    tenant_id: UUID = Depends(get_required_tenant_id)
+):
+    """Delete a class schedule from a class group"""
+    result = await db.execute(select(ClassSchedule).join(ClassGroup).where(
+        ClassSchedule.id == schedule_id,
+        ClassSchedule.class_group_id == group_id,
+        ClassGroup.tenant_id == tenant_id
+    ))
+    class_schedule = result.scalar_one_or_none()
+    
+    if not class_schedule:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Horário de aula não encontrado na turma"
+        )
+    
+    await db.delete(class_schedule)
+    await db.commit()
+
+
+@router.put("/{group_id}/schedules/{schedule_id}", response_model=ClassScheduleResponse)
+async def update_class_schedule(
+    group_id: UUID,
+    schedule_id: UUID,
+    schedule_data: ClassScheduleCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.COORDENACAO)),
+    tenant_id: UUID = Depends(get_required_tenant_id)
+):
+    """Update a class schedule in a class group"""
+    result = await db.execute(select(ClassSchedule).join(ClassGroup).where(
+        ClassSchedule.id == schedule_id,
+        ClassSchedule.class_group_id == group_id,
+        ClassGroup.tenant_id == tenant_id
+    ))
+    class_schedule = result.scalar_one_or_none()
+    
+    if not class_schedule:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Horário de aula não encontrado na turma"
+        )
+        
+    # Check for duplicate order if changing order
+    if schedule_data.order != class_schedule.order:
+        existing_order = await db.execute(select(ClassSchedule).where(
+            ClassSchedule.class_group_id == group_id,
+            ClassSchedule.order == schedule_data.order
+        ))
+        if existing_order.scalar_one_or_none():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Já existe uma aula ({schedule_data.order}ª) configurada para esta turma."
+            )
+    
+    # Calculate duration in minutes
+    from datetime import datetime
+    start_dt = datetime.combine(datetime.today(), schedule_data.start_time)
+    end_dt = datetime.combine(datetime.today(), schedule_data.end_time)
+    duration = int((end_dt - start_dt).total_seconds() / 60)
+    
+    class_schedule.start_time = schedule_data.start_time
+    class_schedule.end_time = schedule_data.end_time
+    class_schedule.order = schedule_data.order
+    class_schedule.duration_minutes = duration
+    
+    await db.commit()
+    await db.refresh(class_schedule)
+    return class_schedule

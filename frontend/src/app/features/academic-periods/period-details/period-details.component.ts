@@ -9,8 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AcademicPeriodService } from '../../../core/services/academic-period.service';
-import { AcademicPeriod, PeriodStatistics, ClassSchedule, NonSchoolDay, ExtraSchoolDay } from '../../../core/models/academic-period.model';
-import { ClassScheduleDialogComponent } from './class-schedule-dialog/class-schedule-dialog.component';
+import { AcademicPeriod, PeriodStatistics, NonSchoolDay, ExtraSchoolDay } from '../../../core/models/academic-period.model';
 import { DayFormDialogComponent } from './day-form-dialog/day-form-dialog.component';
 
 @Component({
@@ -102,47 +101,6 @@ export class PeriodDetailsComponent implements OnInit {
     }
 
     // ============ Management Methods ============
-
-    openScheduleDialog(schedule?: ClassSchedule): void {
-        const dialogRef = this.dialog.open(ClassScheduleDialogComponent, {
-            width: '400px',
-            data: { schedule }
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                if (schedule) {
-                    this.periodService.updateClassSchedule(schedule.id, result).subscribe({
-                        next: () => {
-                            this.snackBar.open('Horário atualizado', 'OK', { duration: 3000 });
-                            this.loadPeriodDetails();
-                        },
-                        error: (err) => this.snackBar.open('Erro ao atualizar horário', 'Fechar', { duration: 3000 })
-                    });
-                } else {
-                    this.periodService.addClassSchedule(this.periodId, result).subscribe({
-                        next: () => {
-                            this.snackBar.open('Horário adicionado', 'OK', { duration: 3000 });
-                            this.loadPeriodDetails();
-                        },
-                        error: (err) => this.snackBar.open('Erro ao adicionar horário', 'Fechar', { duration: 3000 })
-                    });
-                }
-            }
-        });
-    }
-
-    deleteSchedule(schedule: ClassSchedule): void {
-        if (confirm(`Remover ${schedule.order}ª aula?`)) {
-            this.periodService.deleteClassSchedule(schedule.id).subscribe({
-                next: () => {
-                    this.snackBar.open('Horário removido', 'OK', { duration: 3000 });
-                    this.loadPeriodDetails();
-                },
-                error: (err) => this.snackBar.open('Erro ao remover horário', 'Fechar', { duration: 3000 })
-            });
-        }
-    }
 
     openDayDialog(type: 'non-school' | 'extra'): void {
         const dialogRef = this.dialog.open(DayFormDialogComponent, {

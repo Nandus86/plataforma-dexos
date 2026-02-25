@@ -11,7 +11,7 @@ from app.database import get_db
 from app.auth.dependencies import get_current_user, get_current_tenant_id, get_required_tenant_id
 from typing import Optional
 from app.models.user import User, UserRole
-from app.models.academic_period import AcademicPeriod, PeriodBreak, NonSchoolDay, ClassSchedule, NonSchoolDayReason
+from app.models.academic_period import AcademicPeriod, PeriodBreak, NonSchoolDay, NonSchoolDayReason
 from app.models.course import Course
 from app.schemas.academic_period import (
     AcademicPeriodCreate,
@@ -21,8 +21,6 @@ from app.schemas.academic_period import (
     PeriodBreakResponse,
     NonSchoolDayCreate,
     NonSchoolDayResponse,
-    ClassScheduleCreate,
-    ClassScheduleResponse,
     PeriodStatistics
 )
 from app.services.period_calculator import PeriodCalculator
@@ -357,115 +355,6 @@ async def delete_non_school_day(
     await db.delete(non_school_day)
     await db.commit()
 
-
-# ============= Class Schedules =============
-
-@router.post("/{period_id}/schedules", response_model=ClassScheduleResponse, status_code=status.HTTP_201_CREATED)
-async def add_class_schedule(
-    period_id: UUID,
-    schedule_data: ClassScheduleCreate,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_admin),
-    tenant_id: UUID = Depends(get_required_tenant_id)
-):
-    """Add a class schedule"""
-    result = await db.execute(select(AcademicPeriod).where(
-        AcademicPeriod.id == period_id,
-        AcademicPeriod.tenant_id == tenant_id
-    ))
-    period = result.scalar_one_or_none()
-    
-    if not period:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Período letivo não encontrado"
-        )
-    
-    # Validate times
-    if schedule_data.start_time >= schedule_data.end_time:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Horário de início deve ser anterior ao horário de fim"
-        )
-    
-    # Calculate duration in minutes
-    from datetime import datetime
-    start_dt = datetime.combine(datetime.today(), schedule_data.start_time)
-    end_dt = datetime.combine(datetime.today(), schedule_data.end_time)
-    duration = int((end_dt - start_dt).total_seconds() / 60)
-    
-    class_schedule = ClassSchedule(
-        academic_period_id=period_id,
-        duration_minutes=duration,
-        **schedule_data.model_dump()
-    )
-    
-    db.add(class_schedule)
-    await db.commit()
-    await db.refresh(class_schedule)
-    
-    return class_schedule
-
-
-@router.delete("/schedules/{schedule_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_class_schedule(
-    schedule_id: UUID,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_admin),
-    tenant_id: UUID = Depends(get_required_tenant_id)
-):
-    """Delete a class schedule"""
-    result = await db.execute(select(ClassSchedule).join(AcademicPeriod).where(
-        ClassSchedule.id == schedule_id,
-        AcademicPeriod.tenant_id == tenant_id
-    ))
-    class_schedule = result.scalar_one_or_none()
-    
-    if not class_schedule:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Horário de aula não encontrado"
-        )
-    
-    await db.delete(class_schedule)
-    await db.commit()
-
-
-@router.put("/schedules/{schedule_id}", response_model=ClassScheduleResponse)
-async def update_class_schedule(
-    schedule_id: UUID,
-    schedule_data: ClassScheduleCreate,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_admin),
-    tenant_id: UUID = Depends(get_required_tenant_id)
-):
-    """Update a class schedule"""
-    result = await db.execute(select(ClassSchedule).join(AcademicPeriod).where(
-        ClassSchedule.id == schedule_id,
-        AcademicPeriod.tenant_id == tenant_id
-    ))
-    class_schedule = result.scalar_one_or_none()
-    
-    if not class_schedule:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Horário de aula não encontrado"
-        )
-    
-    # Calculate duration in minutes
-    from datetime import datetime
-    start_dt = datetime.combine(datetime.today(), schedule_data.start_time)
-    end_dt = datetime.combine(datetime.today(), schedule_data.end_time)
-    duration = int((end_dt - start_dt).total_seconds() / 60)
-    
-    class_schedule.start_time = schedule_data.start_time
-    class_schedule.end_time = schedule_data.end_time
-    class_schedule.order = schedule_data.order
-    class_schedule.duration_minutes = duration
-    
-    await db.commit()
-    await db.refresh(class_schedule)
-    return class_schedule
 
 
 # ============= Holidays Import =============

@@ -371,15 +371,12 @@ export class LessonPlansComponent implements OnInit {
       next: d => this.subjects = d
     });
 
-    // Load class schedules from the group's academic period
-    const group = this.groups.find(g => g.id === this.selectedGroupId);
-    if (group && group.academic_period_id) {
-      this.api.get<any>(`/academic-periods/${group.academic_period_id}`).subscribe({
-        next: period => {
-          this.classSchedules = (period.class_schedules || []).sort((a: any, b: any) => a.order - b.order);
-        }
-      });
-    }
+    // Load class schedules from the selected group
+    this.api.get<any>(`/class-groups/${this.selectedGroupId}`).subscribe({
+      next: (group: any) => {
+        this.classSchedules = (group.class_schedules || []).sort((a: any, b: any) => a.order - b.order);
+      }
+    });
   }
 
   onSubjectChange() {

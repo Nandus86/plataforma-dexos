@@ -20,7 +20,9 @@ import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
 import { AcademicPeriodService } from '../../core/services/academic-period.service';
-import { AcademicPeriod, PeriodBreak } from '../../core/models/academic-period.model';
+import { AcademicPeriod, PeriodBreak, ClassSchedule } from '../../core/models/academic-period.model';
+import { MatDialog } from '@angular/material/dialog';
+import { ClassScheduleDialogComponent } from './class-schedule-dialog/class-schedule-dialog.component';
 
 @Component({
   selector: 'app-class-groups',
@@ -271,6 +273,37 @@ import { AcademicPeriod, PeriodBreak } from '../../core/models/academic-period.m
                   </div>
                 }
                 @if (groupSubjects.length === 0) { <p class="text-muted">Nenhuma disciplina adicionada</p> }
+            </div>
+            </div>
+
+            <!-- Schedules Section -->
+            <mat-divider></mat-divider>
+            <div class="detail-section">
+              <div class="section-header">
+                <h3><mat-icon>schedule</mat-icon> Horários de Aula ({{ classSchedules.length }})</h3>
+                <div class="section-actions">
+                  <button mat-raised-button color="primary" (click)="openScheduleDialog()" class="btn-gold btn-sm">
+                    <mat-icon>add</mat-icon> Novo Horário
+                  </button>
+                </div>
+              </div>
+              <div class="chips-list">
+                @for (schedule of classSchedules; track schedule.id) {
+                  <div class="subject-card">
+                    <div class="subject-header">
+                       <div class="subject-title">
+                           <strong>{{ schedule.order }}ª Aula</strong>
+                           <span class="break-tag">{{ schedule.start_time }} - {{ schedule.end_time }}</span>
+                           <span class="break-tag" *ngIf="schedule.duration_minutes">{{ schedule.duration_minutes }} min</span>
+                       </div>
+                       <div>
+                         <button mat-icon-button color="primary" (click)="openScheduleDialog(schedule)"><mat-icon>edit</mat-icon></button>
+                         <button mat-icon-button color="warn" (click)="deleteSchedule(schedule)"><mat-icon>delete</mat-icon></button>
+                       </div>
+                    </div>
+                  </div>
+                }
+                @if (classSchedules.length === 0) { <p class="text-muted">Nenhum horário configurado</p> }
               </div>
             </div>
 
@@ -340,6 +373,7 @@ export class ClassGroupsComponent implements OnInit {
   groupSubjects: any[] = [];
   availableEnrollments: any[] = [];
   availableSubjects: any[] = [];
+  classSchedules: ClassSchedule[] = [];
   availableProfessors: any[] = [];
   availableBreaks: PeriodBreak[] = [];
   selectedProfessors: { id: string, name: string, assigned_hours: number }[] = [];
@@ -366,7 +400,8 @@ export class ClassGroupsComponent implements OnInit {
   constructor(
     private api: ApiService,
     private periodService: AcademicPeriodService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -455,6 +490,12 @@ export class ClassGroupsComponent implements OnInit {
 
   openDetail(g: any) {
     this.selectedGroup = g;
+    this.api.get<any>(`/class-groups/${g.id}`).subscribe({
+      next: detailedGroup => {
+        this.selectedGroup = detailedGroup;
+        this.classSchedules = detailedGroup.class_schedules || [];
+      }
+    });
     this.loadGroupStudents();
     this.loadGroupSubjects();
     this.loadAvailableEnrollments();
@@ -477,6 +518,52 @@ export class ClassGroupsComponent implements OnInit {
     this.api.get<any[]>(`/class-groups/${this.selectedGroup.id}/students/`).subscribe({
       next: d => { this.groupStudents = d; this.buildGridMeta(); },
     });
+  }
+
+  // ========== Class Schedules ==========
+
+  openScheduleDialog(schedule?: ClassSchedule): void {
+    const dialogRef = this.dialog.open(ClassScheduleDialogComponent, {
+      width: '400px',
+      data: { schedule }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        if (schedule) {
+          this.api.put(`/class-groups/${this.selectedGroup.id}/schedules/${schedule.id}`, result).subscribe({
+            next: (s: any) => {
+              this.snackBar.open('Horário atualizado', 'OK', { duration: 3000 });
+              this.classSchedules = this.classSchedules.map(x => x.id === schedule.id ? s : x);
+              this.selectedGroup.class_schedules = this.classSchedules;
+            },
+            error: (e: any) => this.snackBar.open('Erro', 'OK', { duration: 3000 })
+          });
+        } else {
+          this.api.post(`/class-groups/${this.selectedGroup.id}/schedules`, result).subscribe({
+            next: (s: any) => {
+              this.snackBar.open('Horário adicionado', 'OK', { duration: 3000 });
+              this.classSchedules = [...this.classSchedules, s];
+              this.selectedGroup.class_schedules = this.classSchedules;
+            },
+            error: (e: any) => this.snackBar.open('Erro', 'OK', { duration: 3000 })
+          });
+        }
+      }
+    });
+  }
+
+  deleteSchedule(schedule: ClassSchedule): void {
+    if (confirm(`Remover ${schedule.order}ª aula?`)) {
+      this.api.delete(`/class-groups/${this.selectedGroup.id}/schedules/${schedule.id}`).subscribe({
+        next: () => {
+          this.snackBar.open('Horário removido', 'OK', { duration: 3000 });
+          this.classSchedules = this.classSchedules.filter(x => x.id !== schedule.id);
+          this.selectedGroup.class_schedules = this.classSchedules;
+        },
+        error: (e: any) => this.snackBar.open('Erro ao remover horário', 'Fechar', { duration: 3000 })
+      });
+    }
   }
 
   loadGroupSubjects() {

@@ -7,7 +7,7 @@ from typing import List, Dict, Tuple
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.academic_period import AcademicPeriod, NonSchoolDay, ClassSchedule, NonSchoolDayReason
+from app.models.academic_period import AcademicPeriod, NonSchoolDay, NonSchoolDayReason
 from app.schemas.academic_period import PeriodStatistics
 
 
@@ -77,15 +77,8 @@ class PeriodCalculator:
         """
         school_days = await PeriodCalculator.calculate_school_days(period, db)
         
-        # Get number of class schedules configured
-        result = await db.execute(select(func.count()).select_from(ClassSchedule).where(
-            ClassSchedule.academic_period_id == period.id
-        ))
-        schedules_count = result.scalar()
-        
         # If no schedules configured, assume 1 per class
-        if schedules_count == 0:
-            schedules_count = 1
+        schedules_count = 1
         
         return school_days * period.classes_per_day * schedules_count
 
@@ -110,10 +103,7 @@ class PeriodCalculator:
         ))
         non_school_days_count = result_nsd.scalar()
         
-        result_sch = await db.execute(select(func.count()).select_from(ClassSchedule).where(
-            ClassSchedule.academic_period_id == period.id
-        ))
-        schedules_count = result_sch.scalar()
+        schedules_count = 0
         
         # Check breaks
         # Since relationships are lazy='selectin', they should be populated

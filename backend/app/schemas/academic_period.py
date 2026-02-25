@@ -74,33 +74,6 @@ class NonSchoolDayResponse(NonSchoolDayBase):
         from_attributes = True
 
 
-# ============= ClassSchedule Schemas =============
-
-class ClassScheduleBase(BaseModel):
-    order: int = Field(..., description="Class order (1st, 2nd, etc)")
-    start_time: time
-    end_time: time
-
-
-class ClassScheduleCreate(ClassScheduleBase):
-    pass
-
-
-class ClassScheduleUpdate(BaseModel):
-    order: Optional[int] = None
-    start_time: Optional[time] = None
-    end_time: Optional[time] = None
-
-
-class ClassScheduleResponse(ClassScheduleBase):
-    id: UUID
-    academic_period_id: UUID
-    duration_minutes: Optional[int] = None
-
-    class Config:
-        from_attributes = True
-
-
 # ============= AcademicPeriod Schemas =============
 
 class AcademicPeriodBase(BaseModel):
@@ -134,7 +107,6 @@ class AcademicPeriodResponse(AcademicPeriodBase):
     updated_at: datetime
     period_breaks: List[PeriodBreakResponse] = []
     non_school_days: List[NonSchoolDayResponse] = []
-    class_schedules: List[ClassScheduleResponse] = []
     extra_school_days: List["ExtraSchoolDayResponse"] = []
 
     class Config:

@@ -53,7 +53,6 @@ class AcademicPeriod(Base):
     tenant = relationship("Tenant")
     period_breaks = relationship("PeriodBreak", back_populates="academic_period", lazy="selectin", cascade="all, delete-orphan")
     non_school_days = relationship("NonSchoolDay", back_populates="academic_period", lazy="selectin", cascade="all, delete-orphan")
-    class_schedules = relationship("ClassSchedule", back_populates="academic_period", lazy="selectin", cascade="all, delete-orphan")
     extra_school_days = relationship("ExtraSchoolDay", back_populates="academic_period", lazy="selectin", cascade="all, delete-orphan")
     courses = relationship("Course", back_populates="academic_period")
 
@@ -94,24 +93,6 @@ class NonSchoolDay(Base):
 
     def __repr__(self):
         return f"<NonSchoolDay {self.date} - {self.reason.value}>"
-
-
-class ClassSchedule(Base):
-    """Horários das aulas no dia"""
-    __tablename__ = "class_schedules"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    academic_period_id = Column(UUID(as_uuid=True), ForeignKey("academic_periods.id", ondelete="CASCADE"), nullable=False, index=True)
-    order = Column(Integer, nullable=False)  # 1ª aula, 2ª aula, etc
-    start_time = Column(Time, nullable=False)
-    end_time = Column(Time, nullable=False)
-    duration_minutes = Column(Integer, nullable=True)  # Calculado automaticamente
-
-    # Relationships
-    academic_period = relationship("AcademicPeriod", back_populates="class_schedules")
-
-    def __repr__(self):
-        return f"<ClassSchedule {self.order}ª aula: {self.start_time} - {self.end_time}>"
 
 
 class ExtraSchoolDay(Base):

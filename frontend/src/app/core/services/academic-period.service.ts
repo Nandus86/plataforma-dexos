@@ -7,7 +7,6 @@ import {
     AcademicPeriodCreate,
     PeriodBreak,
     NonSchoolDay,
-    ClassSchedule,
     ExtraSchoolDay,
     PeriodStatistics
 } from '../models/academic-period.model';
@@ -86,20 +85,6 @@ export class AcademicPeriodService {
 
     deleteExtraSchoolDay(dayId: string): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/extra-school-days/${dayId}`);
-    }
-
-    // ========== Class Schedules ==========
-
-    addClassSchedule(periodId: string, data: Omit<ClassSchedule, 'id' | 'academic_period_id' | 'duration_minutes'>): Observable<ClassSchedule> {
-        return this.http.post<ClassSchedule>(`${this.apiUrl}/${periodId}/schedules`, data);
-    }
-
-    deleteClassSchedule(scheduleId: string): Observable<void> {
-        return this.http.delete<void>(`${this.apiUrl}/schedules/${scheduleId}`);
-    }
-
-    updateClassSchedule(scheduleId: string, data: Omit<ClassSchedule, 'id' | 'academic_period_id' | 'duration_minutes'>): Observable<ClassSchedule> {
-        return this.http.put<ClassSchedule>(`${this.apiUrl}/schedules/${scheduleId}`, data);
     }
 
     // ========== Helper Methods ==========

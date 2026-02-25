@@ -180,43 +180,6 @@
                     </div>
                 </mat-tab>
 
-                <mat-tab label="Horários de Aula">
-                    <div class="tab-content">
-                        <div class="actions-bar">
-                            <button mat-raised-button color="primary" (click)="openScheduleDialog()">
-                                <mat-icon>add</mat-icon>
-                                Adicionar Horário
-                            </button>
-                        </div>
-
-                        <div *ngIf="period.class_schedules && period.class_schedules.length > 0" class="schedules-list">
-                            <div *ngFor="let schedule of period.class_schedules" class="schedule-item">
-                                <div class="item-content">
-                                    <span class="schedule-order">{{ schedule.order }}ª Aula</span>
-                                    <div class="schedule-time">
-                                        <mat-icon>schedule</mat-icon>
-                                        <span>{{ schedule.start_time }} - {{ schedule.end_time }}</span>
-                                    </div>
-                                    <span class="schedule-duration" *ngIf="schedule.duration_minutes">
-                                        {{ schedule.duration_minutes }} min
-                                    </span>
-                                </div>
-                                <div class="actions">
-                                    <button mat-icon-button color="primary" (click)="openScheduleDialog(schedule)">
-                                        <mat-icon>edit</mat-icon>
-                                    </button>
-                                    <button mat-icon-button color="warn" (click)="deleteSchedule(schedule)">
-                                        <mat-icon>delete</mat-icon>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div *ngIf="!period.class_schedules || period.class_schedules.length === 0" class="empty-state">
-                            <mat-icon>access_time</mat-icon>
-                            <p>Nenhum horário definido</p>
-                        </div>
-                    </div>
-                </mat-tab>
             </mat-tab-group>
         </mat-card>
     </div>

@@ -4,7 +4,7 @@ Class Group Schemas - ClassGroup (Turma), ClassGroupStudent, ClassGroupSubject, 
 from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, time
 
 
 # --- ClassGroup ---
@@ -46,6 +46,7 @@ class ClassGroupResponse(BaseModel):
     updated_at: Optional[datetime] = None
     academic_period_name: Optional[str] = None
     period_break_name: Optional[str] = None
+    class_schedules: list["ClassScheduleResponse"] = []
 
     class Config:
         from_attributes = True
@@ -126,3 +127,32 @@ class StudentSubjectStatusResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# --- Class Schedules ---
+class ClassScheduleBase(BaseModel):
+    order: int
+    start_time: time
+    end_time: time
+
+
+class ClassScheduleCreate(ClassScheduleBase):
+    pass
+
+
+class ClassScheduleUpdate(BaseModel):
+    order: Optional[int] = None
+    start_time: Optional[time] = None
+    end_time: Optional[time] = None
+
+
+class ClassScheduleResponse(ClassScheduleBase):
+    id: UUID
+    class_group_id: UUID
+    duration_minutes: Optional[int] = None
+
+    class Config:
+        from_attributes = True
+
+ClassGroupResponse.model_rebuild()
+ClassGroupDetailResponse.model_rebuild()

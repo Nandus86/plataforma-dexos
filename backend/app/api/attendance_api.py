@@ -12,10 +12,7 @@ from sqlalchemy import select
 from app.database import get_db
 from app.models.user import User, UserRole
 from app.models.academic import Attendance, Enrollment
-from app.models.class_group import ClassGroupStudent
-from app.models.content import LessonPlan
-from app.models.academic_period import ClassSchedule
-from sqlalchemy.orm import selectinload
+from app.models.class_group import ClassGroupStudent, ClassSchedule
 from app.auth.dependencies import get_current_user, require_role
 from app.schemas.academic import AttendanceCreate, AttendanceResponse, AttendanceBulkCreate, AttendanceCheckin, AttendanceBiometricCheckin
 
@@ -161,8 +158,7 @@ async def checkin_biometric(
 
     checkin_date = checkin_time.date()
     
-    # Needs to match imports
-    from app.models.academic_period import ClassSchedule
+    from app.models.class_group import ClassSchedule
     from functools import reduce
 
     # 1. Find the student by RA
@@ -221,8 +217,8 @@ async def checkin_biometric(
     if not lesson_plans:
         raise HTTPException(status_code=404, detail="Nenhuma aula (LessonPlan) planejada para o dia de hoje nas disciplinas deste aluno")
 
-    # 5. Get ClassSchedules for the periods the student is enrolled in
-    schedule_query = select(ClassSchedule).where(ClassSchedule.academic_period_id.in_(academic_period_ids))
+    # 5. Get ClassSchedules for the class groups the student is enrolled in
+    schedule_query = select(ClassSchedule).where(ClassSchedule.class_group_id.in_(class_group_ids))
     schedule_res = await db.execute(schedule_query)
     schedules = schedule_res.scalars().all()
     
@@ -244,7 +240,7 @@ async def checkin_biometric(
         target_enrollment = next((e for e in enrollments if e.id == target_cgs.enrollment_id), None)
         if not target_enrollment: continue
         
-        period_schedules = [s for s in schedules if s.academic_period_id == target_cgs.class_group.academic_period_id and s.order in lp.class_orders]
+        period_schedules = [s for s in schedules if s.class_group_id == target_cgs.class_group_id and s.order in lp.class_orders]
         
         if not period_schedules:
             continue

@@ -6,7 +6,7 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { ClassSchedule } from '../../../../core/models/academic-period.model';
+import { ClassSchedule } from '../../../core/models/academic-period.model';
 
 @Component({
     selector: 'app-class-schedule-dialog',
