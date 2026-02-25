@@ -435,7 +435,7 @@ async def list_class_group_subjects(
         if prof_check.scalar() == 0:
             raise HTTPException(status_code=403, detail="Acesso negado: Você não leciona nesta turma.")
 
-    result = await db.execute(
+    query = (
         select(ClassGroupSubject)
         .options(
             selectinload(ClassGroupSubject.subject),
@@ -443,6 +443,14 @@ async def list_class_group_subjects(
         )
         .where(ClassGroupSubject.class_group_id == group_id)
     )
+
+    if current_user.role == UserRole.PROFESSOR:
+        query = query.join(
+            ClassGroupSubjectProfessor, 
+            ClassGroupSubject.id == ClassGroupSubjectProfessor.class_group_subject_id
+        ).where(ClassGroupSubjectProfessor.professor_id == current_user.id)
+
+    result = await db.execute(query)
     records = result.scalars().all()
 
     return [
@@ -604,7 +612,7 @@ async def get_grid(
     await _sync_grid_for_group(db, group_id)
     await db.commit()
 
-    result = await db.execute(
+    query = (
         select(ClassGroupStudentSubject)
         .options(
             joinedload(ClassGroupStudentSubject.enrollment).joinedload(Enrollment.student),
@@ -612,6 +620,20 @@ async def get_grid(
         )
         .where(ClassGroupStudentSubject.class_group_id == group_id)
     )
+
+    if current_user.role == UserRole.PROFESSOR:
+        query = query.join(
+            ClassGroupSubject, 
+            and_(
+                ClassGroupSubject.class_group_id == ClassGroupStudentSubject.class_group_id,
+                ClassGroupSubject.subject_id == ClassGroupStudentSubject.subject_id
+            )
+        ).join(
+            ClassGroupSubjectProfessor,
+            ClassGroupSubject.id == ClassGroupSubjectProfessor.class_group_subject_id
+        ).where(ClassGroupSubjectProfessor.professor_id == current_user.id)
+
+    result = await db.execute(query)
     records = result.scalars().all()
 
     return [
