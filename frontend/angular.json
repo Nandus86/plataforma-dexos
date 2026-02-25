@@ -96,6 +96,7 @@
             "allowedHosts": [
               ".easypanel.host",
               ".vpcxvl.easypanel.host",
+              ".dexos.com.br",
               "esd.nandus.com.br",
               "localhost"
             ]
