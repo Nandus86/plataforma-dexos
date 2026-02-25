@@ -1,6 +1,6 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://exousia-school-backend.vpcxvl.easypanel.host/api/v1',
+    apiUrl: '/api',
     appName: 'Exousía School',
     appSubtitle: 'by Dexos',
 };
