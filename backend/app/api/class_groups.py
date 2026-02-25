@@ -92,6 +92,11 @@ async def list_class_groups(
         query = query.where(ClassGroup.year == year)
     if is_active is not None:
         query = query.where(ClassGroup.is_active == is_active)
+        
+    if current_user.role == UserRole.PROFESSOR:
+        query = query.join(ClassGroupSubject, ClassGroup.id == ClassGroupSubject.class_group_id)\
+                     .join(ClassGroupSubjectProfessor, ClassGroupSubject.id == ClassGroupSubjectProfessor.class_group_subject_id)\
+                     .where(ClassGroupSubjectProfessor.professor_id == current_user.id)
 
     query = query.order_by(ClassGroup.year.desc(), ClassGroup.semester.desc(), ClassGroup.name)
     result = await db.execute(query)
@@ -179,6 +184,19 @@ async def get_class_group(
     g = result.scalar_one_or_none()
     if not g:
         raise HTTPException(status_code=404, detail="Turma não encontrada")
+        
+    if current_user.role == UserRole.PROFESSOR:
+        # Verify if professor teaches any subject in this specific group
+        prof_check = await db.execute(
+            select(func.count(ClassGroupSubjectProfessor.id))
+            .join(ClassGroupSubject, ClassGroupSubject.id == ClassGroupSubjectProfessor.class_group_subject_id)
+            .where(
+                ClassGroupSubject.class_group_id == group_id,
+                ClassGroupSubjectProfessor.professor_id == current_user.id
+            )
+        )
+        if prof_check.scalar() == 0:
+            raise HTTPException(status_code=403, detail="Acesso negado: Você não leciona nesta turma.")
 
     return ClassGroupDetailResponse(
         id=g.id,
@@ -261,6 +279,18 @@ async def list_class_group_students(
     current_user: User = Depends(get_current_user),
 ):
     """List enrollments in a class group"""
+    if current_user.role == UserRole.PROFESSOR:
+        prof_check = await db.execute(
+            select(func.count(ClassGroupSubjectProfessor.id))
+            .join(ClassGroupSubject, ClassGroupSubject.id == ClassGroupSubjectProfessor.class_group_subject_id)
+            .where(
+                ClassGroupSubject.class_group_id == group_id,
+                ClassGroupSubjectProfessor.professor_id == current_user.id
+            )
+        )
+        if prof_check.scalar() == 0:
+            raise HTTPException(status_code=403, detail="Acesso negado: Você não leciona nesta turma.")
+
     from app.models.academic import Enrollment
     from sqlalchemy.orm import joinedload
     
@@ -393,6 +423,18 @@ async def list_class_group_subjects(
     current_user: User = Depends(get_current_user),
 ):
     """List subjects in a class group"""
+    if current_user.role == UserRole.PROFESSOR:
+        prof_check = await db.execute(
+            select(func.count(ClassGroupSubjectProfessor.id))
+            .join(ClassGroupSubject, ClassGroupSubject.id == ClassGroupSubjectProfessor.class_group_subject_id)
+            .where(
+                ClassGroupSubject.class_group_id == group_id,
+                ClassGroupSubjectProfessor.professor_id == current_user.id
+            )
+        )
+        if prof_check.scalar() == 0:
+            raise HTTPException(status_code=403, detail="Acesso negado: Você não leciona nesta turma.")
+
     result = await db.execute(
         select(ClassGroupSubject)
         .options(
@@ -543,6 +585,18 @@ async def get_grid(
     current_user: User = Depends(get_current_user),
 ):
     """Get full student×subject grid for a class group"""
+    if current_user.role == UserRole.PROFESSOR:
+        prof_check = await db.execute(
+            select(func.count(ClassGroupSubjectProfessor.id))
+            .join(ClassGroupSubject, ClassGroupSubject.id == ClassGroupSubjectProfessor.class_group_subject_id)
+            .where(
+                ClassGroupSubject.class_group_id == group_id,
+                ClassGroupSubjectProfessor.professor_id == current_user.id
+            )
+        )
+        if prof_check.scalar() == 0:
+            raise HTTPException(status_code=403, detail="Acesso negado: Você não leciona nesta turma.")
+
     from app.models.academic import Enrollment
     from sqlalchemy.orm import joinedload
     
