@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    apiUrl: 'https://esdb.nandus.com.br',
+    apiUrl: 'http://localhost:8000/api/v1',
     appName: 'Exousía School',
     appSubtitle: 'by Dexos',
 };
