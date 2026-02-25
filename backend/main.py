@@ -40,7 +40,8 @@ async def lifespan(app: FastAPI):
                 
     await redis_client.connect()
     try:
-        await seed_initial_data()
+        # await seed_initial_data() # Disabled for production to prevent overwriting wiped databases
+        pass
     except Exception as e:
         logger.error(f"Failed to seed initial data: {e}")
         
