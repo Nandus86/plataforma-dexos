@@ -167,7 +167,7 @@
 
 <mat-dialog-actions align="end">
     <button mat-button (click)="close()" [disabled]="loading">Cancelar</button>
-    <button mat-raised-button color="primary" (click)="save()" [disabled]="form?.invalid || loading" class="btn-gold">
+    <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid || loading" class="btn-gold">
         Salvar
     </button>
 </mat-dialog-actions>
