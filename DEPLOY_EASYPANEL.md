@@ -13,7 +13,7 @@ Acesse o painel do seu Easypanel e crie um novo **Project** (Ex: `exousia-prod`)
 2. **Name**: `exousia-postgres`
 3. Configure as credenciais no formulário (Usuário, Senha e Nome do Banco).
 4. Clique em **Create**.
-5. Anote a "Internal URL" gerada na aba "Overview" do Postgres (Ex: `postgres://usuario:senha@exousia-postgres:5432/nomedobanco`).
+5. Anote a "Internal URL" gerada na aba "Overview" do Postgres. Ajuste o prefixo para `postgresql+asyncpg://` em vez de `postgres://` (Ex: `postgresql+asyncpg://usuario:senha@exousia-postgres:5432/nomedobanco`).
 
 ### 1.2 Redis (Cache e Fila)
 1. Clique em **Create Service** -> **App** -> Procure por **Redis**.
@@ -42,7 +42,7 @@ Acesse o painel do seu Easypanel e crie um novo **Project** (Ex: `exousia-prod`)
    - **Dockerfile**: `/backend/Dockerfile`
 5. Na aba **Environment**, insira as variáveis essenciais conectando o Backend aos serviços que você girou no Passo 1:
    ```env
-   DATABASE_URL=postgres://usuario:senha@exousia-postgres:5432/nomedobanco
+   DATABASE_URL=postgresql+asyncpg://usuario:senha@exousia-postgres:5432/nomedobanco
    REDIS_URL=redis://exousia-redis:6379
    MINIO_ENDPOINT=exousia-minio:9000
    MINIO_ACCESS_KEY=seu_usuario_minio

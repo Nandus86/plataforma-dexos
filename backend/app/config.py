@@ -2,7 +2,9 @@
 Exousía School by Dexos - Application Configuration
 """
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from functools import lru_cache
+from typing import Any
 
 
 class Settings(BaseSettings):
@@ -14,6 +16,16 @@ class Settings(BaseSettings):
 
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://exousia:exousia123@localhost:5534/exousia_db"
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def assemble_db_connection(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            if v.startswith("postgres://"):
+                return v.replace("postgres://", "postgresql+asyncpg://", 1)
+            elif v.startswith("postgresql://"):
+                return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
 
     # Redis
     REDIS_URL: str = "redis://localhost:6481"
