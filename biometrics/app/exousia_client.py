@@ -1,5 +1,5 @@
 """
-Hikvision ISUP Bridge - Exousia API Client
+Hikvision Bridge - Exousia API Client
 Forwards attendance events to the main Exousia platform.
 """
 import httpx
@@ -11,43 +11,50 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 
 
-async def send_attendance(registration_number: str, timestamp: datetime) -> bool:
-    """
-    Send a biometric check-in event to the Exousia API.
+class ExousiaClient:
+    """Client for sending attendance events to Exousia API."""
 
-    Args:
-        registration_number: Student's registration number (employeeNo from Hikvision)
-        timestamp: When the biometric event occurred
+    def __init__(self, api_url: str = "", api_token: str = ""):
+        self.api_url = api_url or settings.EXOUSIA_API_URL
+        self.api_token = api_token or settings.EXOUSIA_API_TOKEN
 
-    Returns:
-        True if accepted, False otherwise
-    """
-    url = f"{settings.EXOUSIA_API_URL}/attendance"
-    payload = {
-        "registration_number": registration_number,
-        "checkin_method": "biometric",
-        "timestamp": timestamp.isoformat(),
-    }
+    async def send_attendance(self, registration_number: str, timestamp: datetime) -> bool:
+        """
+        Send a biometric check-in event to the Exousia API.
 
-    headers = {"Content-Type": "application/json"}
-    if settings.EXOUSIA_API_TOKEN:
-        headers["Authorization"] = f"Bearer {settings.EXOUSIA_API_TOKEN}"
+        Args:
+            registration_number: Student's registration number (employeeNo)
+            timestamp: When the biometric event occurred
 
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.post(url, json=payload, headers=headers)
+        Returns:
+            True if accepted, False otherwise
+        """
+        url = f"{self.api_url}/attendance/biometric"
+        payload = {
+            "registration_number": registration_number,
+            "checkin_method": "biometric",
+            "timestamp": timestamp.isoformat(),
+        }
 
-        if response.status_code in (200, 201):
-            logger.info(
-                f"✅ Attendance sent: {registration_number} at {timestamp}"
-            )
-            return True
-        else:
-            logger.error(
-                f"❌ Exousia rejected attendance: {response.status_code} - {response.text}"
-            )
+        headers = {"Content-Type": "application/json"}
+        if self.api_token:
+            headers["Authorization"] = f"Bearer {self.api_token}"
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.post(url, json=payload, headers=headers)
+
+            if response.status_code in (200, 201):
+                logger.info(
+                    f"✅ Attendance sent: {registration_number} at {timestamp}"
+                )
+                return True
+            else:
+                logger.error(
+                    f"❌ Exousia rejected: {response.status_code} - {response.text}"
+                )
+                return False
+
+        except httpx.RequestError as e:
+            logger.error(f"❌ Failed to reach Exousia API: {e}")
             return False
-
-    except httpx.RequestError as e:
-        logger.error(f"❌ Failed to reach Exousia API: {e}")
-        return False

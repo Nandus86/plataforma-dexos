@@ -8,10 +8,12 @@ from datetime import datetime, time, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from app.database import get_db
 from app.models.user import User, UserRole
 from app.models.academic import Attendance, Enrollment
+from app.models.content import LessonPlan
 from app.models.class_group import ClassGroupStudent, ClassSchedule
 from app.auth.dependencies import get_current_user, require_role
 from app.schemas.academic import AttendanceCreate, AttendanceResponse, AttendanceBulkCreate, AttendanceCheckin, AttendanceBiometricCheckin
@@ -146,6 +148,8 @@ async def checkin_biometric(
     from the start of the first to the end of the last.
     """
     import zoneinfo
+    import logging
+    bio_logger = logging.getLogger("biometric_checkin")
     tz_sp = zoneinfo.ZoneInfo("America/Sao_Paulo")
     
     if data.timestamp:
@@ -157,6 +161,7 @@ async def checkin_biometric(
         checkin_time = datetime.now(tz=tz_sp).replace(tzinfo=None)
 
     checkin_date = checkin_time.date()
+    bio_logger.info(f"🔍 BIOMETRIC CHECKIN: RA={data.registration_number}, checkin_time={checkin_time}, checkin_date={checkin_date}")
     
     from app.models.class_group import ClassSchedule
     from functools import reduce
@@ -167,7 +172,10 @@ async def checkin_biometric(
     student = user_res.scalar_one_or_none()
     
     if not student:
+        bio_logger.warning(f"❌ Step 1: Student not found with RA={data.registration_number}")
         raise HTTPException(status_code=404, detail="Estudante não encontrado com este RA")
+
+    bio_logger.info(f"✅ Step 1: Found student '{student.name}' (id={student.id})")
 
     # 2. Get active enrollments for this student
     enrollments_query = select(Enrollment).where(
@@ -178,9 +186,11 @@ async def checkin_biometric(
     enrollments = enrollments_res.scalars().all()
     
     if not enrollments:
+        bio_logger.warning(f"❌ Step 2: No active enrollments for student {student.id}")
         raise HTTPException(status_code=404, detail="Estudante não possui matrículas ativas")
 
     enrollment_ids = [e.id for e in enrollments]
+    bio_logger.info(f"✅ Step 2: Found {len(enrollments)} active enrollment(s)")
 
     # 3. Find ClassGroups the student is in
     cg_students_query = select(ClassGroupStudent).options(
@@ -190,10 +200,12 @@ async def checkin_biometric(
     cg_students = cg_students_res.scalars().all()
     
     if not cg_students:
+        bio_logger.warning(f"❌ Step 3: Student not linked to any class group")
         raise HTTPException(status_code=404, detail="Estudante não está vinculado a nenhuma turma")
         
     class_group_ids = [cgs.class_group_id for cgs in cg_students]
     academic_period_ids = list(set([cgs.class_group.academic_period_id for cgs in cg_students if cgs.class_group.academic_period_id]))
+    bio_logger.info(f"✅ Step 3: Found {len(cg_students)} class group(s): {class_group_ids}")
 
     # Find ClassGroupSubjects to match against LessonPlans
     from app.models.class_group import ClassGroupSubject
@@ -203,7 +215,10 @@ async def checkin_biometric(
     cg_subject_ids = [sub.id for sub in cg_subjects]
 
     if not cg_subject_ids:
+        bio_logger.warning(f"❌ Step 3b: Class groups have no subjects assigned")
         raise HTTPException(status_code=404, detail="A turma do estudante ainda não possui disciplinas associadas")
+
+    bio_logger.info(f"✅ Step 3b: Found {len(cg_subjects)} subject(s) in class groups")
 
     # 4. Get active LessonPlans for TODAY for these subjects
     lp_query = select(LessonPlan).where(
@@ -215,13 +230,22 @@ async def checkin_biometric(
     lesson_plans = lp_res.scalars().all()
     
     if not lesson_plans:
+        bio_logger.warning(f"❌ Step 4: No LessonPlans for today ({checkin_date}) for subjects {cg_subject_ids}")
         raise HTTPException(status_code=404, detail="Nenhuma aula (LessonPlan) planejada para o dia de hoje nas disciplinas deste aluno")
+
+    bio_logger.info(f"✅ Step 4: Found {len(lesson_plans)} lesson plan(s) for today")
+    for lp in lesson_plans:
+        bio_logger.info(f"   📚 LP id={lp.id}, date={lp.date}, class_orders={lp.class_orders}, cg_subject_id={lp.class_group_subject_id}")
 
     # 5. Get ClassSchedules for the class groups the student is enrolled in
     schedule_query = select(ClassSchedule).where(ClassSchedule.class_group_id.in_(class_group_ids))
     schedule_res = await db.execute(schedule_query)
     schedules = schedule_res.scalars().all()
     
+    bio_logger.info(f"✅ Step 5: Found {len(schedules)} class schedule(s)")
+    for s in schedules:
+        bio_logger.info(f"   ⏰ Schedule: cg_id={s.class_group_id}, order={s.order}, start={s.start_time}, end={s.end_time}")
+
     # 6. Inference Loop: Find ALL colliding LessonPlans based on time
     colliding_plans = []
     
@@ -229,20 +253,28 @@ async def checkin_biometric(
     
     for lp in lesson_plans:
         if not lp.class_orders:
+            bio_logger.warning(f"   ⏭️ LP {lp.id} skipped: no class_orders")
             continue
             
         lp_cg_sub = next((s for s in cg_subjects if s.id == lp.class_group_subject_id), None)
-        if not lp_cg_sub: continue
+        if not lp_cg_sub:
+            bio_logger.warning(f"   ⏭️ LP {lp.id} skipped: no matching cg_subject")
+            continue
         
         target_cgs = next((cgs for cgs in cg_students if cgs.class_group_id == lp_cg_sub.class_group_id), None)
-        if not target_cgs or not target_cgs.class_group.academic_period_id: continue
+        if not target_cgs or not target_cgs.class_group.academic_period_id:
+            bio_logger.warning(f"   ⏭️ LP {lp.id} skipped: no target_cgs or no academic_period")
+            continue
         
         target_enrollment = next((e for e in enrollments if e.id == target_cgs.enrollment_id), None)
-        if not target_enrollment: continue
+        if not target_enrollment:
+            bio_logger.warning(f"   ⏭️ LP {lp.id} skipped: no target enrollment")
+            continue
         
         period_schedules = [s for s in schedules if s.class_group_id == target_cgs.class_group_id and s.order in lp.class_orders]
         
         if not period_schedules:
+            bio_logger.warning(f"   ⏭️ LP {lp.id} skipped: no matching schedules for orders {lp.class_orders} in cg {target_cgs.class_group_id}")
             continue
             
         period_schedules.sort(key=lambda x: x.order)
@@ -252,6 +284,8 @@ async def checkin_biometric(
         start_dt = datetime.combine(checkin_date, start_time) - timedelta(minutes=TOLERANCE_MINUTES)
         end_dt = datetime.combine(checkin_date, end_time) + timedelta(minutes=TOLERANCE_MINUTES)
         
+        bio_logger.info(f"   🕐 LP {lp.id}: window={start_dt} to {end_dt}, checkin={checkin_time}, match={start_dt <= checkin_time <= end_dt}")
+        
         if start_dt <= checkin_time <= end_dt:
             colliding_plans.append({
                 "plan": lp,
@@ -259,6 +293,7 @@ async def checkin_biometric(
             })
 
     if not colliding_plans:
+        bio_logger.warning(f"❌ Step 6: No colliding plans found for checkin_time={checkin_time}")
         raise HTTPException(status_code=403, detail="Batida fora do horário de aula ou aula não encontrada na grade para a hora atual")
 
     # 7. Register or Update Attendance for each class order across ALL colliding plans

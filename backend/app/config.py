@@ -40,6 +40,9 @@ class Settings(BaseSettings):
     MINIO_BUCKET: str = "exousia-files"
     MINIO_SECURE: bool = False
 
+    # Biometrics Bridge
+    BIOMETRICS_SERVICE_URL: str = "http://exousia-biometrics:9500"
+
     # Security
     SECRET_KEY: str = "exousia-dev-secret-key-2026"
     ALGORITHM: str = "HS256"

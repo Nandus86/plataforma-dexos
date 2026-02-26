@@ -1,0 +1,10 @@
+# Ignore SDK docs and demos (only need lib/)
+sdk/EN-HCNetSDKV6.1.9.48_build20230410_linux64/doc/
+sdk/EN-HCNetSDKV6.1.9.48_build20230410_linux64/LinuxJavaDemo/
+sdk/EN-HCNetSDKV6.1.9.48_build20230410_linux64/QtDemo/
+sdk/EN-HCNetSDKV6.1.9.48_build20230410_linux64/consoleDemo/
+sdk/EN-HCNetSDKV6.1.9.48_build20230410_linux64/incEn/
+sdk/EN-HCNetSDKV6.1.9.48_build20230410_linux64/psdatacall_demo/
+__pycache__
+*.pyc
+.git

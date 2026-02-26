@@ -1,59 +1,107 @@
 """
-Hikvision ISUP Bridge - User Sync
-Pushes student profiles (name + registration_number) to the Hikvision device
-so fingerprints can be enrolled locally at the terminal.
+Hikvision Bridge - User Sync via ISAPI HTTP
+
+Manages users on the Hikvision DS-K1T342MFWX access control terminal
+using ISAPI REST endpoints (HTTP Digest auth).
+
+Reference ISAPI endpoints for access control:
+  - POST /ISAPI/AccessControl/UserInfo/Record?format=json  → Add user
+  - PUT  /ISAPI/AccessControl/UserInfo/Modify?format=json   → Modify user
+  - POST /ISAPI/AccessControl/UserInfo/Search?format=json   → Search users
+  - PUT  /ISAPI/AccessControl/UserInfo/Delete?format=json   → Delete user
+  - POST /ISAPI/AccessControl/FingerPrint/SetUp?format=json → Set fingerprints
+  - POST /ISAPI/AccessControl/FingerPrint/Capture           → Capture fingerprint
 """
 import httpx
 import logging
 from typing import Optional
-from xml.etree import ElementTree as ET
-
-from app.config import settings
 
 logger = logging.getLogger(__name__)
 
 
 class HikvisionUserManager:
     """
-    Manages user profiles on the Hikvision terminal via ISAPI over HTTP.
-    Note: Even when using ISUP for events, user management is often done
-    via ISAPI HTTP calls to the device's local IP when on the same network,
-    OR via the ISUP tunnel if the SDK supports remote configuration.
+    Manages users on the device via ISAPI REST (HTTP Digest Auth).
+    Works when Bridge can reach the device over the network or via Tunnel.
     """
 
-    def __init__(self, device_ip: str, username: str, password: str):
-        self.device_ip = device_ip
-        self.username = username
-        self.password = password
-        self.base_url = f"http://{device_ip}"
+    def __init__(self, host: str, port: int = 80,
+                 username: str = "admin", password: str = "", protocol: str = "http"):
+        
+        # If port is 80/443, we typically don't append it for cleaner URLs
+        port_str = f":{port}" if port not in (80, 443) else ""
+        self.base_url = f"{protocol}://{host}{port_str}"
+        self.auth = httpx.DigestAuth(username, password)
+        self.host = host
+        logger.info(f"UserManager initialized for {self.base_url}")
 
-    async def add_user(
-        self,
-        employee_no: str,
-        name: str,
-        valid_begin: str = "2024-01-01T00:00:00",
-        valid_end: str = "2030-12-31T23:59:59",
-    ) -> bool:
-        """
-        Register a user on the Hikvision terminal.
-        The user can then enroll their fingerprint directly on the device.
+    async def _request(self, method: str, path: str, 
+                       json_data: dict = None, xml_data: str = None) -> dict:
+        """Make an ISAPI request with digest auth."""
+        url = f"{self.base_url}{path}"
+        
+        headers = {}
+        content = None
+        
+        if json_data:
+            headers["Content-Type"] = "application/json"
+        elif xml_data:
+            headers["Content-Type"] = "application/xml"
+            content = xml_data.encode("utf-8")
+        
+        try:
+            async with httpx.AsyncClient(auth=self.auth, timeout=15.0, verify=False) as client:
+                response = await client.request(
+                    method, url, headers=headers, 
+                    json=json_data, content=content
+                )
+            
+            logger.debug(f"ISAPI {method} {path}: {response.status_code}")
+            
+            if response.status_code in (200, 201):
+                try:
+                    return {"status": "ok", "data": response.json()}
+                except Exception:
+                    return {"status": "ok", "data": response.text}
+            else:
+                logger.error(f"ISAPI error: {response.status_code} - {response.text}")
+                return {"status": "error", "code": response.status_code, 
+                        "message": response.text}
+                        
+        except httpx.ConnectError as e:
+            logger.error(f"Cannot reach device at {self.host}: {e}")
+            return {"status": "error", "message": f"Device unreachable: {self.host}"}
+        except Exception as e:
+            logger.error(f"ISAPI request failed: {e}")
+            return {"status": "error", "message": str(e)}
 
-        Args:
-            employee_no: Registration number (matrícula)
-            name: Student's full name
-            valid_begin: Validity start (ISO format)
-            valid_end: Validity end (ISO format)
-        """
-        url = f"{self.base_url}/ISAPI/AccessControl/UserInfo/Record?format=json"
-        payload = {
+    async def search_users(self, start: int = 0, count: int = 30) -> dict:
+        """Search/list users on the device."""
+        body = {
+            "UserInfoSearchCond": {
+                "searchID": "1",
+                "maxResults": count,
+                "searchResultPosition": start
+            }
+        }
+        return await self._request(
+            "POST", "/ISAPI/AccessControl/UserInfo/Search?format=json",
+            json_data=body
+        )
+
+    async def add_user(self, employee_no: str, name: str,
+                       user_type: str = "normal") -> dict:
+        """Add a user to the device."""
+        body = {
             "UserInfo": {
                 "employeeNo": employee_no,
                 "name": name,
-                "userType": "normal",
+                "userType": user_type,
                 "Valid": {
                     "enable": True,
-                    "beginTime": valid_begin,
-                    "endTime": valid_end,
+                    "beginTime": "2020-01-01T00:00:00",
+                    "endTime": "2037-12-31T23:59:59",
+                    "timeType": "local"
                 },
                 "doorRight": "1",
                 "RightPlan": [
@@ -61,133 +109,57 @@ class HikvisionUserManager:
                         "doorNo": 1,
                         "planTemplateNo": "1"
                     }
-                ],
+                ]
             }
         }
+        return await self._request(
+            "POST", "/ISAPI/AccessControl/UserInfo/Record?format=json",
+            json_data=body
+        )
 
-        try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.post(
-                    url,
-                    json=payload,
-                    auth=httpx.DigestAuth(self.username, self.password),
-                )
-
-            if response.status_code == 200:
-                logger.info(f"✅ User {employee_no} ({name}) added to device")
-                return True
-            else:
-                logger.error(
-                    f"❌ Failed to add user {employee_no}: "
-                    f"{response.status_code} - {response.text}"
-                )
-                return False
-
-        except httpx.RequestError as e:
-            logger.error(f"❌ Cannot reach device at {self.device_ip}: {e}")
-            return False
-
-    async def delete_user(self, employee_no: str) -> bool:
-        """Remove a user from the Hikvision terminal."""
-        url = f"{self.base_url}/ISAPI/AccessControl/UserInfo/Delete?format=json"
-        payload = {
+    async def delete_user(self, employee_no: str) -> dict:
+        """Delete a user from the device."""
+        body = {
             "UserInfoDelCond": {
                 "EmployeeNoList": [
                     {"employeeNo": employee_no}
                 ]
             }
         }
+        return await self._request(
+            "PUT", "/ISAPI/AccessControl/UserInfo/Delete?format=json",
+            json_data=body
+        )
 
-        try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.put(
-                    url,
-                    json=payload,
-                    auth=httpx.DigestAuth(self.username, self.password),
-                )
+    async def get_capabilities(self) -> dict:
+        """Get device access control capabilities."""
+        return await self._request(
+            "GET", "/ISAPI/AccessControl/UserInfo/capabilities?format=json"
+        )
 
-            if response.status_code == 200:
-                logger.info(f"✅ User {employee_no} deleted from device")
-                return True
-            else:
-                logger.error(
-                    f"❌ Failed to delete user {employee_no}: "
-                    f"{response.status_code} - {response.text}"
-                )
-                return False
-
-        except httpx.RequestError as e:
-            logger.error(f"❌ Cannot reach device at {self.device_ip}: {e}")
-            return False
-
-    async def list_users(self) -> Optional[dict]:
-        """List all users registered on the device."""
-        url = f"{self.base_url}/ISAPI/AccessControl/UserInfo/Search?format=json"
-        payload = {
-            "UserInfoSearchCond": {
-                "searchID": "1",
-                "maxResults": 100,
-                "searchResultPosition": 0,
-            }
-        }
-
-        try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.post(
-                    url,
-                    json=payload,
-                    auth=httpx.DigestAuth(self.username, self.password),
-                )
-
-            if response.status_code == 200:
-                return response.json()
-            else:
-                logger.error(f"❌ Failed to list users: {response.status_code}")
-                return None
-
-        except httpx.RequestError as e:
-            logger.error(f"❌ Cannot reach device: {e}")
-            return None
-
-    async def start_fingerprint_capture(self, employee_no: str, finger_id: int = 1) -> bool:
-        """
-        Initiate fingerprint capture mode on the device for a specific user.
-        The student must physically place their finger on the reader.
-
-        Args:
-            employee_no: The student's registration number
-            finger_id: Which finger (1-10)
-        """
-        url = f"{self.base_url}/ISAPI/AccessControl/FingerPrint/SetUp?format=json"
-        payload = {
-            "FingerPrintCfg": {
+    async def capture_fingerprint(self, employee_no: str, 
+                                   finger_no: int = 1) -> dict:
+        """Start fingerprint capture on the device for a specific user."""
+        body = {
+            "FingerPrintCond": {
                 "employeeNo": employee_no,
                 "enableCardReader": [1],
-                "fingerPrintID": finger_id,
+                "fingerPrintID": finger_no
             }
         }
+        return await self._request(
+            "POST", "/ISAPI/AccessControl/FingerPrint/Capture",
+            json_data=body
+        )
 
-        try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                response = await client.post(
-                    url,
-                    json=payload,
-                    auth=httpx.DigestAuth(self.username, self.password),
-                )
-
-            if response.status_code == 200:
-                logger.info(
-                    f"✅ Fingerprint capture started for {employee_no} "
-                    f"(finger #{finger_id}). Student must touch the reader now."
-                )
-                return True
-            else:
-                logger.error(
-                    f"❌ Failed to start capture for {employee_no}: "
-                    f"{response.status_code} - {response.text}"
-                )
-                return False
-
-        except httpx.RequestError as e:
-            logger.error(f"❌ Cannot reach device: {e}")
-            return False
+    async def set_face(self, employee_no: str, face_data_url: str = "") -> dict:
+        """Set face data for a user (face recognition enrollment)."""
+        body = {
+            "FaceInfo": {
+                "employeeNo": employee_no,
+            }
+        }
+        return await self._request(
+            "POST", "/ISAPI/Intelligent/FDLib/FaceDataRecord?format=json",
+            json_data=body
+        )

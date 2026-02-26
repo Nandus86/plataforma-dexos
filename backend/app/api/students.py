@@ -92,7 +92,34 @@ async def create_student(
 
     await db.commit()
     result = await db.execute(select(User).options(selectinload(User.student_profile)).where(User.id == user.id))
-    return result.scalar_one()
+    new_student = result.scalar_one()
+
+    # --- INÍCIO DA INTEGRAÇÃO BIOMETRIA ---
+    try:
+        import httpx
+        import asyncio
+        import logging
+        from app.config import settings as app_settings
+        logger = logging.getLogger(__name__)
+
+        async def send_to_biometrics(ra, name):
+            try:
+                bio_url = f"{app_settings.BIOMETRICS_SERVICE_URL}/device/users"
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    await client.post(
+                        bio_url,
+                        json={"employee_no": str(ra), "name": name}
+                    )
+                    logger.info(f"Aluno {name} ({ra}) enfileirado para envio ao relógio Hikvision")
+            except Exception as e:
+                logger.error(f"Falha ao enviar aluno para o relógio: {e}")
+
+        asyncio.create_task(send_to_biometrics(new_student.registration_number, new_student.name))
+    except Exception as e:
+        pass
+    # --- FIM DA INTEGRAÇÃO ---
+
+    return new_student
 
 
 @router.get("/{user_id}", response_model=StudentResponse)
