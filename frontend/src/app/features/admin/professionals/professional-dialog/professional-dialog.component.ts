@@ -41,6 +41,8 @@ export class ProfessionalDialogComponent implements OnInit {
     form!: FormGroup;
     loading = false;
     isEditing = false;
+    tenants: any[] = [];
+    isSuperAdmin = false;
 
     roles = [
         { value: 'professor', label: 'Professor' },
@@ -56,7 +58,8 @@ export class ProfessionalDialogComponent implements OnInit {
         public dialogRef: MatDialogRef<ProfessionalDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
-        if (this.auth.userRole === 'superadmin') {
+        this.isSuperAdmin = this.auth.userRole === 'superadmin';
+        if (this.isSuperAdmin) {
             this.roles.push({ value: 'superadmin', label: 'Super Admin' });
         }
 
@@ -65,9 +68,23 @@ export class ProfessionalDialogComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        if (this.isSuperAdmin) {
+            this.loadTenants();
+        }
         if (this.isEditing) {
             this.loadFullProfile(this.data.professional.id);
         }
+    }
+
+    loadTenants() {
+        this.api.get<any>('/tenants/').subscribe({
+            next: (data) => {
+                this.tenants = Array.isArray(data) ? data : (data.tenants || data.items || []);
+            },
+            error: () => {
+                this.snackBar.open('Erro ao carregar instituições', 'X', { duration: 3000 });
+            }
+        });
     }
 
     loadFullProfile(id: string) {
@@ -94,6 +111,7 @@ export class ProfessionalDialogComponent implements OnInit {
             role: [this.data.professional?.role || 'professor', [Validators.required]],
             registration_number: [''],
             phone: [''],
+            tenant_id: [this.data.professional?.tenant_id || null, this.isSuperAdmin && !this.isEditing ? [Validators.required] : []],
 
             // Profile Fields
             profile: this.fb.group({
@@ -129,6 +147,7 @@ export class ProfessionalDialogComponent implements OnInit {
             registration_number: fullData.registration_number,
             phone: fullData.phone,
             password: '',
+            tenant_id: fullData.tenant_id || null,
         });
 
         if (fullData.professional_profile) {

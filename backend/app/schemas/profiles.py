@@ -68,6 +68,7 @@ class BaseUserUpdate(BaseModel):
     phone: Optional[str] = None
     registration_number: Optional[str] = None
     is_active: Optional[bool] = None
+    tenant_id: Optional[UUID] = None
 
 
 class StudentUpdate(BaseUserUpdate):

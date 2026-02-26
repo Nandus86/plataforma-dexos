@@ -42,6 +42,15 @@
                             </mat-select>
                         </mat-form-field>
 
+                        <mat-form-field appearance="outline" class="full-width" *ngIf="isSuperAdmin">
+                            <mat-label>Instituição</mat-label>
+                            <mat-select formControlName="tenant_id">
+                                <mat-option *ngFor="let t of tenants" [value]="t.id">{{ t.name }}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="form.get('tenant_id')?.hasError('required')">Instituição é
+                                obrigatória</mat-error>
+                        </mat-form-field>
+
                         <mat-form-field appearance="outline" *ngIf="isEditing">
                             <mat-label>Registro Profissional (RA)</mat-label>
                             <input matInput formControlName="registration_number" readonly>
