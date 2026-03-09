@@ -49,6 +49,8 @@ export class StudentsComponent implements OnInit, AfterViewInit {
     dataSource = new MatTableDataSource<any>([]);
     loading = false;
     searchQuery = '';
+    totalRecords = 0;
+    pageSize = 25;
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
@@ -65,13 +67,17 @@ export class StudentsComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
     }
 
-    loadStudents(): void {
+    loadStudents(resetPage = true): void {
         this.loading = true;
-        const params: any = {};
+        if (resetPage && this.paginator) {
+            this.paginator.pageIndex = 0;
+        }
+        const skip = this.paginator ? this.paginator.pageIndex * this.paginator.pageSize : 0;
+        const limit = this.paginator ? this.paginator.pageSize : this.pageSize;
+        const params: any = { skip, limit };
         if (this.searchQuery) params.search = this.searchQuery;
 
         this.api.get<any>('/students/', params)
@@ -79,14 +85,16 @@ export class StudentsComponent implements OnInit, AfterViewInit {
             .subscribe({
                 next: (res) => {
                     this.dataSource.data = res.users || [];
-                    if (this.paginator) {
-                        this.paginator.firstPage();
-                    }
+                    this.totalRecords = res.total || 0;
                 },
                 error: (err) => {
                     this.snackBar.open('Erro ao carregar estudantes', 'Fechar', { duration: 3000 });
                 }
             });
+    }
+
+    onPageChange(): void {
+        this.loadStudents(false);
     }
 
     openDialog(student?: any): void {
