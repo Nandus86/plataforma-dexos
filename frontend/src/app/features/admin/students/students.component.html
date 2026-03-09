@@ -74,7 +74,7 @@
             </tr>
         </table>
 
-        <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons
-            aria-label="Selecione a página"></mat-paginator>
+        <mat-paginator [length]="totalRecords" [pageSize]="pageSize" [pageSizeOptions]="[10, 25, 50, 100]"
+            showFirstLastButtons (page)="onPageChange()" aria-label="Selecione a página"></mat-paginator>
     </div>
 </div>

@@ -49,6 +49,8 @@ export class ProfessionalsComponent implements OnInit, AfterViewInit {
     loading = false;
     searchQuery = '';
     roleFilter = '';
+    totalRecords = 0;
+    pageSize = 25;
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
@@ -65,13 +67,17 @@ export class ProfessionalsComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
     }
 
-    loadProfessionals(): void {
+    loadProfessionals(resetPage = true): void {
         this.loading = true;
-        const params: any = {};
+        if (resetPage && this.paginator) {
+            this.paginator.pageIndex = 0;
+        }
+        const skip = this.paginator ? this.paginator.pageIndex * this.paginator.pageSize : 0;
+        const limit = this.paginator ? this.paginator.pageSize : this.pageSize;
+        const params: any = { skip, limit };
         if (this.searchQuery) params.search = this.searchQuery;
         if (this.roleFilter) params.role = this.roleFilter;
 
@@ -80,14 +86,16 @@ export class ProfessionalsComponent implements OnInit, AfterViewInit {
             .subscribe({
                 next: (res) => {
                     this.dataSource.data = res.users || [];
-                    if (this.paginator) {
-                        this.paginator.firstPage();
-                    }
+                    this.totalRecords = res.total || 0;
                 },
                 error: (err) => {
                     this.snackBar.open('Erro ao carregar profissionais', 'Fechar', { duration: 3000 });
                 }
             });
+    }
+
+    onPageChange(): void {
+        this.loadProfessionals(false);
     }
 
     openDialog(professional?: any): void {
