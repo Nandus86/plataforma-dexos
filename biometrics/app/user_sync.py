@@ -37,8 +37,35 @@ class HikvisionUserManager:
 
     async def _request(self, method: str, path: str, 
                        json_data: dict = None, xml_data: str = None) -> dict:
-        """Make an ISAPI request with digest auth."""
+        """Make an ISAPI request with SDK tunnel fallback to digest auth."""
+        # 1. TENTATIVA VIA TÚNEL SDK (ISUP/EHome mode)
+        try:
+            from app.main import device_user_id, sdk_available, sdk_send_isapi
+            import json
+            
+            if sdk_available and device_user_id >= 0:
+                logger.info(f"🔄 Usando Túnel SDK para ISAPI: {method} {path}")
+                
+                body_str = xml_data or (json.dumps(json_data) if json_data else "")
+                url = f"{method} {path}"
+                
+                # sdk_send_isapi é síncrono mas lida com o túnel TCP C-types rapidamente
+                result_str = sdk_send_isapi(device_user_id, url, body_str)
+                
+                if result_str is not None:
+                    try:
+                        parsed = json.loads(result_str)
+                        return {"status": "ok", "data": parsed}
+                    except Exception:
+                        return {"status": "ok", "data": result_str}
+                else:
+                    logger.warning(f"⚠️ Túnel SDK falhou para {path}, caindo para fallback HTTP direto...")
+        except Exception as e:
+            logger.warning(f"Erro ao tentar túnel SDK: {e}")
+
+        # 2. FALLBACK VIA REDE LOCAL (HTTP Digest)
         url = f"{self.base_url}{path}"
+        logger.info(f"🌐 Usando requisição HTTP direta: {method} {url}")
         
         headers = {}
         content = None
