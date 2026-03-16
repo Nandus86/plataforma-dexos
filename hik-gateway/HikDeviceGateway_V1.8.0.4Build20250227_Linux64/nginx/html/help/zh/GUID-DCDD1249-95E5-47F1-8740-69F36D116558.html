@@ -1,0 +1,139 @@
+
+<!DOCTYPE html
+  PUBLIC "" "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:whc="http://www.daksys.com/webhelp/components" xml:lang="zh-cn" lang="zh-cn">
+	<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+      <meta name="copyright" content="©  杭州海康威视数字技术股份有限公司。保留一切权利。" /><meta name="DC.Type" content="task" /><meta name="DC.Title" content="ISAPI协议管理" /><meta name="abstract" content="Device Gateway 和第三方平台之间通过ISAPI协议进行通信。为了确保正常通信，需要配置的协议参数与第三方平台配置保持一致。" /><meta name="description" content="Device Gateway 和第三方平台之间通过ISAPI协议进行通信。为了确保正常通信，需要配置的协议参数与第三方平台配置保持一致。" /><meta name="DC.Relation" scheme="URI" content="GUID-C49BA8C1-B462-4189-94F7-E3FCA860DF7E.html" /><meta name="DC.Relation" scheme="URI" content="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A.html" /><meta name="DC.Format" content="XHTML" /><meta name="DC.Identifier" content="GUID-DCDD1249-95E5-47F1-8740-69F36D116558" /><meta name="DC.Language" content="zh-CN" /><title>ISAPI协议管理</title><!-- Generated with dksgen version 1.0, build number 2023071300.  --><meta viewport="Content-Type" content="width=device-width, initial-scale=1.0" /><meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" /><meta name="wh-path2root" content="index.html" />
+		<!-- commonltr css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/css/commonltr.css" />
+		<!-- Bootstrap css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/js/jquery-ui.min.css" />
+		
+		<!-- Template css  -->
+		<link href="daksys-webhelp/template/resources/css/HIKVISION_color.css?buildId=2023071300" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic_m.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_expand.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_note.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_steps.css?buildId=2023071300" />
+		
+		<!-- jquery js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-3.6.2.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.highlight-3.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-ui.min.js"></script>
+		
+		<!-- common js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/base64.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/browserDetect.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/localization.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/parseuri.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/localization/strings.js"></script>
+		<!-- Template js -->
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_topic.js?buildId=2023071300"></script>
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_expand.js?buildId=2023071300"></script>
+	</head>
+	<body class="wt_topic_page frmBody" id="GUID-DCDD1249-95E5-47F1-8740-69F36D116558" onload="topicOnload()">
+		<!-- get_lang -->
+		<div id="lang" style="display:none">zh-CN</div><div id="mapoutputclass" style="display:none"></div>
+		<input hidden="hidden" id="UDCode" value="UD13378B" /><input hidden="hidden" id="UDTrademark" value="" /><input hidden="hidden" id="Trademark" value="海康威视" />
+		
+		<div class="content_box">
+			<div class="middle_view content_area col-sm-9" id="content_area">
+				<div class=" wt_breadcrumb "><ol><li><span class="home topicref"><a href="javascript:void(0)" onclick="gotoFirstPage()">首页</a></span></li><li><span class="topicref"><a href="GUID-C49BA8C1-B462-4189-94F7-E3FCA860DF7E.html" data-id="GUID-C49BA8C1-B462-4189-94F7-E3FCA860DF7E">其他配置</a></span></li><li class="active"><span class="topicref">ISAPI协议管理</span></li></ol><div class="wt_breadcrumb_ellipsis" onclick="expandBreadcrumbDiv()"></div><div class="wt_breadcrumb_collapse" style="display: none;"><div class="wt_breadcrumb_collapse_button" onclick="collapseBreadcrumbDiv()"></div></div></div>
+				
+				<div id="container_body" class="container">
+					<div id="contentArea">
+						<div class=" wt_topic_content body ">
+    <h1 class="title topictitle1">ISAPI协议管理</h1>
+
+    <p class="shortdesc"> Device Gateway
+        和第三方平台之间通过ISAPI协议进行通信。为了确保正常通信，需要配置的协议参数与第三方平台配置保持一致。</p>
+
+    
+<div class="topic task nested1" id="TASK_IBV_KXK_31C">
+        <h2 class="title topictitle2">启用ISAPI协议</h2>
+
+        <div class="body taskbody">
+            <div class="section context" id="TASK_IBV_KXK_31C__GUID-B750BF3A-F29E-4407-84C9-FAAFE7AE8CE9">
+                <p class="p">为使用ISAPI的三方平台启用ISAPI协议，添加至 Device Gateway 的设备就可以与三方平台通信。Device Gateway 的ISAPI协议是默认不启用的。点击<span class="ph menucascade"><span class="ph uicontrol">其他协议</span> &gt; <span class="ph uicontrol">ISAPI</span></span>。</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="topic task nested1" id="TASK_CHS_ZXK_31C">
+        <h2 class="title topictitle2">绑定设备与Device Gateway</h2>
+
+        <div class="body taskbody">
+            <div class="section context" id="TASK_CHS_ZXK_31C__GUID-1E2E0EE0-1720-46B0-BAED-81037A6A555B">
+                <p class="p">为了使三方平台与ISUP5.0设备通信，需把设备与 Device Gateway 绑定。绑定后网关可以为设备分配端口号，这样设备就可以与三方平台通信。</p>
+
+            </div>
+
+            <ol class="ol steps" id="TASK_CHS_ZXK_31C__GUID-7D297CC5-7E52-4176-B46D-5A38E8E49A18"><li class="li step stepexpand" id="TASK_CHS_ZXK_31C__GUID-153A3277-56EE-435E-94BF-70CDB6C707D2">
+                    <span class="ph cmd">点击<span class="ph menucascade"><span class="ph uicontrol">其他协议</span> &gt; <span class="ph uicontrol">ISAPI</span></span>进入设备列表页面。</span>
+                </li>
+<li class="li step stepexpand" id="TASK_CHS_ZXK_31C__GUID-D2215D4D-6AE7-46BC-A872-6EE42B765864">
+                    <span class="ph cmd">点击<span class="ph uicontrol">添加</span>进入已绑定设备列表页面。</span>
+                </li>
+<li class="li step stepexpand" id="TASK_CHS_ZXK_31C__GUID-7C1DD147-B907-4A15-AFB7-158CFA95E4FA">
+                    <span class="ph cmd">在设备列表中选择需要绑定的设备。</span>
+                </li>
+<li class="li step stepexpand" id="TASK_CHS_ZXK_31C__GUID-E284F386-FD5E-4BF4-86CC-B273DCE51213">
+                    <span class="ph cmd">点击<img class="image icon" style="display:none;" id="TASK_CHS_ZXK_31C__IMAGE_RXB_J5B_TPB" src="GUID-9B142540-677F-4B19-83D0-E228F248B1B4-high.png" />添加设备至已选择列表。</span>
+                </li>
+<li class="li step stepexpand" id="TASK_CHS_ZXK_31C__GUID-42AECB19-7AFC-4C07-BE95-D038E524A945">
+                    <span class="ph cmd">勾选需绑定设备。</span>
+                    <div class="itemgroup info">
+                        <div class="note note" id="TASK_CHS_ZXK_31C__GUID-9F1B0B15-7A38-4001-877C-33F1E470526B"><span class="notetitle">说明</span> 
+                            <p class="p">最多可绑定200个设备。</p>
+
+                        </div>
+
+                    </div>
+                </li>
+<li class="li step stepexpand" id="TASK_CHS_ZXK_31C__GUID-502FBF9F-0E8C-4D36-AF7B-DEDFD0287FA1">
+                    <span class="ph cmd">点击<span class="ph uicontrol">确认</span>。</span>
+                    <div class="itemgroup info">
+                        <div class="fig fignone" id="TASK_CHS_ZXK_31C__FIG_WWR_52W_M1C">
+                            
+                            <img class="image" style="display:none;" id="TASK_CHS_ZXK_31C__IMAGE_OKH_X2W_M1C" src="GUID-A3A65775-6144-48A7-93E3-B1921B222FC8-high.png" width="2067" />
+                        <div class="fig_caption"><span class="figcap">图 1 绑定设备</span></div></div>
+
+                    </div>
+                </li>
+</ol>
+
+        </div>
+
+    </div>
+
+</div>
+						<div class=" wt_topic_wpp_content wt_pc_only "><div class=" wt_topic_wpp_content_flex "><div class="wt_topic_wpp_item like"></div><div class="wt_topic_wpp_item view"></div><div class="wt_topic_wpp_item share">分享</div></div></div>
+						
+						<div class=" wt_related_links "><div class="related-links"><div class="relinfo relconcepts"><strong>Related concepts</strong><br /><div class="related_link"><a class="navheader_parent_path" href="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A.html" title="可在基础配置模块配置报警转发等系统设置、导出系统日志、配置端口、HTTPS和配置存储路径等。本文重点介绍如何启用报警转发、启用私有数据转发、导出设备日志、配置是否记录设备操作日志、修改端口、配置HTTPS和心跳超时。">基础配置</a></div></div></div></div>
+						
+					</div>
+				</div><!-- container_body -->
+				
+				<div class=" body_footer "><div onclick="prevTopic()" class=" body_footer_left link_button "><span>上一页</span></div><div onclick="nextTopic()" class=" body_footer_right link_button "><span>下一页</span></div></div>
+				<div class=" body_wpp mobile_only"><div class="wt_body_mobile_like"></div><div class="wt_body_mobile_view"></div></div>
+				<!-- <whc:webhelp_side_toc /> -->
+				
+			</div> <!-- middle_view content_area -->
+			<div class=" right_content wt_pc_only "><div class=" right_fixed_container "><div class="right_guide"><div class="feature_guide"><div>本页导航</div><ul><li onclick="scrollToAnchor($(this))" data-id="TASK_IBV_KXK_31C" class="feature_guide_h2"><span class="link_button">启用ISAPI协议</span></li><li onclick="scrollToAnchor($(this))" data-id="TASK_CHS_ZXK_31C" class="feature_guide_h2"><span class="link_button">绑定设备与Device Gateway</span></li></ul></div></div></div></div>
+		</div> <!-- content_box -->
+		
+		<!-- 置顶按钮 -->
+		<div class="body_to_top" onclick="scrollTopicTop()"></div> 
+		<!-- 评价反馈 -->
+		<div onclick="manualFeedback()" class=" body_feedback " data-href="https://wj.hikvision.com/#/public-survey?id=64c8b90d80e02e9e88feca2f"></div>
+		
+	</body>
+</html>

@@ -16,40 +16,73 @@ import httpx
 import logging
 from typing import Optional
 
+from app.config import settings
+
 logger = logging.getLogger(__name__)
 
 
 class HikvisionUserManager:
     """
-    Manages users on the device via ISAPI REST (HTTP Digest Auth).
-    Works when Bridge can reach the device over the network or via Tunnel.
+    Manages users on the device.
+    Prioritizes Hik Device Gateway (Build 2025) for stable cloud communication.
+    Fallbacks: SDK Tunnel (ISUP) -> Direct HTTP.
     """
 
-    def __init__(self, host: str, port: int = 80,
-                 username: str = "admin", password: str = "", protocol: str = "http"):
+    def __init__(self, host: str = None, port: int = None,
+                 username: str = None, password: str = None, 
+                 protocol: str = "http", dev_index: str = None):
         
-        # If port is 80/443, we typically don't append it for cleaner URLs
-        port_str = f":{port}" if port not in (80, 443) else ""
-        self.base_url = f"{protocol}://{host}{port_str}"
-        self.auth = httpx.DigestAuth(username, password)
-        self.host = host
-        logger.info(f"UserManager initialized for {self.base_url}")
+        # Prefer settings but allow override
+        self.host = host or settings.HIKVISION_HOST
+        self.port = port or settings.HIKVISION_PORT
+        self.username = username or settings.HIKVISION_USER
+        self.password = password or settings.HIKVISION_PASSWORD
+        self.dev_index = dev_index or settings.HIKVISION_DEV_INDEX
+        self.gateway_url = settings.GATEWAY_URL
+        
+        self.auth = httpx.DigestAuth(self.username, self.password)
+        
+        logger.info(f"UserManager initialized. Gateway: {self.gateway_url} | Device: {self.host}")
 
     async def _request(self, method: str, path: str, 
                        json_data: dict = None, xml_data: str = None) -> dict:
-        """Make an ISAPI request with SDK tunnel fallback to digest auth."""
-        # 1. TENTATIVA VIA TÚNEL SDK (ISUP/EHome mode)
+        """Prioritizes Gateway -> SDK Tunnel -> Direct HTTP."""
+        
+        # 1. TENTATIVA VIA HIK DEVICE GATEWAY (Recomendado para Produção/Cloud)
+        if self.gateway_url:
+            try:
+                # O Gateway serve como um proxy ISAPI. 
+                # Adicionamos devIndex para identificar qual dispositivo comandar.
+                connector = "&" if "?" in path else "?"
+                gateway_path = f"{path}{connector}devIndex={self.dev_index}"
+                url = f"{self.gateway_url}{gateway_path}"
+                
+                logger.info(f"🚀 Usando Hik Gateway: {method} {url}")
+                
+                async with httpx.AsyncClient(auth=self.auth, timeout=20.0, verify=False) as client:
+                    response = await client.request(
+                        method, url, json=json_data, 
+                        content=xml_data.encode("utf-8") if xml_data else None
+                    )
+                
+                if response.status_code in (200, 201):
+                    return {"status": "ok", "data": response.json() if "json" in response.headers.get("Content-Type", "") else response.text}
+                else:
+                    logger.warning(f"⚠️ Gateway retornou {response.status_code}. Tentando fallback...")
+            except Exception as e:
+                logger.error(f"❌ Erro ao usar Gateway: {e}")
+
+        # 2. TENTATIVA VIA TÚNEL SDK (ISUP/EHome Classic)
         try:
             from app.main import device_user_id, sdk_available, sdk_send_isapi
             import json
             
             if sdk_available and device_user_id >= 0:
-                logger.info(f"🔄 Usando Túnel SDK para ISAPI: {method} {path}")
+                logger.info(f"🔄 Fallback: Usando Túnel SDK para ISAPI: {method} {path}")
                 
                 body_str = xml_data or (json.dumps(json_data) if json_data else "")
                 url = f"{method} {path}"
                 
-                # sdk_send_isapi é síncrono mas lida com o túnel TCP C-types rapidamente
                 result_str = sdk_send_isapi(device_user_id, url, body_str)
                 
                 if result_str is not None:
@@ -58,49 +91,23 @@ class HikvisionUserManager:
                         return {"status": "ok", "data": parsed}
                     except Exception:
                         return {"status": "ok", "data": result_str}
-                else:
-                    logger.warning(f"⚠️ Túnel SDK falhou para {path}, caindo para fallback HTTP direto...")
         except Exception as e:
-            logger.warning(f"Erro ao tentar túnel SDK: {e}")
+            logger.debug(f"Erro no túnel SDK (esperado se não conectado): {e}")
 
-        # 2. FALLBACK VIA REDE LOCAL (HTTP Digest)
-        url = f"{self.base_url}{path}"
-        logger.info(f"🌐 Usando requisição HTTP direta: {method} {url}")
-        
-        headers = {}
-        content = None
-        
-        if json_data:
-            headers["Content-Type"] = "application/json"
-        elif xml_data:
-            headers["Content-Type"] = "application/xml"
-            content = xml_data.encode("utf-8")
+        # 3. ÚLTIMO RECURSO: CONEXÃO DIRETA (Só funciona se estiver na mesma rede local)
+        port_str = f":{self.port}" if self.port not in (80, 443) else ""
+        direct_url = f"http://{self.host}{port_str}{path}"
+        logger.info(f"🌐 Fallback final: Requisição HTTP direta: {method} {direct_url}")
         
         try:
-            async with httpx.AsyncClient(auth=self.auth, timeout=15.0, verify=False) as client:
-                response = await client.request(
-                    method, url, headers=headers, 
-                    json=json_data, content=content
-                )
-            
-            logger.debug(f"ISAPI {method} {path}: {response.status_code}")
+            async with httpx.AsyncClient(auth=self.auth, timeout=10.0, verify=False) as client:
+                response = await client.request(method, direct_url, json=json_data, content=xml_data)
             
             if response.status_code in (200, 201):
-                try:
-                    return {"status": "ok", "data": response.json()}
-                except Exception:
-                    return {"status": "ok", "data": response.text}
-            else:
-                logger.error(f"ISAPI error: {response.status_code} - {response.text}")
-                return {"status": "error", "code": response.status_code, 
-                        "message": response.text}
-                        
-        except httpx.ConnectError as e:
-            logger.error(f"Cannot reach device at {self.host}: {e}")
-            return {"status": "error", "message": f"Device unreachable: {self.host}"}
+                return {"status": "ok", "data": response.json()}
+            return {"status": "error", "code": response.status_code, "message": response.text}
         except Exception as e:
-            logger.error(f"ISAPI request failed: {e}")
-            return {"status": "error", "message": str(e)}
+            return {"status": "error", "message": f"All connection attempts failed: {str(e)}"}
 
     async def search_users(self, start: int = 0, count: int = 30) -> dict:
         """Search/list users on the device."""

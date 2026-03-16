@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<driver id="drv_isapi_acs_x64" ver="1.0.0" dac_ver="1.0.0" delayload="false">
+<procs>
+<proc proc_id="vag" proc_ver="1.0.0" proc_name="../bin/vag/drv_isapi_acs">
+<indicators>
+<indicator id="memory.upperThreshold" value="2000"/>
+</indicators>
+</proc>
+</procs>
+<languages>
+<language id="zh_CN"/>
+<language id="en_US"/>
+</languages>
+<capability>
+<cap id="vss" proc_id="vag"/>
+<cap id="io" proc_id="vag"/>
+<cap id="record" proc_id="vag"/>
+<cap id="maintenance" proc_id="vag"/>
+<cap id="event_vss" proc_id="vag"/>
+<cap id="event_pdc" proc_id="vag"/>
+<cap id="event_gps" proc_id="vag"/>
+<cap id="event_rule" proc_id="vag"/>
+<cap id="event_device" proc_id="vag"/>
+<cap id="event_face" proc_id="vag"/>
+<cap id="event_heat" proc_id="vag"/>
+<cap id="event_person_density" proc_id="vag"/>
+<cap id="remote_vss" proc_id="vag"/>
+<cap id="status" proc_id="vag"/>
+<cap id="ptz" proc_id="vag"/>
+</capability>
+<max_dev_per_inst>20000</max_dev_per_inst>
+<supports dev_type_code="AccessControl" dev_category="acs">
+<support protocol="ISAPI">
+</support>
+</supports>
+</driver>

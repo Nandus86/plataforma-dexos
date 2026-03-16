@@ -1,0 +1,500 @@
+
+<!DOCTYPE html
+  PUBLIC "" "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:whc="http://www.daksys.com/webhelp/components" xml:lang="zh-cn" lang="zh-cn">
+	<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+      <meta name="copyright" content="©  杭州海康威视数字技术股份有限公司。保留一切权利。" /><meta name="DC.Type" content="concept" /><meta name="DC.Title" content="步骤三：协议测试" /><meta name="abstract" content="添加设备后，可以选择指定设备快速进行协议测试，直观看到通过 Device Gateway 能实现的功能，测试功能是否正常。" /><meta name="description" content="添加设备后，可以选择指定设备快速进行协议测试，直观看到通过 Device Gateway 能实现的功能，测试功能是否正常。" /><meta name="DC.Format" content="XHTML" /><meta name="DC.Identifier" content="GUID-9F8D2AA6-CD60-4B97-A87A-9F6E5037D9AC" /><meta name="DC.Language" content="zh-CN" /><title>步骤三：协议测试</title><!-- Generated with dksgen version 1.0, build number 2023071300.  --><meta viewport="Content-Type" content="width=device-width, initial-scale=1.0" /><meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" /><meta name="wh-path2root" content="index.html" />
+		<!-- commonltr css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/css/commonltr.css" />
+		<!-- Bootstrap css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/js/jquery-ui.min.css" />
+		
+		<!-- Template css  -->
+		<link href="daksys-webhelp/template/resources/css/HIKVISION_color.css?buildId=2023071300" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic_m.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_expand.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_note.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_steps.css?buildId=2023071300" />
+		
+		<!-- jquery js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-3.6.2.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.highlight-3.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-ui.min.js"></script>
+		
+		<!-- common js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/base64.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/browserDetect.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/localization.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/parseuri.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/localization/strings.js"></script>
+		<!-- Template js -->
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_topic.js?buildId=2023071300"></script>
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_expand.js?buildId=2023071300"></script>
+	</head>
+	<body class="wt_topic_page frmBody" onload="topicOnload()">
+		<!-- get_lang -->
+		<div id="lang" style="display:none">zh-CN</div><div id="mapoutputclass" style="display:none"></div>
+		<input hidden="hidden" id="UDCode" value="UD13378B" /><input hidden="hidden" id="UDTrademark" value="" /><input hidden="hidden" id="Trademark" value="海康威视" />
+		
+		<div class="content_box">
+			<div class="middle_view content_area col-sm-9" id="content_area">
+				<div class=" wt_breadcrumb "><ol><li><span class="home topicref"><a href="javascript:void(0)" onclick="gotoFirstPage()">首页</a></span></li><li class="active"><span class="topicref">步骤三：协议测试</span></li></ol><div class="wt_breadcrumb_ellipsis" onclick="expandBreadcrumbDiv()"></div><div class="wt_breadcrumb_collapse" style="display: none;"><div class="wt_breadcrumb_collapse_button" onclick="collapseBreadcrumbDiv()"></div></div></div>
+				
+				<div id="container_body" class="container">
+					<div id="contentArea">
+						<div class=" wt_topic_content body "><div class="nested0" id="GUID-9F8D2AA6-CD60-4B97-A87A-9F6E5037D9AC">
+    <h1 class="title topictitle1">步骤三：协议测试</h1>
+
+<p class="shortdesc">添加设备后，可以选择指定设备快速进行协议测试，直观看到通过 Device Gateway 能实现的功能，测试功能是否正常。</p>
+
+<div class="topic task nested1" xml:lang="zh-CN" lang="zh-CN" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5">
+    <h2 class="title topictitle2">测试透传设备功能协议</h2>
+
+
+<div class="body taskbody"><p class="shortdesc">对于未在协议测试界面列出但属于设备支持的功能，可以用过 Device Gateway 透传设备ISAPI协议测试功能。</p>
+
+<div class="section context" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-5473F3C8-D89A-4C7D-9EF0-E5D48CF2EDEE">
+            <p class="p">本文以添加人脸图片至人脸库为例，介绍测试透传设备功能协议和视频协议的具体步骤。</p>
+
+        </div>
+
+<ol class="ol steps" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-2C5E939C-CAA7-4C29-9E2C-E675B41EB4B0"><li class="li step stepexpand" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-CD14CC36-B1BB-4440-8FB3-2B42F4053472">
+                <span class="ph cmd">单击<span class="ph menucascade"><span class="ph uicontrol">协议测试</span> &gt; <span class="ph uicontrol">通用协议</span> &gt; <span class="ph uicontrol">透传设备ISAPI协议</span></span>。</span>
+            </li>
+<li class="li step stepexpand" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-98EB1081-DB73-4D1E-B608-30A0287D733E">
+                <span class="ph cmd">通过 Device Gateway 透传设备ISAPI协议，获取人脸库信息，比如<span class="keyword parmname">FDID</span>。</span>
+                <ol type="a" class="ol substeps" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__SUBSTEPS_W4X_FSJ_31C">
+                    <li class="li substep" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-0242C64B-59C1-4F36-94F7-1EAA60503C58">
+                        <span class="ph cmd">单击<span class="ph uicontrol">选择</span>，选中支持添加人脸的相机设备。</span>
+                    </li>
+
+                    <li class="li substep" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-0BF358CA-FB67-450D-AB87-66E5AC3029C8">
+                        <span class="ph cmd">将请求方法设置为<span class="ph uicontrol">GET</span>，并用获取人脸库API的URI
+                                <kbd class="ph userinput">/ISAPI/Intelligent/FDLib</kbd> 替换URL中
+                                <kbd class="ph userinput">&lt;ISAPIURI&gt;</kbd>。</span>
+                    </li>
+
+                    <li class="li substep" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-111D3451-EA37-48CA-9C63-6090D15F1DCF">
+                        <span class="ph cmd">单击<span class="ph uicontrol">发送请求</span>。</span>
+                    </li>
+
+                </ol>
+
+            </li>
+<li class="li step stepexpand" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-AD53EA7C-CB14-4ED4-8AEF-04AB08FACEDA">
+                <span class="ph cmd">获取人脸库信息后，通过视频设备的添加人脸协议，添加人脸到指定人脸库。</span>
+                <ol type="a" class="ol substeps" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__SUBSTEPS_NVW_MTJ_31C">
+                    <li class="li substep" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-5E2425A5-0BA5-4826-B1D5-5927F03B39CF">
+                        <span class="ph cmd">单击<span class="ph menucascade"><span class="ph uicontrol">视频协议</span> &gt; <span class="ph uicontrol">设备操作</span> &gt; <span class="ph uicontrol">添加人脸</span></span>。</span>
+                    </li>
+
+                    <li class="li substep" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-38DA1C8C-3A7B-4ED4-9207-193E58FE9EC0">
+                        <span class="ph cmd">在请求参数的输入框中输入步骤二中获取的FDID。</span>
+                    </li>
+
+                    <li class="li substep" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-7C4BFE88-4539-4FBD-ACEA-931A27F04F6B">
+                        <span class="ph cmd">单击<img class="image" style="display:none;" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__IMAGE_LPT_B5J_31C" src="GUID-4DBC657F-9960-4932-8FA4-359702AEF863-high.png" />，上传图片。</span>
+                    </li>
+
+                    <li class="li substep" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__GUID-56FCC5B5-3531-4EE3-9DCD-4BD1FE1A004D">
+                        <span class="ph cmd">单击<span class="ph uicontrol">发送请求</span>。可在响应内容框中查看上传结果。</span>
+                    </li>
+
+                </ol>
+
+                <div class="itemgroup info">
+                    <p class="p">网页端可参看以下动图（PDF版本不支持），直观了解具体步骤。</p>
+
+                    <div class="fig fignone" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__FIG_OC1_J5J_31C">
+                        
+                        <img class="image" style="display:none;" id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5__IMAGE_DMH_ZYJ_31C" src="GUID-16F21A2B-2878-4EAC-98BB-031A740F1194-high.gif" width="2067" />
+                    <div class="fig_caption"><span class="figcap">图 1 添加人脸到人脸库</span></div></div>
+
+                </div>
+            </li>
+</ol>
+
+</div>
+
+</div>
+<div class="topic task nested1" xml:lang="zh-CN" lang="zh-CN" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA">
+    <h2 class="title topictitle2">通用协议测试</h2>
+
+
+<div class="body taskbody"><p class="shortdesc">对于设备管理、设备操作、网关配置、开启预览等操作，可以通过通用协议测试，测试某一项功能是否可以正常使用。</p>
+
+<div class="section context" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__GUID-BFC64909-2061-4852-A6A4-C4C9F82DE109">
+            <p class="p">以测试预览功能为例，介绍协议通用测试的步骤。只有 Firefox 、 Chrome、Edge浏览器 支持预览、回放功能。 网页仅支持
+                G.711ulaw、G.711alaw 以及 AAC 的音频格式。</p>
+
+        </div>
+
+<ol class="ol steps" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__GUID-B5CBE5BB-BFD4-4354-88B3-AFDA431A9D7A"><li class="li step stepexpand" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__GUID-CD14CC36-B1BB-4440-8FB3-2B42F4053472">
+                <span class="ph cmd">单击<span class="ph menucascade"><span class="ph uicontrol">协议测试</span> &gt; <span class="ph uicontrol">通用协议</span> &gt; <span class="ph uicontrol">视频和音频</span> &gt; <span class="ph uicontrol">开始预览</span></span>。</span>
+            </li>
+<li class="li step stepexpand" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__GUID-8F955BB8-36F3-410B-9602-1E8E8AFABD0F">
+                <span class="ph cmd">单击<span class="ph uicontrol">选择</span>，选中支持预览的设备。</span>
+                <div class="itemgroup stepresult">
+                    <p class="p">选择设备后，URL中的&lt;uuid&gt;将自动填充。</p>
+
+                </div>
+            </li>
+<li class="li step stepexpand" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__GUID-33E347A0-2122-4525-B60C-3D08678FE2EB"><strong>可选操作： </strong>
+                <span class="ph cmd">若要在ISUP2.0设备开启抓图功能，单击<span class="ph menucascade"><span class="ph uicontrol">网关配置</span> &gt; <span class="ph uicontrol">系统设置</span> &gt; <span class="ph uicontrol">报警转发</span></span>，启用报警转发。</span>
+            </li>
+<li class="li step stepexpand" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__GUID-BEB3B49C-2937-4F0E-BDF5-159C4EE101D5"><strong>可选操作： </strong>
+                <span class="ph cmd">设置请求超时。</span>
+            </li>
+<li class="li step stepexpand" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__GUID-6D97E029-68FA-4B1D-8B1C-1B05F768C960">
+                <span class="ph cmd">单击<span class="ph uicontrol">发送请求</span>。</span>
+            </li>
+<li class="li step stepexpand" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__GUID-06D1FDB2-1701-47A3-B95C-2C0E376D3687">
+                <span class="ph cmd">单击<span class="ph uicontrol">预览</span>。</span>
+                <div class="itemgroup info">
+                    <div class="fig fignone" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__FIG_G24_4Y4_M1C">
+                        
+                        <img class="image" style="display:none;" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__IMAGE_N1W_SY4_M1C" src="GUID-40141126-D2C8-4C24-A6CA-43C24F1BDAA2-high.png" width="2067" />
+                    <div class="fig_caption"><span class="figcap">图 2 测试预览功能</span></div></div>
+
+                </div>
+            </li>
+<li class="li step stepexpand" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__GUID-71AF4971-9F54-4BBE-A06A-A77AB19889CA"><strong>可选操作： </strong>
+                <span class="ph cmd">执行以下操作。</span>
+                <div class="itemgroup info">
+                    
+<div class="div_table"><table cellpadding="4" cellspacing="0" summary="" style="display:none;" id="tbl_rowfixed" class="table wt_table_rowfixed" frame="border" border="1" rules="all"></table><table cellpadding="4" cellspacing="0" summary="" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__TABLE_BKR_G1P_M1C" class="table" frame="border" border="1" rules="all"><caption><span class="tablecap">表 1 开启预览后的可选操作</span></caption>
+                            
+                            
+                            <thead class="thead" align="left">
+                                <tr>
+                                    <th class="entry" valign="top" id="d2831e300">
+                                        <p class="p">操作</p>
+
+                                    </th>
+
+                                    <th class="entry" valign="top" id="d2831e306">
+                                        <p class="p">描述</p>
+
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody class="tbody">
+                                <tr>
+                                    <td class="entry" valign="top" headers="d2831e300 ">
+                                        <p class="p">开启/暂停预览</p>
+
+                                    </td>
+
+                                    <td class="entry" valign="top" headers="d2831e306 ">
+                                        <p class="p">单击<img class="image icon" style="display:none;" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__IMAGE_CKR_G1P_M1C" src="GUID-DFBAEF5C-E5F2-4B80-8C64-51FEAB87B17D-high.png" />/<img class="image icon" style="display:none;" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__IMAGE_DKR_G1P_M1C" src="GUID-C76966D9-232D-43F7-A286-01122B1EE851-high.png" />开启或暂停预览。</p>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td class="entry" valign="top" headers="d2831e300 ">
+                                        <p class="p">开启/停止录像</p>
+
+                                    </td>
+
+                                    <td class="entry" valign="top" headers="d2831e306 ">
+                                        <p class="p">单击<img class="image icon" style="display:none;" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__IMAGE_EKR_G1P_M1C" src="GUID-7EC23ED0-81C8-404A-8F65-6603FA41074F-high.png" />/<img class="image icon" style="display:none;" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__IMAGE_FKR_G1P_M1C" src="GUID-3C4E91CE-4350-4973-BC1E-FCE170F7443B-high.png" />开启或停止录像。</p>
+
+                                        <div class="note note" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__GUID-13BC7B5E-8A6F-46CF-BF79-EAE4B6AFF818"><span class="notetitle">说明</span> 
+                                            <p class="p">Firefox浏览器不支持该功能。</p>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td class="entry" valign="top" headers="d2831e300 ">
+                                        <p class="p">打开/关闭声音</p>
+
+                                    </td>
+
+                                    <td class="entry" valign="top" headers="d2831e306 ">
+                                        <p class="p">单击<img class="image icon" style="display:none;" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__IMAGE_GKR_G1P_M1C" src="GUID-6FC5835A-E870-4162-A89E-128284EE5F14-high.png" />/<img class="image icon" style="display:none;" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__IMAGE_HKR_G1P_M1C" src="GUID-9C16435F-035C-456D-AB07-AC0056395924-high.png" />开启或关闭声音。</p>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td class="entry" valign="top" headers="d2831e300 ">
+                                        <p class="p">抓拍BMP格式图片</p>
+
+                                    </td>
+
+                                    <td class="entry" valign="top" headers="d2831e306 ">
+                                        <p class="p">单击<img class="image icon" style="display:none;" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__IMAGE_IKR_G1P_M1C" src="GUID-FDCDCF4C-A4DB-494E-A9FE-837440B407FA-high.png" />抓拍BMP格式图片。</p>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td class="entry" valign="top" headers="d2831e300 ">
+                                        <p class="p">抓拍JPEG格式图片</p>
+
+                                    </td>
+
+                                    <td class="entry" valign="top" headers="d2831e306 ">
+                                        <p class="p">单击<img class="image icon" style="display:none;" id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA__IMAGE_JKR_G1P_M1C" src="GUID-89B0DE08-305C-4C75-817D-E0C9EE0C3515-high.png" />抓拍JPEG图片。</p>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+</div>
+
+                </div>
+            </li>
+</ol>
+
+</div>
+
+</div>
+<div class="topic task nested1" xml:lang="zh-CN" lang="zh-CN" id="GUID-68D9A843-1D19-4CE5-82CA-BE90938325C7">
+    <h2 class="title topictitle2">音视频协议测试</h2>
+
+
+<div class="body taskbody"><p class="shortdesc">支持测试如开启回放、语音对讲等音视频协议测试是否正常。 </p>
+
+<div class="section context" id="GUID-68D9A843-1D19-4CE5-82CA-BE90938325C7__GUID-EE118E52-9A62-40EC-86EF-E988AB837010">
+            <p class="p">以测试开始回放、获取对讲通道功能为例，介绍视频协议测试的步骤。只有 Firefox 、 Chrome、Edge浏览器 支持对讲、回放功能。
+                网页仅支持 G.711ulaw、G.711alaw 以及 AAC 的音频格式。</p>
+
+        </div>
+
+</div>
+
+    <div class="topic task nested2" id="TASK_L1J_PZ4_M1C">
+        <h3 class="title topictitle3">测试回放功能</h3>
+
+        <div class="body taskbody">
+            <ol class="ol steps" id="TASK_L1J_PZ4_M1C__GUID-B5CBE5BB-BFD4-4354-88B3-AFDA431A9D7A"><li class="li step stepexpand" id="TASK_L1J_PZ4_M1C__GUID-CD14CC36-B1BB-4440-8FB3-2B42F4053472">
+                    <span class="ph cmd">单击<span class="ph menucascade"><span class="ph uicontrol">协议测试</span> &gt; <span class="ph uicontrol">视频协议</span> &gt; <span class="ph uicontrol">视频和音频</span> &gt; <span class="ph uicontrol">开始回放</span></span>。</span>
+                </li>
+<li class="li step stepexpand" id="TASK_L1J_PZ4_M1C__GUID-8F955BB8-36F3-410B-9602-1E8E8AFABD0F">
+                    <span class="ph cmd">单击<span class="ph uicontrol">选择</span>，选中支持回放的设备。</span>
+                    <div class="itemgroup stepresult">
+                        <p class="p">选择设备后，URL中的&lt;uuid&gt;将自动填充。</p>
+
+                    </div>
+                </li>
+<li class="li step stepexpand" id="TASK_L1J_PZ4_M1C__GUID-BEB3B49C-2937-4F0E-BDF5-159C4EE101D5"><strong>可选操作： </strong>
+                    <span class="ph cmd">设置请求超时。</span>
+                </li>
+<li class="li step stepexpand" id="TASK_L1J_PZ4_M1C__GUID-6D97E029-68FA-4B1D-8B1C-1B05F768C960">
+                    <span class="ph cmd">单击<span class="ph uicontrol">发送请求</span>。</span>
+                </li>
+<li class="li step stepexpand" id="TASK_L1J_PZ4_M1C__GUID-EA209513-D4CD-4337-BC84-E9BDC256E100">
+                    <span class="ph cmd">设置<kbd class="ph userinput">endTime</kbd>和<kbd class="ph userinput">startTime</kbd>。</span>
+                </li>
+<li class="li step stepexpand" id="TASK_L1J_PZ4_M1C__GUID-06D1FDB2-1701-47A3-B95C-2C0E376D3687">
+                    <span class="ph cmd">单击<span class="ph uicontrol">回放</span>。</span>
+                    <div class="itemgroup info">
+                        <div class="fig fignone" id="TASK_L1J_PZ4_M1C__FIG_G24_4Y4_M1C">
+                            
+                            <img class="image" style="display:none;" id="TASK_L1J_PZ4_M1C__IMAGE_A2H_4FP_M1C" src="GUID-3E537B3B-732A-4456-8200-0F5FB6BE9057-high.png" width="2067" />
+                        <div class="fig_caption"><span class="figcap">图 3 测试回放功能</span></div></div>
+
+                    </div>
+                </li>
+<li class="li step stepexpand" id="TASK_L1J_PZ4_M1C__GUID-4C517DBE-2EAE-4F42-ABA2-5D80A3DDEF78"><strong>可选操作： </strong>
+                    <span class="ph cmd">执行以下操作。</span>
+                    <div class="itemgroup info">
+                        
+<div class="div_table"><table cellpadding="4" cellspacing="0" summary="" style="display:none;" id="tbl_rowfixed" class="table wt_table_rowfixed" frame="border" border="1" rules="all"></table><table cellpadding="4" cellspacing="0" summary="" id="TASK_L1J_PZ4_M1C__GUID-E393245D-EE9A-4545-AC35-AE16322F34EC" class="table" frame="border" border="1" rules="all"><caption><span class="tablecap">表 2 开启回放后的可选操作</span></caption>
+                                
+                                
+                                <thead class="thead" align="left">
+                                    <tr>
+                                        <th class="entry" valign="top" id="d2831e555">
+                                            <p class="p">操作</p>
+
+                                        </th>
+
+                                        <th class="entry" valign="top" id="d2831e561">
+                                            <p class="p">描述</p>
+
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody class="tbody">
+                                    <tr>
+                                        <td class="entry" valign="top" headers="d2831e555 ">
+                                            <p class="p">开启/暂停回放</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" headers="d2831e561 ">
+                                            <p class="p">单击<img class="image icon" style="display:none;" id="TASK_L1J_PZ4_M1C__IMAGE_YGW_4T4_QRB" src="GUID-DFBAEF5C-E5F2-4B80-8C64-51FEAB87B17D-high.png" />/<img class="image icon" style="display:none;" id="TASK_L1J_PZ4_M1C__IMAGE_ZGW_4T4_QRB" src="GUID-C76966D9-232D-43F7-A286-01122B1EE851-high.png" />开启或暂停回放。</p>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="entry" valign="top" headers="d2831e555 ">
+                                            <p class="p">开启/停止录像</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" headers="d2831e561 ">
+                                            <p class="p">单击<img class="image icon" style="display:none;" id="TASK_L1J_PZ4_M1C__IMAGE_IFW_4T4_QRB" src="GUID-7EC23ED0-81C8-404A-8F65-6603FA41074F-high.png" />/<img class="image icon" style="display:none;" id="TASK_L1J_PZ4_M1C__IMAGE_JFW_4T4_QRB" src="GUID-3C4E91CE-4350-4973-BC1E-FCE170F7443B-high.png" />开启或停止录像。</p>
+
+                                            <div class="note note" id="TASK_L1J_PZ4_M1C__GUID-926053CC-D43C-47AA-BB9C-DBE4CFA0C9A8"><span class="notetitle">说明</span> 
+                                                <p class="p">Firefox浏览器不支持该功能。</p>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="entry" valign="top" headers="d2831e555 ">
+                                            <p class="p">慢放/快放</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" headers="d2831e561 ">
+                                            <p class="p">单击<img class="image icon" style="display:none;" id="TASK_L1J_PZ4_M1C__IMAGE_H2B_254_QRB" src="GUID-A9E47FE8-DB6B-4967-AB42-1037B8BC2D5C-high.png" />/<img class="image icon" style="display:none;" id="TASK_L1J_PZ4_M1C__IMAGE_QTL_C54_QRB" src="GUID-3678635A-AF70-4D28-99CF-D4B3CD32E0F3-high.png" />慢放或快放录像。</p>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="entry" valign="top" headers="d2831e555 ">
+                                            <p class="p">打开/关闭声音</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" headers="d2831e561 ">
+                                            <p class="p">单击<img class="image icon" style="display:none;" id="TASK_L1J_PZ4_M1C__IMAGE_JBW_4T4_QRB" src="GUID-6FC5835A-E870-4162-A89E-128284EE5F14-high.png" />/<img class="image icon" style="display:none;" id="TASK_L1J_PZ4_M1C__IMAGE_KBW_4T4_QRB" src="GUID-9C16435F-035C-456D-AB07-AC0056395924-high.png" />打开或关闭声音。</p>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="entry" valign="top" headers="d2831e555 ">
+                                            <p class="p">选择录像</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" headers="d2831e561 ">
+                                            <p class="p">在回放页面右上角单击<img class="image icon" style="display:none;" id="TASK_L1J_PZ4_M1C__IMAGE_K4P_554_QRB" src="GUID-507C2E48-A4F1-4C48-B677-7081EDDB5549-high.png" />选择录像单击来播放录像。默认播放指定时间内第一条录像。</p>
+
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+</div>
+
+                    </div>
+                </li>
+</ol>
+
+        </div>
+
+    </div>
+
+    <div class="topic task nested2" id="TASK_OLC_N1P_M1C">
+        <h3 class="title topictitle3">测试对讲功能</h3>
+
+        <div class="body taskbody">
+            <ol class="ol steps" id="TASK_OLC_N1P_M1C__STEPS_EHJ_41P_M1C"><li class="li step" id="TASK_OLC_N1P_M1C__GUID-D4DFC7DF-6D3A-4E24-80E7-8802B98FCF82">
+                    <span class="ph cmd">配置HTTPS。</span>
+                    <ol type="a" class="ol substeps" id="TASK_OLC_N1P_M1C__SUBSTEPS_PX5_1BP_M1C">
+                        <li class="li substep" id="TASK_OLC_N1P_M1C__GUID-C2F229FC-AD49-41A4-B240-E4A1057DF7B8">
+                            <span class="ph cmd">安装并创建证书。具体参见<a class="xref" href="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A.html#GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-592612A6-BFC3-4048-980E-114012A22D76">配置HTTPS</a>。</span>
+                        </li>
+
+                        <li class="li substep" id="TASK_OLC_N1P_M1C__GUID-8B8143DE-8F84-4A17-8A67-E89D5D696D1C">
+                            <span class="ph cmd">单击<span class="ph menucascade"><span class="ph uicontrol">网关配置</span> &gt; <span class="ph uicontrol">网络</span> &gt; <span class="ph uicontrol">端口</span> &gt; <span class="ph uicontrol">网关访问端口</span></span>，查看HTTPS端口状态是否正常。</span>
+                        </li>
+
+                        <li class="li substep" id="TASK_OLC_N1P_M1C__GUID-61A5BEE0-CB10-4510-A944-29B9A7669566">
+                            <span class="ph cmd">在浏览器地址栏输入HTTPS网址，访问Device Gateway。</span>
+                        </li>
+
+                    </ol>
+
+                </li>
+<li class="li step" id="TASK_OLC_N1P_M1C__GUID-556B7EF7-CE82-4F2B-A4FA-1426526B95DD">
+                    <span class="ph cmd">测试对讲功能。</span>
+                    <ol type="a" class="ol substeps" id="TASK_OLC_N1P_M1C__SUBSTEPS_X5N_NBP_M1C">
+                        <li class="li substep" id="TASK_OLC_N1P_M1C__GUID-3DB347B5-87C0-4A86-AECC-7F2CC12D80FC">
+                            <span class="ph cmd">单击<span class="ph menucascade"><span class="ph uicontrol">协议测试</span> &gt; <span class="ph uicontrol">视频协议</span> &gt; <span class="ph uicontrol">视频和音频</span> &gt; <span class="ph uicontrol">获取对讲通道</span></span>。</span>
+                        </li>
+
+                        <li class="li substep" id="TASK_OLC_N1P_M1C__GUID-8EAD339E-B21F-4ECB-840A-F002751C015F">
+                            <span class="ph cmd">单击<span class="ph uicontrol">选择</span>，选择支持对讲的设备。</span>
+                        </li>
+
+                        <li class="li substep" id="TASK_OLC_N1P_M1C__GUID-12B26B82-07B2-425E-9210-A1DE6F71F01A">
+                            <span class="ph cmd">单击<span class="ph uicontrol">发送请求</span>。</span>
+                        </li>
+
+                        <li class="li substep" id="TASK_OLC_N1P_M1C__GUID-7F1EB40D-22EB-4D87-AD62-D230DDDE5F2B">
+                            <span class="ph cmd">单击<span class="ph uicontrol">开始/停止语音对讲</span>。</span>
+                        </li>
+
+                    </ol>
+
+                </li>
+</ol>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+</div>
+						<div class=" wt_topic_wpp_content wt_pc_only "><div class=" wt_topic_wpp_content_flex "><div class="wt_topic_wpp_item like"></div><div class="wt_topic_wpp_item view"></div><div class="wt_topic_wpp_item share">分享</div></div></div>
+						
+						
+						
+					</div>
+				</div><!-- container_body -->
+				
+				<div class=" body_footer "><div onclick="prevTopic()" class=" body_footer_left link_button "><span>上一页</span></div><div onclick="nextTopic()" class=" body_footer_right link_button "><span>下一页</span></div></div>
+				<div class=" body_wpp mobile_only"><div class="wt_body_mobile_like"></div><div class="wt_body_mobile_view"></div></div>
+				<!-- <whc:webhelp_side_toc /> -->
+				
+			</div> <!-- middle_view content_area -->
+			<div class=" right_content wt_pc_only "><div class=" right_fixed_container "><div class="right_guide"><div class="feature_guide"><div>本页导航</div><ul><li onclick="scrollToAnchor($(this))" data-id="GUID-FB3A64E0-723E-49C4-8747-284F6889A7F5" class="feature_guide_h2"><span class="link_button">测试透传设备功能协议</span></li><li onclick="scrollToAnchor($(this))" data-id="GUID-2396C2CF-8A3E-4CEE-91AD-1EB2DD32C0CA" class="feature_guide_h2"><span class="link_button">通用协议测试</span></li><li onclick="scrollToAnchor($(this))" data-id="GUID-68D9A843-1D19-4CE5-82CA-BE90938325C7" class="feature_guide_h2"><span class="link_button">音视频协议测试</span></li><li onclick="scrollToAnchor($(this))" data-id="TASK_L1J_PZ4_M1C" class="feature_guide_h3"><span class="link_button">测试回放功能</span></li><li onclick="scrollToAnchor($(this))" data-id="TASK_OLC_N1P_M1C" class="feature_guide_h3"><span class="link_button">测试对讲功能</span></li></ul></div></div></div></div>
+		</div> <!-- content_box -->
+		
+		<!-- 置顶按钮 -->
+		<div class="body_to_top" onclick="scrollTopicTop()"></div> 
+		<!-- 评价反馈 -->
+		<div onclick="manualFeedback()" class=" body_feedback " data-href="https://wj.hikvision.com/#/public-survey?id=64c8b90d80e02e9e88feca2f"></div>
+		
+	</body>
+</html>

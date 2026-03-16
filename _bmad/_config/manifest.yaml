@@ -1,0 +1,42 @@
+installation:
+  version: 6.0.3
+  installDate: 2026-02-28T14:42:31.490Z
+  lastUpdated: 2026-02-28T14:42:31.490Z
+modules:
+  - name: core
+    version: 6.0.3
+    installDate: 2026-02-28T14:42:27.882Z
+    lastUpdated: 2026-02-28T14:42:27.882Z
+    source: built-in
+    npmPackage: null
+    repoUrl: null
+  - name: bmm
+    version: 6.0.3
+    installDate: 2026-02-28T14:41:55.526Z
+    lastUpdated: 2026-02-28T14:42:27.882Z
+    source: built-in
+    npmPackage: null
+    repoUrl: null
+  - name: bmb
+    version: 0.1.6
+    installDate: 2026-02-28T14:42:01.951Z
+    lastUpdated: 2026-02-28T14:42:29.085Z
+    source: external
+    npmPackage: bmad-builder
+    repoUrl: https://github.com/bmad-code-org/bmad-builder
+  - name: cis
+    version: 0.1.8
+    installDate: 2026-02-28T14:42:07.937Z
+    lastUpdated: 2026-02-28T14:42:30.297Z
+    source: external
+    npmPackage: bmad-creative-intelligence-suite
+    repoUrl: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
+  - name: tea
+    version: 1.3.2
+    installDate: 2026-02-28T14:42:15.005Z
+    lastUpdated: 2026-02-28T14:42:31.490Z
+    source: external
+    npmPackage: bmad-method-test-architecture-enterprise
+    repoUrl: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
+ides:
+  - antigravity

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin>
+  <dump max_count="5" path="./" full_dump="true"/>
+  <dso file="libPicStorageServer.so" />
+  <function init="PSS_Init" uninit="PSS_Uninit" start="PSS_Start" stop="PSS_Stop" msgcb="PSS_SetMsgCallBack" error="PSS_GetLastError" version="PSS_GetVersion" />
+</plugin>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hservice>
+	<service name="DeviceGatewayService" disp="Device Gateway Service" desc="Device Gateway Service"/>
+	<dump enable="true" isfull="true" count="5" path=""/>
+	<dso file="libHGServiceMgr.so"/>
+	<function init="HG_Service_Init" uinit="HG_Service_UnInit" start="HG_Service_Start" stop="HG_Service_Stop" error="HG_Service_GetLastError" version="HG_Service_GetVersion" gtest="HG_Service_Gtest"/>
+</hservice>

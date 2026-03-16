@@ -1,0 +1,27 @@
+[Unit]
+Description=SYSV: IVMS_SERVICE_NAME
+Before=shutdown.target
+Before=mariadb.service
+After=network-online.target
+After=network.service
+After=sshd.service
+Conflicts=shutdown.target
+
+[Service]
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+LimitCORE=infinity
+KillMode=control-group
+GuessMainPID=no
+RemainAfterExit=no
+PIDFile=/var/run/IVMS_SERVICE_NAME.pid
+ExecStart=IVMS_SERVICE_SCRIPT start
+ExecStartPost=/bin/sleep 0.2
+ExecStop=IVMS_SERVICE_SCRIPT stop
+KillSignal=KILL
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

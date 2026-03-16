@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Config>
+    <SingleStreamPort enable="0">15000</SingleStreamPort>
+    <ehomeV5StreamPort enable="0">16001</ehomeV5StreamPort>
+    <ProbeSmart264 enable="1" />
+    <OpenStreamConfig enable="1">
+        <IsCheckSetupClientPort>0</IsCheckSetupClientPort>
+    </OpenStreamConfig>
+    <InstallPath>../conf</InstallPath>
+    <ServerName>das_stream</ServerName>
+</Config>

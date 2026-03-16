@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<PrivateConfig>
+    <LDM>
+        <LDMPort>30001</LDMPort>
+		<LDMOperationPort>30002</LDMOperationPort>
+		<LDMAlarmPort>30003</LDMAlarmPort>
+		<LDMStreamPort>20002</LDMStreamPort>
+        <EHomeRegisterPort>7661</EHomeRegisterPort>
+        <EHomeAlarmPort></EHomeAlarmPort>
+    </LDM>
+    <HTTPService>
+        <Port>8081</Port>
+        <TaskThread>128</TaskThread>
+        <AudioTalkPort>12081</AudioTalkPort>
+    </HTTPService>
+	<WebSocketService>
+        <Port>9081</Port>
+        <TaskThread>2</TaskThread>
+    </WebSocketService>
+    <Encrypt>
+        <ISAPI>
+            <Level>1</Level>
+            <Iterations>100</Iterations>
+        </ISAPI>
+    </Encrypt>
+    <InternalCommunication>
+        <ConnectTimeOut>3000</ConnectTimeOut>
+        <RecvTimeOut>30000</RecvTimeOut>
+    </InternalCommunication>
+    <Log>
+        <AppPath>./logs</AppPath>
+    </Log>
+</PrivateConfig>

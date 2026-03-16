@@ -79,6 +79,39 @@ services:
     networks:
       - exousia-network
 
+  exousia-biometrics:
+    build:
+      context: ./biometrics
+      dockerfile: Dockerfile
+    container_name: exousia-biometrics
+    restart: unless-stopped
+    ports:
+      - "9500:9500"
+    environment:
+      - EXOUSIA_API_URL=http://exousia-backend:8000
+      - BRIDGE_PORT=9500
+      - GATEWAY_URL=http://hik-gateway:8081
+    depends_on:
+      - hik-gateway
+    networks:
+      - exousia-network
+
+  hik-gateway:
+    build:
+      context: ./hik-gateway
+      dockerfile: Dockerfile
+    container_name: hik-gateway
+    restart: unless-stopped
+    ports:
+      - "7660:7660/tcp"
+      - "7660:7660/udp"
+      - "7661-7667:7661-7667/tcp"
+      - "7661-7667:7661-7667/udp"
+      - "8081:8081"
+      - "8080:80"
+    networks:
+      - exousia-network
+
 volumes:
   exousia_postgres_data:
   exousia_redis_data:

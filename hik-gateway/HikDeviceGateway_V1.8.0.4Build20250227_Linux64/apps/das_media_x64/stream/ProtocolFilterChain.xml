@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Filters>
+  <Filter id="dasurl" path="./libDasUrlProtocolFilter.so" />
+  <Filter id="suppport_old_url" path="./libURLCompatibleProtocolFilter.so" />
+</Filters>

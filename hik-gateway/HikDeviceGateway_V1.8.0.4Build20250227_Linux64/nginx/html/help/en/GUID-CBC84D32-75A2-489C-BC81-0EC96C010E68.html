@@ -1,0 +1,530 @@
+
+<!DOCTYPE html
+  PUBLIC "" "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:whc="http://www.daksys.com/webhelp/components" xml:lang="en-us" lang="en-us">
+	<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+      <meta name="copyright" content="© Hangzhou Hikvision Digital Technology Co., Ltd. All rights reserved." /><meta name="DC.Type" content="task" /><meta name="DC.Title" content="Step 3: Test APIs" /><meta name="abstract" content="After adding devices, you can select a device to test the available APIs such as adding face pictures and starting live view of access control devices. This topic will guide you through testing the API of adding face pictures to the face picture library, the API of starting live view, the API of starting playback, and the API of starting the two-way audio." /><meta name="description" content="After adding devices, you can select a device to test the available APIs such as adding face pictures and starting live view of access control devices. This topic will guide you through testing the API of adding face pictures to the face picture library, the API of starting live view, the API of starting playback, and the API of starting the two-way audio." /><meta name="DC.Format" content="XHTML" /><meta name="DC.Identifier" content="GUID-CBC84D32-75A2-489C-BC81-0EC96C010E68" /><meta name="DC.Language" content="en-US" /><title>Step 3: Test APIs</title><!-- Generated with dksgen version 1.0, build number 2023071300.  --><meta viewport="Content-Type" content="width=device-width, initial-scale=1.0" /><meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" /><meta name="wh-path2root" content="index.html" />
+		<!-- commonltr css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/css/commonltr.css" />
+		<!-- Bootstrap css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/js/jquery-ui.min.css" />
+		
+		<!-- Template css  -->
+		<link href="daksys-webhelp/template/resources/css/HIKVISION_color.css?buildId=2023071300" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic_m.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_expand.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_note.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_steps.css?buildId=2023071300" />
+		
+		<!-- jquery js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-3.6.2.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.highlight-3.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-ui.min.js"></script>
+		
+		<!-- common js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/base64.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/browserDetect.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/localization.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/parseuri.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/localization/strings.js"></script>
+		<!-- Template js -->
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_topic.js?buildId=2023071300"></script>
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_expand.js?buildId=2023071300"></script>
+	</head>
+	<body class="wt_topic_page frmBody" id="GUID-CBC84D32-75A2-489C-BC81-0EC96C010E68" onload="topicOnload()">
+		<!-- get_lang -->
+		<div id="lang" style="display:none">en-US</div><div id="mapoutputclass" style="display:none"></div>
+		<input hidden="hidden" id="UDCode" value="UD13778B" /><input hidden="hidden" id="UDTrademark" value="" /><input hidden="hidden" id="Trademark" value="Hikvision" />
+		
+		<div class="content_box">
+			<div class="middle_view content_area col-sm-9" id="content_area">
+				<div class=" wt_breadcrumb "><ol><li><span class="home topicref"><a href="javascript:void(0)" onclick="gotoFirstPage()">Home Page</a></span></li><li class="active"><span class="topicref">Step 3: Test APIs</span></li></ol><div class="wt_breadcrumb_ellipsis" onclick="expandBreadcrumbDiv()"></div><div class="wt_breadcrumb_collapse" style="display: none;"><div class="wt_breadcrumb_collapse_button" onclick="collapseBreadcrumbDiv()"></div></div></div>
+				
+				<div id="container_body" class="container">
+					<div id="contentArea">
+						<div class=" wt_topic_content body ">
+    <h1 class="title topictitle1">Step 3: Test APIs</h1>
+
+<p class="shortdesc">After adding devices, you can select a device to test the available APIs
+        such as adding face pictures and starting live view of access control devices. This topic
+        will guide you through testing the API of adding face pictures to the face picture library,
+        the API of starting live view, the API of starting playback, and the API of starting the
+        two-way audio.</p>
+
+    <div class="topic task nested1" id="TASK_XQL_PLC_31C">
+        <h2 class="title topictitle2">Test Transmitting Device ISAPI</h2>
+
+        <div class="body taskbody">
+            <div class="section context" id="TASK_XQL_PLC_31C__GUID-DDC5F016-D037-4BF8-AD22-4EB87C98EF59">
+                <p class="p">This section will introduce how to add face pictures to the face picture
+                    library.</p>
+
+            </div>
+
+            <ol class="ol steps" id="TASK_XQL_PLC_31C__STEPS_FB4_QLC_31C"><li class="li step stepexpand" id="TASK_XQL_PLC_31C__GUID-23D931AE-9187-4E45-AD70-5174602A09B4">
+                    <span class="ph cmd">Select <span class="ph menucascade"><span class="ph uicontrol">API Testing</span> &gt; <span class="ph uicontrol">General Protocol</span> &gt; <span class="ph uicontrol">Transmit Device ISAPI</span> &gt; <span class="ph uicontrol">Transmit ISAPI</span></span>.</span>
+                </li>
+<li class="li step stepexpand" id="TASK_XQL_PLC_31C__GUID-8846BDC0-4CB6-4599-B4A5-EF711A4910FA">
+                    <span class="ph cmd">Click <span class="ph uicontrol">Select</span> to select a encoding device supported
+                        adding face pictures. You can select a device by the device ID and device
+                        name.</span>
+                    <div class="itemgroup stepresult">
+                        <p class="p">After you selecting a device, <span class="keyword parmname">&lt;uuid&gt;</span> in the
+                            request URL will be automatically filled.</p>
+
+                    </div>
+                </li>
+<li class="li step stepexpand" id="TASK_XQL_PLC_31C__GUID-8A7A0377-B555-4FCE-940F-67F827DDFAD3">
+                    <span class="ph cmd">Get the information of the face picture library such as
+                            <span class="keyword parmname">FDID</span>. </span>
+                    <ol type="a" class="ol substeps" id="TASK_XQL_PLC_31C__SUBSTEPS_GB4_QLC_31C">
+                        <li class="li substep" id="TASK_XQL_PLC_31C__GUID-D1D84152-1820-4999-96E8-1761BF311080">
+                            <span class="ph cmd">Set the request method to <span class="ph uicontrol">Get</span>.</span>
+                        </li>
+
+                        <li class="li substep" id="TASK_XQL_PLC_31C__GUID-7D5B9FD4-C9ED-42CC-895E-7A4F9FD76BA5">
+                            <span class="ph cmd"> Replace <span class="keyword parmname">&lt;ISAPIURI&gt;</span> with
+                                    <kbd class="ph userinput">/ISAPI/Intelligent/FDLib</kbd>.</span>
+                        </li>
+
+                        <li class="li substep" id="TASK_XQL_PLC_31C__GUID-88B3982A-68BD-4105-A1D2-67D4AF586F1F"><strong>Optional: </strong>
+                            <span class="ph cmd">Set the timeout.</span>
+                        </li>
+
+                        <li class="li substep" id="TASK_XQL_PLC_31C__GUID-1FA47E1B-7F2E-47CB-A86B-F84779449129">
+                            <span class="ph cmd">select <span class="ph uicontrol">Send Request</span>.</span>
+                        </li>
+
+                    </ol>
+
+                </li>
+<li class="li step stepexpand" id="TASK_XQL_PLC_31C__GUID-00476588-A556-4C3C-9938-1EDA5885F91F">
+                    <span class="ph cmd">After you get the information, upload face pictures to the library, call
+                            <span class="keyword parmname">/ISAPI/Intelligent/FDLib/pictureUpload?format=json</span> to upload
+                        face pictures to the library.</span>
+                    <ol type="a" class="ol substeps" id="TASK_XQL_PLC_31C__SUBSTEPS_HB4_QLC_31C">
+                        <li class="li substep" id="TASK_XQL_PLC_31C__GUID-57634C78-23D4-476F-8B2E-5033E77F79B8">
+                            <span class="ph cmd">Select <span class="ph menucascade"><span class="ph uicontrol">Video Protocol</span> &gt; <span class="ph uicontrol">Device Operation</span> &gt; <span class="ph uicontrol">Add Face Picture</span></span>.</span>
+                        </li>
+
+                        <li class="li substep" id="TASK_XQL_PLC_31C__GUID-1F1F46F2-33A4-41C0-8B5A-89DECBCD566E">
+                            <span class="ph cmd">Enter <span class="keyword parmname">FDID</span> you get in the step 3.
+                            </span>
+                        </li>
+
+                        <li class="li substep" id="TASK_XQL_PLC_31C__GUID-28F7F237-C025-4BE1-94E5-0BE654907DA7">
+                            <span class="ph cmd">Upload a face picture as an attachment.</span>
+                        </li>
+
+                        <li class="li substep" id="TASK_XQL_PLC_31C__GUID-59348C23-6D68-4FCF-86BE-38A706C5B187">
+                            <span class="ph cmd">Select <span class="ph uicontrol">Send Request</span>.</span>
+                        </li>
+
+                    </ol>
+
+                    <div class="itemgroup info">
+                        <div class="note note" id="TASK_XQL_PLC_31C__GUID-DABED5FD-EEFA-4BC1-88DB-1BC9F3E3EE06"><span class="notetitle">Note</span> 
+                            <p class="p">The following GIF (The PDF version is not supported)
+                                will help you visualize the testing process.</p>
+
+                            <div class="fig fignone" id="TASK_XQL_PLC_31C__FIG_IB4_QLC_31C">
+                                
+                                <img class="image" style="display:none;" id="TASK_XQL_PLC_31C__IMAGE_MPD_YGH_M1C" src="GUID-69F354E2-F598-4F9B-B926-428C5C56BCE9-high.gif" width="2067" />
+                            <div class="fig_caption"><span class="figcap">Figure 1 Add Face
+                                    Pictures to Library</span></div></div>
+
+                        </div>
+
+                    </div>
+                </li>
+</ol>
+
+        </div>
+
+    </div>
+
+    <div class="topic task nested1" id="TASK_H4T_PLC_31C">
+        <h2 class="title topictitle2">Test General Protocol</h2>
+
+        <div class="body taskbody">
+            <div class="section context" id="TASK_H4T_PLC_31C__GUID-E31B3E79-0B1D-4CDC-BB55-3652F1F8E03A">
+                <p class="p">This section will introduce how to test the API of starting the live view of
+                    encoding devices and access control devices. You can only preview videos under
+                    1080p resolution on the Firefox, Chrome, or Edge browser. Only G.711 a-law,
+                    G.711 u-law, and ACC codecs are supported on the web page.</p>
+
+            </div>
+
+            <ol class="ol steps" id="TASK_H4T_PLC_31C__STEPS_HC1_BMC_31C"><li class="li step stepexpand" id="TASK_H4T_PLC_31C__GUID-5075FA1E-21A3-4098-9307-7277586A8D5D">
+                    <span class="ph cmd">Select <span class="ph menucascade"><span class="ph uicontrol">API Testing</span> &gt; <span class="ph uicontrol">General Protocol</span> &gt; <span class="ph uicontrol">Video and Audio</span> &gt; <span class="ph uicontrol">Start Live View</span></span>.</span>
+                </li>
+<li class="li step stepexpand" id="TASK_H4T_PLC_31C__GUID-0B95DB93-1AB9-4AF7-8C3B-DCFE7B8F3EF6">
+                    <span class="ph cmd">Click <span class="ph uicontrol">Select</span> to select an access control device
+                        supporting live view.</span>
+                    <div class="itemgroup stepresult">
+                        <p class="p">The &lt;uuid&gt; in the request URL will be automatically replaced.</p>
+
+                    </div>
+                </li>
+<li class="li step stepexpand" id="TASK_H4T_PLC_31C__GUID-F39BEF04-D1BA-4813-A0E5-F44CA8D15459"><strong>Optional: </strong>
+                    <span class="ph cmd">To capture pictures on ISUP2.0 devices, go to <span class="ph menucascade"><span class="ph uicontrol">Configuration</span> &gt; <span class="ph uicontrol">System Settings</span></span>, and enable <span class="ph uicontrol">Alarm Forwarding</span>.</span>
+                </li>
+<li class="li step stepexpand" id="TASK_H4T_PLC_31C__GUID-083E2BB9-EDFE-4E09-81EA-4B9135B4DAF2">
+                    <span class="ph cmd">Set the request parameters, and then select <span class="ph menucascade"><span class="ph uicontrol">Send Request</span> &gt; <span class="ph uicontrol">Start Live View</span></span>.</span>
+                    <div class="itemgroup info">
+                        <div class="fig fignone" id="TASK_H4T_PLC_31C__FIG_KW2_4MN_M1C">
+                            
+                            <img class="image" style="display:none;" id="TASK_H4T_PLC_31C__IMAGE_ACK_RMN_M1C" src="GUID-C37CD980-F0E2-4BEB-9587-F827331F9505-high.png" width="2067" />
+                        <div class="fig_caption"><span class="figcap">Figure 2 Start Live View</span></div></div>
+
+                    </div>
+                </li>
+<li class="li step stepexpand" id="TASK_H4T_PLC_31C__GUID-A1CA6D80-8195-4346-9D18-544E9985DDBA"><strong>Optional: </strong>
+                    <span class="ph cmd">Perform the following operations as needed.</span>
+                    <div class="itemgroup info">
+                        
+<div class="div_table"><table cellpadding="4" cellspacing="0" summary="" style="display:none;" id="tbl_rowfixed" class="table wt_table_rowfixed" frame="border" border="1" rules="all"></table><table cellpadding="4" cellspacing="0" summary="" id="TASK_H4T_PLC_31C__GUID-6029B248-CCF6-4910-A77A-2992371EE372" class="table" frame="border" border="1" rules="all">
+                                
+                                
+                                <thead class="thead" align="left">
+                                    <tr>
+                                        <th class="entry" valign="top" id="d2426e304">
+                                            <p class="p">Operation</p>
+
+                                        </th>
+
+                                        <th class="entry" valign="top" id="d2426e310">
+                                            <p class="p">Description</p>
+
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody class="tbody">
+                                    <tr>
+                                        <td class="entry" valign="top" headers="d2426e304 ">
+                                            <p class="p">Start/Pause Live View</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" headers="d2426e310 ">
+                                            <p class="p">Click <img class="image icon" style="display:none;" id="TASK_H4T_PLC_31C__IMAGE_U13_YS4_QRB" src="GUID-DFBAEF5C-E5F2-4B80-8C64-51FEAB87B17D-high.png" />/<img class="image icon" style="display:none;" id="TASK_H4T_PLC_31C__IMAGE_EWC_YS4_QRB" src="GUID-C76966D9-232D-43F7-A286-01122B1EE851-high.png" /> to
+                                                start or pause live view.</p>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="entry" valign="top" headers="d2426e304 ">
+                                            <p class="p">Start/Stop Recording</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" headers="d2426e310 ">
+                                            <p class="p">Click <img class="image icon" style="display:none;" id="TASK_H4T_PLC_31C__IMAGE_HZQ_LDN_M1C" src="GUID-7EC23ED0-81C8-404A-8F65-6603FA41074F-high.png" />/<img class="image icon" style="display:none;" id="TASK_H4T_PLC_31C__IMAGE_IZQ_LDN_M1C" src="GUID-3C4E91CE-4350-4973-BC1E-FCE170F7443B-high.png" /> to
+                                                start or stop recording.</p>
+
+                                            <div class="note note" id="TASK_H4T_PLC_31C__GUID-FCC9350B-5F32-45C8-982D-F46F91E0B54A"><span class="notetitle">Note</span> 
+                                                <p class="p">This function is not supported on Firefox.</p>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="entry" valign="top" headers="d2426e304 ">
+                                            <p class="p">Audio On/Off</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" headers="d2426e310 ">
+                                            <p class="p">Click <img class="image icon" style="display:none;" id="TASK_H4T_PLC_31C__IMAGE_H5R_PS4_QRB" src="GUID-6FC5835A-E870-4162-A89E-128284EE5F14-high.png" />/<img class="image icon" style="display:none;" id="TASK_H4T_PLC_31C__IMAGE_NGF_RS4_QRB" src="GUID-9C16435F-035C-456D-AB07-AC0056395924-high.png" /> to
+                                                turn the audio on or off.</p>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="entry" valign="top" headers="d2426e304 ">
+                                            <p class="p">Capture Picture (BMP)</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" headers="d2426e310 ">
+                                            <p class="p">Click <img class="image icon" style="display:none;" id="TASK_H4T_PLC_31C__IMAGE_IBK_TS4_QRB" src="GUID-FDCDCF4C-A4DB-494E-A9FE-837440B407FA-high.png" /> to
+                                                capture a picture in BMP.</p>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="entry" valign="top" headers="d2426e304 ">
+                                            <p class="p">Capture Picture (JPEG)</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" headers="d2426e310 ">
+                                            <p class="p">Click <img class="image icon" style="display:none;" id="TASK_H4T_PLC_31C__IMAGE_PCJ_5S4_QRB" src="GUID-89B0DE08-305C-4C75-817D-E0C9EE0C3515-high.png" /> to
+                                                capture a picture in JPEG.</p>
+
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+</div>
+
+                    </div>
+                </li>
+</ol>
+
+        </div>
+
+    </div>
+
+    <div class="topic task nested1" id="TASK_YZ2_TKM_M1C">
+        <h2 class="title topictitle2">Test Video Protocol</h2>
+
+        <div class="body taskbody">
+            <div class="section context" id="TASK_YZ2_TKM_M1C__GUID-D3F1F458-70C7-4FAF-A5E4-62AC12C921EB">
+                <p class="p">This section will introduce how to test the API of starting the playback and
+                    two-way audio.  You can only play back videos under 1080p resolution on the
+                    Firefox, Chrome, or Edge browser. Only G.711 a-law, G.711 u-law, and ACC codecs
+                    are supported on the web page.</p>
+
+            </div>
+
+        </div>
+
+        <div class="topic task nested2" id="TASK_FJX_YDN_M1C">
+            <h3 class="title topictitle3">Test Video Playback</h3>
+
+            <div class="body taskbody">
+                <ol class="ol steps" id="TASK_FJX_YDN_M1C__STEPS_FTY_12N_M1C"><li class="li step stepexpand" id="TASK_FJX_YDN_M1C__GUID-0CC4953A-8893-4FBF-A7CF-0AB212B8D78B">
+                        <span class="ph cmd">Select <span class="ph menucascade"><span class="ph uicontrol">API Testing</span> &gt; <span class="ph uicontrol">Video Protocol</span> &gt; <span class="ph uicontrol">Video and Audio</span> &gt; <span class="ph uicontrol">Start Playback</span></span>.</span>
+                    </li>
+<li class="li step stepexpand" id="TASK_FJX_YDN_M1C__GUID-CA8809D9-5147-4AD7-9F7C-801EA04BA25D">
+                        <span class="ph cmd">Click <span class="ph uicontrol">Select</span> to select a device supporting
+                            playback.</span>
+                    </li>
+<li class="li step stepexpand" id="TASK_FJX_YDN_M1C__GUID-110CD358-1F43-4F32-A14D-EE234C91AA1E">
+                        <span class="ph cmd">Set the start time and end time in the Request Parameters.</span>
+                    </li>
+<li class="li step stepexpand" id="TASK_FJX_YDN_M1C__GUID-13449517-FAA1-4D8B-B3BD-4DCBF5CCA789">
+                        <span class="ph cmd">Set the request parameters, and then select <span class="ph menucascade"><span class="ph uicontrol">Send Request</span> &gt; <span class="ph uicontrol">Start Playback</span></span>.</span>
+                        <div class="itemgroup info">
+                            <div class="fig fignone" id="TASK_FJX_YDN_M1C__FIG_TY1_CNN_M1C">
+                                
+                                <img class="image" style="display:none;" id="TASK_FJX_YDN_M1C__IMAGE_B1B_FNN_M1C" src="GUID-3F96CB1B-5159-42E4-B25A-7AE0EE5740B2-high.png" width="2067" />
+                            <div class="fig_caption"><span class="figcap">Figure 3 Test Video Playback</span></div></div>
+
+                        </div>
+                    </li>
+<li class="li step stepexpand" id="TASK_FJX_YDN_M1C__GUID-5EF216FF-607D-439D-8594-F187ADBC4AF3">
+                        <span class="ph cmd">Perform the following operations as needed.</span>
+                        <div class="itemgroup info">
+                            
+<div class="div_table"><table cellpadding="4" cellspacing="0" summary="" style="display:none;" id="tbl_rowfixed" class="table wt_table_rowfixed" frame="border" border="1" rules="all"></table><table cellpadding="4" cellspacing="0" summary="" id="TASK_FJX_YDN_M1C__GUID-38E48E1F-013E-4789-8C19-34CBCC23B030" class="table" frame="border" border="1" rules="all">
+                                    
+                                    
+                                    <thead class="thead" align="left">
+                                        <tr>
+                                            <th class="entry" valign="top" id="d2426e529">
+                                                <p class="p">Operation</p>
+
+                                            </th>
+
+                                            <th class="entry" valign="top" id="d2426e535">
+                                                <p class="p">Description</p>
+
+                                            </th>
+
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody class="tbody">
+                                        <tr>
+                                            <td class="entry" valign="top" headers="d2426e529 ">
+                                                <p class="p">Start/Pause Playback</p>
+
+                                            </td>
+
+                                            <td class="entry" valign="top" headers="d2426e535 ">
+                                                <p class="p">Click <img class="image icon" style="display:none;" id="TASK_FJX_YDN_M1C__IMAGE_YGW_4T4_QRB" src="GUID-DFBAEF5C-E5F2-4B80-8C64-51FEAB87B17D-high.png" />/<img class="image icon" style="display:none;" id="TASK_FJX_YDN_M1C__IMAGE_ZGW_4T4_QRB" src="GUID-C76966D9-232D-43F7-A286-01122B1EE851-high.png" /> to
+                                                  start or pause playback.</p>
+
+                                            </td>
+
+                                        </tr>
+
+                                        <tr>
+                                            <td class="entry" valign="top" headers="d2426e529 ">
+                                                <p class="p">Start/Stop Recording</p>
+
+                                            </td>
+
+                                            <td class="entry" valign="top" headers="d2426e535 ">
+                                                <p class="p">Click <img class="image icon" style="display:none;" id="TASK_FJX_YDN_M1C__IMAGE_IFW_4T4_QRB" src="GUID-7EC23ED0-81C8-404A-8F65-6603FA41074F-high.png" />/<img class="image icon" style="display:none;" id="TASK_FJX_YDN_M1C__IMAGE_JFW_4T4_QRB" src="GUID-3C4E91CE-4350-4973-BC1E-FCE170F7443B-high.png" /> to
+                                                  start or stop recording.</p>
+
+                                                <div class="note note" id="TASK_FJX_YDN_M1C__GUID-FFD155D2-C466-4A77-A34A-74AE4020A466"><span class="notetitle">Note</span> 
+                                                  <p class="p">This function is not supported on Firefox.</p>
+
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+
+                                        <tr>
+                                            <td class="entry" valign="top" headers="d2426e529 ">
+                                                <p class="p">Fast/Slow Forward</p>
+
+                                            </td>
+
+                                            <td class="entry" valign="top" headers="d2426e535 ">
+                                                <p class="p">Click <img class="image icon" style="display:none;" id="TASK_FJX_YDN_M1C__IMAGE_H2B_254_QRB" src="GUID-A9E47FE8-DB6B-4967-AB42-1037B8BC2D5C-high.png" />/<img class="image icon" style="display:none;" id="TASK_FJX_YDN_M1C__IMAGE_QTL_C54_QRB" src="GUID-3678635A-AF70-4D28-99CF-D4B3CD32E0F3-high.png" /> to
+                                                  play the recorded video slower or faster. </p>
+
+                                            </td>
+
+                                        </tr>
+
+                                        <tr>
+                                            <td class="entry" valign="top" headers="d2426e529 ">
+                                                <p class="p">Audio On/Off</p>
+
+                                            </td>
+
+                                            <td class="entry" valign="top" headers="d2426e535 ">
+                                                <p class="p">Click <img class="image icon" style="display:none;" id="TASK_FJX_YDN_M1C__IMAGE_JBW_4T4_QRB" src="GUID-6FC5835A-E870-4162-A89E-128284EE5F14-high.png" />/<img class="image icon" style="display:none;" id="TASK_FJX_YDN_M1C__IMAGE_KBW_4T4_QRB" src="GUID-9C16435F-035C-456D-AB07-AC0056395924-high.png" /> to
+                                                  turn the audio on or off.</p>
+
+                                            </td>
+
+                                        </tr>
+
+                                        <tr>
+                                            <td class="entry" valign="top" headers="d2426e529 ">
+                                                <p class="p">Select Video</p>
+
+                                            </td>
+
+                                            <td class="entry" valign="top" headers="d2426e535 ">
+                                                <p class="p">Click <img class="image icon" style="display:none;" id="TASK_FJX_YDN_M1C__IMAGE_K4P_554_QRB" src="GUID-507C2E48-A4F1-4C48-B677-7081EDDB5549-high.png" /> in the
+                                                  upper-right corner of the playback page, and
+                                                  select a video to play it. By default, the first
+                                                  video within the set time period will be
+                                                  automatically played.</p>
+
+                                            </td>
+
+                                        </tr>
+
+                                    </tbody>
+
+                                </table>
+</div>
+
+                        </div>
+                    </li>
+</ol>
+
+            </div>
+
+        </div>
+
+        <div class="topic task nested2" id="TASK_L31_JHN_M1C">
+            <h3 class="title topictitle3">Test Two-Way Audio</h3>
+
+            <div class="body taskbody">
+                <div class="section context" id="TASK_L31_JHN_M1C__GUID-AA98CCF0-3027-42B5-99B0-703048EBADB7">
+                    <p class="p">You can test the two-way audio only when you log in to the Device Gateway via
+                        HTTPS.</p>
+
+                </div>
+
+                <ol class="ol steps" id="TASK_L31_JHN_M1C__STEPS_XKG_RHN_M1C"><li class="li step" id="TASK_L31_JHN_M1C__GUID-0D818D1F-4077-46C4-BAEB-C2A24F966933">
+                        <span class="ph cmd">Set HTTPS.</span>
+                        <ol type="a" class="ol substeps" id="TASK_L31_JHN_M1C__SUBSTEPS_UY2_Y24_M1C">
+                            <li class="li substep" id="TASK_L31_JHN_M1C__GUID-67FF97BE-1742-4300-8DB7-1869B4ED6319">
+                                <span class="ph cmd">Set the HTTPS certificate. For details, see <a class="xref" href="GUID-A90190D3-344B-4160-BBDF-A823BD6F33AC.html#CONCEPT_KXL_PQC_31C__GUID-7B6419A1-E1F0-4F46-BE19-E4F79FD92F2E">Set HTTPS</a>.</span>
+                            </li>
+
+                            <li class="li substep" id="TASK_L31_JHN_M1C__GUID-7AFF89A8-7BDE-4528-BE45-2ECCDD154CB7">
+                                <span class="ph cmd">Go to <span class="ph menucascade"><span class="ph uicontrol">Configuration</span> &gt; <span class="ph uicontrol">Network Settings</span> &gt; <span class="ph uicontrol">Port</span> &gt; <span class="ph uicontrol">Gateway Access Port</span></span> to check if the HTTPS port is in the normal
+                                    status.</span>
+                            </li>
+
+                            <li class="li substep" id="TASK_L31_JHN_M1C__GUID-EFD4E6F3-EEA3-419E-9A88-4DE0169B5362">
+                                <span class="ph cmd">Log in to the Device Gateway by entering the HTTPS URL.</span>
+                            </li>
+
+                        </ol>
+
+                    </li>
+<li class="li step" id="TASK_L31_JHN_M1C__GUID-91F73070-83F4-4FA8-8327-07414C565E81">
+                        <span class="ph cmd">Test the two-way audio.</span>
+                        <ol type="a" class="ol substeps" id="TASK_L31_JHN_M1C__SUBSTEPS_UJX_BF4_M1C">
+                            <li class="li substep" id="TASK_L31_JHN_M1C__GUID-FC540AF3-5A8F-4F0B-9716-EDDA0AAFDCE7">
+                                <span class="ph cmd">Select <span class="ph menucascade"><span class="ph uicontrol">API Testing</span> &gt; <span class="ph uicontrol">Video Protocol</span> &gt; <span class="ph uicontrol">Video and Audio</span> &gt; <span class="ph uicontrol">Get a Two-Way Audio Channel</span></span>.</span>
+                            </li>
+
+                            <li class="li substep" id="TASK_L31_JHN_M1C__GUID-87D22F88-C2E2-465B-9A53-993BA228D3B0">
+                                <span class="ph cmd">Click <span class="ph uicontrol">Select</span> to select a device
+                                    supporting two-way audio.</span>
+                            </li>
+
+                            <li class="li substep" id="TASK_L31_JHN_M1C__GUID-C52EF5FD-81A3-4CF6-AC30-F8F0AB300C26">
+                                <span class="ph cmd">Set the request parameters, and then select <span class="ph menucascade"><span class="ph uicontrol">Send Request</span> &gt; <span class="ph uicontrol">Start/Stop Two-Way Audio</span></span>.</span>
+                            </li>
+
+                        </ol>
+
+                    </li>
+</ol>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+						<div class=" wt_topic_wpp_content wt_pc_only "><div class=" wt_topic_wpp_content_flex "><div class="wt_topic_wpp_item like"></div><div class="wt_topic_wpp_item view"></div><div class="wt_topic_wpp_item share">Share</div></div></div>
+						
+						
+						
+					</div>
+				</div><!-- container_body -->
+				
+				<div class=" body_footer "><div onclick="prevTopic()" class=" body_footer_left link_button "><span>Previous Page</span></div><div onclick="nextTopic()" class=" body_footer_right link_button "><span>Next Page</span></div></div>
+				<div class=" body_wpp mobile_only"><div class="wt_body_mobile_like"></div><div class="wt_body_mobile_view"></div></div>
+				<!-- <whc:webhelp_side_toc /> -->
+				
+			</div> <!-- middle_view content_area -->
+			<div class=" right_content wt_pc_only "><div class=" right_fixed_container "><div class="right_guide"><div class="feature_guide"><div>On This Page</div><ul><li onclick="scrollToAnchor($(this))" data-id="TASK_XQL_PLC_31C" class="feature_guide_h2"><span class="link_button">Test Transmitting Device ISAPI</span></li><li onclick="scrollToAnchor($(this))" data-id="TASK_H4T_PLC_31C" class="feature_guide_h2"><span class="link_button">Test General Protocol</span></li><li onclick="scrollToAnchor($(this))" data-id="TASK_YZ2_TKM_M1C" class="feature_guide_h2"><span class="link_button">Test Video Protocol</span></li><li onclick="scrollToAnchor($(this))" data-id="TASK_FJX_YDN_M1C" class="feature_guide_h3"><span class="link_button">Test Video Playback</span></li><li onclick="scrollToAnchor($(this))" data-id="TASK_L31_JHN_M1C" class="feature_guide_h3"><span class="link_button">Test Two-Way Audio</span></li></ul></div></div></div></div>
+		</div> <!-- content_box -->
+		
+		<!-- 置顶按钮 -->
+		<div class="body_to_top" onclick="scrollTopicTop()"></div> 
+		<!-- 评价反馈 -->
+		<div onclick="manualFeedback()" class=" body_feedback " data-href="https://wj.hikvision.com/#/public-survey?id=64c8c01380e02e9eb04798d5"></div>
+		
+	</body>
+</html>

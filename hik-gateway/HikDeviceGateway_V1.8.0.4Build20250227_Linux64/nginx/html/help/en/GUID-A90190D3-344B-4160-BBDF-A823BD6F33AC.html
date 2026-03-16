@@ -1,0 +1,447 @@
+
+<!DOCTYPE html
+  PUBLIC "" "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:whc="http://www.daksys.com/webhelp/components" xml:lang="en-us" lang="en-us">
+	<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="description" content="To achieve the communication between the Device Gateway and the third-party platforms over the ISAPI protocol, you need to ensure that the parameters configured on the Device Gateway are consistent ..." /><meta name="copyright" content="© Hangzhou Hikvision Digital Technology Co., Ltd. All rights reserved." /><meta name="DC.Type" content="concept" /><meta name="DC.Title" content="Other Configuration" /><meta name="DC.Format" content="XHTML" /><meta name="DC.Identifier" content="GUID-A90190D3-344B-4160-BBDF-A823BD6F33AC" /><meta name="DC.Language" content="en-US" /><title>Other Configuration</title><!-- Generated with dksgen version 1.0, build number 2023071300.  --><meta viewport="Content-Type" content="width=device-width, initial-scale=1.0" /><meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" /><meta name="wh-path2root" content="index.html" />
+		<!-- commonltr css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/css/commonltr.css" />
+		<!-- Bootstrap css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/js/jquery-ui.min.css" />
+		
+		<!-- Template css  -->
+		<link href="daksys-webhelp/template/resources/css/HIKVISION_color.css?buildId=2023071300" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic_m.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_expand.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_note.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_steps.css?buildId=2023071300" />
+		
+		<!-- jquery js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-3.6.2.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.highlight-3.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-ui.min.js"></script>
+		
+		<!-- common js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/base64.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/browserDetect.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/localization.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/parseuri.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/localization/strings.js"></script>
+		<!-- Template js -->
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_topic.js?buildId=2023071300"></script>
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_expand.js?buildId=2023071300"></script>
+	</head>
+	<body class="wt_topic_page frmBody" id="GUID-A90190D3-344B-4160-BBDF-A823BD6F33AC" onload="topicOnload()">
+		<!-- get_lang -->
+		<div id="lang" style="display:none">en-US</div><div id="mapoutputclass" style="display:none"></div>
+		<input hidden="hidden" id="UDCode" value="UD13778B" /><input hidden="hidden" id="UDTrademark" value="" /><input hidden="hidden" id="Trademark" value="Hikvision" />
+		
+		<div class="content_box">
+			<div class="middle_view content_area col-sm-9" id="content_area">
+				<div class=" wt_breadcrumb "><ol><li><span class="home topicref"><a href="javascript:void(0)" onclick="gotoFirstPage()">Home Page</a></span></li><li class="active"><span class="topicref">Other Configuration</span></li></ol><div class="wt_breadcrumb_ellipsis" onclick="expandBreadcrumbDiv()"></div><div class="wt_breadcrumb_collapse" style="display: none;"><div class="wt_breadcrumb_collapse_button" onclick="collapseBreadcrumbDiv()"></div></div></div>
+				
+				<div id="container_body" class="container">
+					<div id="contentArea">
+						<div class=" wt_topic_content body ">
+    <h1 class="title topictitle1">Other Configuration</h1>
+
+    <div class="topic concept nested1" id="CONCEPT_UX2_4QC_31C">
+        <h2 class="title topictitle2">ISAPI Management</h2>
+
+        
+        <div class="body conbody"><p class="shortdesc">To achieve the communication between the Device Gateway and the
+            third-party platforms over the ISAPI protocol, you need to ensure that the parameters
+            configured on the Device Gateway are consistent with those of the third-party
+            platform.</p>
+
+            <div class="section" id="CONCEPT_UX2_4QC_31C__GUID-BB6DF2CE-692C-40F9-821B-3627BFB59435"><h3 class="title sectiontitle">Enable ISAPI</h3>
+                
+                <p class="p">The ISAPI function is disabled by default. You can enable this
+                    function for the third-party platform (which supports ISAPI protocol, such as
+                    Milestone XProtect platform) to access the devices added to the Device
+                    Gateway.</p>
+
+                <p class="p">Select <span class="ph menucascade"><span class="ph uicontrol">Other Protocol</span> &gt; <span class="ph uicontrol">ISAPI</span></span>, and then enable <span class="ph uicontrol">ISAPI</span>
+                </p>
+
+                <div class="fig fignone" id="CONCEPT_UX2_4QC_31C__FIG_PZC_ZW5_5PB">
+                    
+                    <img class="image" style="display:none;" id="CONCEPT_UX2_4QC_31C__IMAGE_Q1M_R2V_5PB" src="GUID-2F2E25BC-F9D7-44FC-8FDB-80A6988CBE3C-high.png" width="2067" />
+                <div class="fig_caption"><span class="figcap">Figure 1 ISAPI Management</span></div></div>
+
+            </div>
+
+            <div class="section" id="CONCEPT_UX2_4QC_31C__GUID-47138B50-9B46-4319-A956-33C6DBEEB91B"><h3 class="title sectiontitle">Bind Device with the Device Gateway</h3>
+                
+                <p class="p">In order for a third-party platform (such as Milestone) to access ISUP devices,
+                    you need to bind devices with the Device Gateway, so that the Device Gateway can
+                    assign ISAPI ports to the bound devices.</p>
+
+                <ol class="ol" id="CONCEPT_UX2_4QC_31C__OL_IWB_CSC_31C">
+                    <li class="li" id="CONCEPT_UX2_4QC_31C__GUID-98360A27-978C-46C3-A611-570792F76AE8">
+                        <p class="p">Select <span class="ph uicontrol">Add</span> to enter the Bind Device page.</p>
+
+                    </li>
+
+                    <li class="li" id="CONCEPT_UX2_4QC_31C__GUID-18711DEF-4BF0-4616-B245-989B4071A161">
+                        <p class="p">Select the unbound device(s) in the device list.</p>
+
+                    </li>
+
+                    <li class="li" id="CONCEPT_UX2_4QC_31C__GUID-A3998AB3-1991-45B4-9499-52071ED75BE9">
+                        <p class="p">Select <img class="image icon" style="display:none;" id="CONCEPT_UX2_4QC_31C__IMAGE_RXB_J5B_TPB" src="GUID-9B142540-677F-4B19-83D0-E228F248B1B4-high.png" /> to add the selected
+                            device(s) to the selected list. </p>
+
+                    </li>
+
+                    <li class="li" id="CONCEPT_UX2_4QC_31C__GUID-9E2A85CB-9B2D-46AB-B6C9-A622EDC99902">
+                        <p class="p">Check the device(s) to be bound, and select
+                            <span class="ph uicontrol">OK</span>.</p>
+
+                        <div class="note note" id="CONCEPT_UX2_4QC_31C__GUID-33104FD8-9591-46F4-93BC-8E2322524916"><span class="notetitle">Note</span> 
+                            <p class="p">Up to 200 devices can be bound.</p>
+
+                        </div>
+
+                    </li>
+
+                </ol>
+
+                <div class="note note" id="CONCEPT_UX2_4QC_31C__GUID-A616E892-6C2C-4F64-A248-0C6122AD4312"><span class="notetitle">Note</span> 
+                    <ul class="ul" id="CONCEPT_UX2_4QC_31C__UL_XJD_SY5_5PB">
+                        <li class="li" id="CONCEPT_UX2_4QC_31C__GUID-F5C7220E-D4AD-4AAF-9DD9-A954AE398A55">
+                            <p class="p">Port occupation by another program may cause the failure
+                                of device binding, so make sure you have ended the program occupying
+                                the port(s) before you rebind the device.</p>
+
+                        </li>
+
+                        <li class="li" id="CONCEPT_UX2_4QC_31C__GUID-339BF25E-EFCA-4C88-9987-809852EE9A90">
+                            <p class="p">If the program cannot be ended, you can unbind the
+                                device first, and then bind the device again. In this case, the
+                                Device Gateway will assign new ports to the device.</p>
+
+                        </li>
+
+                        <li class="li" id="CONCEPT_UX2_4QC_31C__GUID-0AD278F9-484A-40D0-88E9-1858AF450E69">
+                            <p class="p">The available HTTP port ranges from 27000 to 27800,
+                                while the available RTSP port ranges from 28000 to 28800.</p>
+
+                        </li>
+
+                        <li class="li" id="CONCEPT_UX2_4QC_31C__GUID-17372CBD-A620-4796-B49A-DCA32CF3E2B0">
+                            <p class="p">Only ISUP devices can be bound with the Device
+                                Gateway.</p>
+
+                        </li>
+
+                        <li class="li" id="CONCEPT_UX2_4QC_31C__GUID-A0002A51-47BC-45FD-BE9E-5B6D35A26FA5">
+                            <p class="p">You need to add corresponding firewall rules after
+                                binding ports for the Device Gateway  on Linux, or the Device
+                                Gateway may be unable to start.</p>
+
+                        </li>
+
+                        <li class="li" id="CONCEPT_UX2_4QC_31C__GUID-E32F6BE5-61BD-4257-8CE5-1A1175030851">
+                            <p class="p">You need to enable <span class="keyword parmname">Alarm
+                                    Forwarding</span> if you want to arm the bound devices.</p>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="topic concept nested1" id="CONCEPT_KXL_PQC_31C">
+        <h2 class="title topictitle2">Basic Configuration</h2>
+
+        
+        <div class="body conbody"><p class="shortdesc">The configuration module provides basic settings such as editing
+            system information, setting network, searching operation logs, enabling alarm
+            forwarding, and setting storage pathway. This section will introduce some major
+            configurations.</p>
+
+            <div class="section" id="CONCEPT_KXL_PQC_31C__GUID-3BE0DF56-E34C-4059-8A66-CA63C60D7230"><h3 class="title sectiontitle">Forward Alarm</h3>
+                
+                <p class="p">If you enable this function, the alarm forwarding port will be used
+                    to forward the alarms reported by ISUP 5.0 devices to Hik Device Gateway. The
+                    Device Gateway can forward alarms and events in the XML format reported by
+                    ISUP5.0-enabled devices. This function is disabled by default.</p>
+
+                <p class="p">You can enable <span class="ph uicontrol">Alarm Forwarding</span> and ensure
+                    that the alarm forwarding port is available.</p>
+
+                <div class="fig fignone" id="CONCEPT_KXL_PQC_31C__GUID-0B3CAF2B-D7EE-47B7-AB3B-AED53F73673E">
+                    
+                    <img class="image" style="display:none;" src="GUID-BEFCEB55-2F8B-4BCB-BB51-DC1324DB7108-high.png" width="2067" />
+                <div class="fig_caption"><span class="figcap">Figure 2 Forward Alarm</span></div></div>
+
+            </div>
+
+            <div class="section" id="CONCEPT_KXL_PQC_31C__GUID-C0231389-07CB-4CE3-BD9E-0F023067328D"><h3 class="title sectiontitle">Forward Private Data</h3>
+                
+                <p class="p">Support forwarding private data contained in streams of live view and
+                    playback (such as bounding box annotations and attributes of detected objects).
+                    This function is disabled by default.</p>
+
+                <p class="p">Go to <span class="ph menucascade"><span class="ph uicontrol">Configuration</span> &gt; <span class="ph uicontrol">System Settings</span> &gt; <span class="ph uicontrol"> Private Data Forwarding</span></span>.</p>
+
+                <div class="fig fignone" id="CONCEPT_KXL_PQC_31C__FIG_RK1_X5L_VDC">
+                    
+                    <img class="image" style="display:none;" id="CONCEPT_KXL_PQC_31C__IMAGE_SK1_X5L_VDC" src="GUID-914FDD9A-B5D6-497F-98F9-95FEE44F68EA-high.png" width="2067" />
+                <div class="fig_caption"><span class="figcap">Figure 3 Forward Private
+                        Data</span></div></div>
+
+            </div>
+
+            <div class="section" id="CONCEPT_KXL_PQC_31C__GUID-9FB57F00-6456-4CAE-AA84-970967474E37"><h3 class="title sectiontitle">Export System Log</h3>
+                
+                <p class="p">Export the system log for debugging.</p>
+
+                <ol class="ol" id="CONCEPT_KXL_PQC_31C__OL_ZLH_NBH_31C">
+                    <li class="li" id="CONCEPT_KXL_PQC_31C__GUID-DA1A4105-289C-460F-99E0-86BA4FBB7E21">
+                        <p class="p">Select <span class="ph menucascade"><span class="ph uicontrol">Configuration</span> &gt; <span class="ph uicontrol">System Maintenance</span> &gt; <span class="ph uicontrol">Log</span></span>.</p>
+
+                    </li>
+
+                    <li class="li" id="CONCEPT_KXL_PQC_31C__GUID-9DDD8E54-EC61-4B0E-A43C-D8B871EF0A2F">
+                        <p class="p">Select a log level, and select <span class="ph uicontrol">Export</span>
+                            to export the log to your local PC.</p>
+
+                        <div class="note note" id="CONCEPT_KXL_PQC_31C__GUID-20128DAA-E2B5-42B5-8E69-4FB68EA1DC81"><span class="notetitle">Note</span> 
+                            <p class="p">If you select the log level to
+                                    <span class="ph uicontrol">Debug</span>, logs with a higher log level will
+                                also be exported.</p>
+
+                        </div>
+
+                    </li>
+
+                    <li class="li" id="CONCEPT_KXL_PQC_31C__GUID-AB013E31-E083-42A0-976A-6180BD8AE4E0">
+                        <p class="p">(Optional) Select <span class="ph uicontrol">Save</span> to save the
+                            configuration such as the log level.</p>
+
+                    </li>
+
+                </ol>
+
+            </div>
+
+            <div class="section" id="CONCEPT_KXL_PQC_31C__GUID-D62838D9-3AD4-4BE3-864E-78344D07778D"><h3 class="title sectiontitle">Record Device Operation
+                    Log</h3>
+                
+                <p class="p">To prevent log file bloat, the system supports configuring whether
+                    to record the device operation logs of testing available APIs and API
+                    passthrough for security audit and troubleshooting. If enabled, it stores
+                    operation records for existing devices (deleted devices are not recorded) and
+                    automatically cleans up logs every 180 days. This function is disabled by
+                    default. </p>
+
+                <p class="p">Go to <span class="ph menucascade"><span class="ph uicontrol">Configuration</span> &gt; <span class="ph uicontrol">System Maintenance</span> &gt; <span class="ph uicontrol">Device Operation Log</span></span>.</p>
+
+                <div class="fig fignone" id="CONCEPT_KXL_PQC_31C__FIG_DCX_RJP_YDC">
+                    
+                    <img class="image" style="display:none;" id="CONCEPT_KXL_PQC_31C__IMAGE_ECX_RJP_YDC" src="GUID-0EFCC010-E6C4-452B-AC91-7931CC721852-high.png" width="2067" />
+                <div class="fig_caption"><span class="figcap">Figure 4 Record Log</span></div></div>
+
+            </div>
+
+            <div class="section" id="CONCEPT_KXL_PQC_31C__GUID-3AC95DF0-8271-44DF-AFA6-DC775953AEDB"><h3 class="title sectiontitle">Set Port</h3>
+                
+                <p class="p">If the default ports are used by other services, you can edit
+                    them.</p>
+
+                <p class="p">Select <span class="ph menucascade"><span class="ph uicontrol">Configuration</span> &gt; <span class="ph uicontrol">Network Settings</span> &gt; <span class="ph uicontrol">Port</span></span>, edit the gateway access port numbers and device port numbers and
+                    save the port settings. The port status indicates whether the ports are already
+                    occupied.</p>
+
+                <div class="fig fignone" id="CONCEPT_KXL_PQC_31C__FIG_HD1_J5L_VDC">
+                    
+                    <img class="image" style="display:none;" id="CONCEPT_KXL_PQC_31C__IMAGE_ID1_J5L_VDC" src="GUID-551C4FE6-7085-4C40-8505-F3FBF1A18B30-high.png" width="2067" />
+                <div class="fig_caption"><span class="figcap">Figure 5 Port Settings</span></div></div>
+
+            </div>
+
+            <div class="section" id="CONCEPT_KXL_PQC_31C__GUID-7B6419A1-E1F0-4F46-BE19-E4F79FD92F2E"><h3 class="title sectiontitle">Set HTTPS</h3>
+                
+                <p class="p">HTTPS provides authentication of the web site and its associated web
+                    server, which protects against attacks. For example, if you set the port number
+                    as 443 and the IP address is 192.168.1.64, you may access the device by entering
+                    https://192.168.1.64:443 via a web browser. The Device Gateway provides three
+                    installing methods of HTTPS certificate.</p>
+
+                <ol class="ol" id="CONCEPT_KXL_PQC_31C__OL_DRF_PGH_31C">
+                    <li class="li" id="CONCEPT_KXL_PQC_31C__GUID-529641F6-E503-4914-B206-D8DC88A99478">
+                        <p class="p">Select <span class="ph menucascade"><span class="ph uicontrol">Configuration</span> &gt; <span class="ph uicontrol">Network Settings</span> &gt; <span class="ph uicontrol">HTTPS</span></span> to enter the HTTPS Setting page.</p>
+
+                    </li>
+
+                    <li class="li" id="CONCEPT_KXL_PQC_31C__GUID-BEF20FF1-E0E6-406B-BA99-ECF7F7B99828">
+                        <p class="p">Check one of the installation methods to set HTTPS
+                            certificate.</p>
+
+                        
+<div class="div_table"><table cellpadding="4" cellspacing="0" summary="" style="display:none;" id="tbl_rowfixed" class="table wt_table_rowfixed" frame="border" border="1" rules="all"></table><table cellpadding="4" cellspacing="0" summary="" id="CONCEPT_KXL_PQC_31C__TABLE_YQL_HHH_31C" class="table" frame="border" border="1" rules="all">
+                                
+                                
+                                <thead class="thead" align="left">
+                                    <tr>
+                                        <th class="entry" valign="top" width="50%" id="d1524e383">
+                                            <p class="p">Method</p>
+
+                                        </th>
+
+                                        <th class="entry" valign="top" width="50%" id="d1524e389">
+                                            <p class="p">Description</p>
+
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody class="tbody">
+                                    <tr>
+                                        <td class="entry" valign="top" width="50%" headers="d1524e383 ">
+                                            <p class="p">Create self-signed certificate.</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" width="50%" headers="d1524e389 ">
+                                            <div class="p">Enter the <span class="keyword parmname">Country</span>, <span class="keyword parmname">Domain/IP</span>, <span class="keyword parmname">Validity</span> and other information, and
+                                                then click <span class="ph uicontrol">Save</span>.<div class="note note" id="CONCEPT_KXL_PQC_31C__GUID-2D711177-FFF9-4076-8EC4-B379315059CF"><span class="notetitle">Note</span> 
+                                                  <p class="p">If you already had a certificate
+                                                  installed, the "Create self-signed certificate."
+                                                  is grayed out.</p>
+
+                                                </div>
+</div>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="entry" valign="top" width="50%" headers="d1524e383 ">
+                                            <p class="p">Signed certificate is available, start
+                                                the installation now.</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" width="50%" headers="d1524e389 ">
+                                            <p class="p">Click <span class="ph uicontrol">Browse</span> to
+                                                select a signed certificate saved in the PC, and
+                                                then click <span class="ph uicontrol">Install</span>.</p>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="entry" valign="top" width="50%" headers="d1524e383 ">
+                                            <p class="p">Create the certificate request first and
+                                                continue the installation.</p>
+
+                                        </td>
+
+                                        <td class="entry" valign="top" width="50%" headers="d1524e389 ">
+                                            <div class="p">
+                                                <ol class="ol" type="a" id="CONCEPT_KXL_PQC_31C__OL_L3R_NHH_31C">
+                                                  <li class="li" id="CONCEPT_KXL_PQC_31C__GUID-968D7712-0CD4-41F1-92A6-DAA25516E086">
+                                                  <p class="p">Select <strong class="ph b">Create</strong> to create the
+                                                  certificate request. Enter the required
+                                                  information in the pop-up window and click
+                                                  <span class="ph uicontrol">OK</span> to save.</p>
+
+                                                  </li>
+
+                                                  <li class="li" id="CONCEPT_KXL_PQC_31C__GUID-60C0DA91-8C1B-408B-9F01-575CF4448AB5">
+                                                  <p class="p">Download the certificate request
+                                                  and submit it to the trusted certificate authority
+                                                  for signature.</p>
+
+                                                  </li>
+
+                                                  <li class="li" id="CONCEPT_KXL_PQC_31C__GUID-50FB54D7-E87C-4759-AA33-03F55A45ABCF">
+                                                  <p class="p">After receiving the signed valid
+                                                  certificate, select <span class="ph uicontrol">Browse</span>
+                                                  to select the downloaded certificate saved in the
+                                                  PC, and then select
+                                                  <span class="ph uicontrol">Install</span>.</p>
+
+                                                  </li>
+
+                                                </ol>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+</div>
+
+                    </li>
+
+                </ol>
+
+            </div>
+
+            <div class="section" id="CONCEPT_KXL_PQC_31C__GUID-9FBD0400-CD8E-46C4-9B07-8E4B1056AEB1"><h3 class="title sectiontitle">Heartbeat Timeout</h3>
+                
+                <p class="p">To prevent frequent device disconnections due to network instability,
+                    Device Gateway supports configuring heartbeat timeout parameters. By default,
+                    the heartbeat interval is set to 30 seconds with 3 retries to determine if a
+                    device is offline. This means that the device accessed by ISUP protocol will
+                    send a heartbeat packet every 30 seconds. If Device Gateway does not receive a
+                    heartbeat packet within 30 seconds, it counts as one timeout. After 3
+                    consecutive timeouts, the device is considered offline.</p>
+
+                <div class="fig fignone" id="CONCEPT_KXL_PQC_31C__FIG_SLF_TZN_YDC">
+                    
+                    <img class="image" style="display:none;" id="CONCEPT_KXL_PQC_31C__IMAGE_TLF_TZN_YDC" src="GUID-B39C1E0A-66F9-48C0-A4F7-3AE04A7DBC6B-high.png" width="2067" />
+                <div class="fig_caption"><span class="figcap">Figure 6 Heartbeat Timeout</span></div></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+						<div class=" wt_topic_wpp_content wt_pc_only "><div class=" wt_topic_wpp_content_flex "><div class="wt_topic_wpp_item like"></div><div class="wt_topic_wpp_item view"></div><div class="wt_topic_wpp_item share">Share</div></div></div>
+						
+						
+						
+					</div>
+				</div><!-- container_body -->
+				
+				<div class=" body_footer "><div onclick="prevTopic()" class=" body_footer_left link_button "><span>Previous Page</span></div><div onclick="nextTopic()" class=" body_footer_right link_button "><span>Next Page</span></div></div>
+				<div class=" body_wpp mobile_only"><div class="wt_body_mobile_like"></div><div class="wt_body_mobile_view"></div></div>
+				<!-- <whc:webhelp_side_toc /> -->
+				
+			</div> <!-- middle_view content_area -->
+			<div class=" right_content wt_pc_only "><div class=" right_fixed_container "><div class="right_guide"><div class="feature_guide"><div>On This Page</div><ul><li onclick="scrollToAnchor($(this))" data-id="CONCEPT_UX2_4QC_31C" class="feature_guide_h2"><span class="link_button">ISAPI Management</span></li><li onclick="scrollToAnchor($(this))" data-id="CONCEPT_UX2_4QC_31C__GUID-BB6DF2CE-692C-40F9-821B-3627BFB59435" class="feature_guide_h3"><span class="link_button">Enable ISAPI</span></li><li onclick="scrollToAnchor($(this))" data-id="CONCEPT_UX2_4QC_31C__GUID-47138B50-9B46-4319-A956-33C6DBEEB91B" class="feature_guide_h3"><span class="link_button">Bind Device with the Device Gateway</span></li><li onclick="scrollToAnchor($(this))" data-id="CONCEPT_KXL_PQC_31C" class="feature_guide_h2"><span class="link_button">Basic Configuration</span></li><li onclick="scrollToAnchor($(this))" data-id="CONCEPT_KXL_PQC_31C__GUID-3BE0DF56-E34C-4059-8A66-CA63C60D7230" class="feature_guide_h3"><span class="link_button">Forward Alarm</span></li><li onclick="scrollToAnchor($(this))" data-id="CONCEPT_KXL_PQC_31C__GUID-C0231389-07CB-4CE3-BD9E-0F023067328D" class="feature_guide_h3"><span class="link_button">Forward Private Data</span></li><li onclick="scrollToAnchor($(this))" data-id="CONCEPT_KXL_PQC_31C__GUID-9FB57F00-6456-4CAE-AA84-970967474E37" class="feature_guide_h3"><span class="link_button">Export System Log</span></li><li onclick="scrollToAnchor($(this))" data-id="CONCEPT_KXL_PQC_31C__GUID-D62838D9-3AD4-4BE3-864E-78344D07778D" class="feature_guide_h3"><span class="link_button">Record Device Operation
+                    Log</span></li><li onclick="scrollToAnchor($(this))" data-id="CONCEPT_KXL_PQC_31C__GUID-3AC95DF0-8271-44DF-AFA6-DC775953AEDB" class="feature_guide_h3"><span class="link_button">Set Port</span></li><li onclick="scrollToAnchor($(this))" data-id="CONCEPT_KXL_PQC_31C__GUID-7B6419A1-E1F0-4F46-BE19-E4F79FD92F2E" class="feature_guide_h3"><span class="link_button">Set HTTPS</span></li><li onclick="scrollToAnchor($(this))" data-id="CONCEPT_KXL_PQC_31C__GUID-9FBD0400-CD8E-46C4-9B07-8E4B1056AEB1" class="feature_guide_h3"><span class="link_button">Heartbeat Timeout</span></li></ul></div></div></div></div>
+		</div> <!-- content_box -->
+		
+		<!-- 置顶按钮 -->
+		<div class="body_to_top" onclick="scrollTopicTop()"></div> 
+		<!-- 评价反馈 -->
+		<div onclick="manualFeedback()" class=" body_feedback " data-href="https://wj.hikvision.com/#/public-survey?id=64c8c01380e02e9eb04798d5"></div>
+		
+	</body>
+</html>

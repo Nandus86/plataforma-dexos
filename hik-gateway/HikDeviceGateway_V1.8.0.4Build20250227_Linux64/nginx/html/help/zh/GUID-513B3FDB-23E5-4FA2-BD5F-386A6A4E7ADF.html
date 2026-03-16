@@ -1,0 +1,449 @@
+
+<!DOCTYPE html
+  PUBLIC "" "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:whc="http://www.daksys.com/webhelp/components" xml:lang="zh-cn" lang="zh-cn">
+	<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+      <meta name="copyright" content="©  杭州海康威视数字技术股份有限公司。保留一切权利。" /><meta name="DC.Type" content="concept" /><meta name="DC.Title" content="步骤一：安装网关" /><meta name="abstract" content="在服务器或者PC上安装 Device Gateway 服务。安装完成后先进行激活，激活后通过Web浏览器访问并使用 Device Gateway 服务。" /><meta name="description" content="在服务器或者PC上安装 Device Gateway 服务。安装完成后先进行激活，激活后通过Web浏览器访问并使用 Device Gateway 服务。" /><meta name="DC.Format" content="XHTML" /><meta name="DC.Identifier" content="GUID-513B3FDB-23E5-4FA2-BD5F-386A6A4E7ADF" /><meta name="DC.Language" content="zh-CN" /><title>步骤一：安装网关</title><!-- Generated with dksgen version 1.0, build number 2023071300.  --><meta viewport="Content-Type" content="width=device-width, initial-scale=1.0" /><meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" /><meta name="wh-path2root" content="index.html" />
+		<!-- commonltr css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/css/commonltr.css" />
+		<!-- Bootstrap css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/js/jquery-ui.min.css" />
+		
+		<!-- Template css  -->
+		<link href="daksys-webhelp/template/resources/css/HIKVISION_color.css?buildId=2023071300" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic_m.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_expand.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_note.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_steps.css?buildId=2023071300" />
+		
+		<!-- jquery js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-3.6.2.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.highlight-3.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-ui.min.js"></script>
+		
+		<!-- common js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/base64.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/browserDetect.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/localization.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/parseuri.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/localization/strings.js"></script>
+		<!-- Template js -->
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_topic.js?buildId=2023071300"></script>
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_expand.js?buildId=2023071300"></script>
+	</head>
+	<body class="wt_topic_page frmBody" onload="topicOnload()">
+		<!-- get_lang -->
+		<div id="lang" style="display:none">zh-CN</div><div id="mapoutputclass" style="display:none"></div>
+		<input hidden="hidden" id="UDCode" value="UD13378B" /><input hidden="hidden" id="UDTrademark" value="" /><input hidden="hidden" id="Trademark" value="海康威视" />
+		
+		<div class="content_box">
+			<div class="middle_view content_area col-sm-9" id="content_area">
+				<div class=" wt_breadcrumb "><ol><li><span class="home topicref"><a href="javascript:void(0)" onclick="gotoFirstPage()">首页</a></span></li><li class="active"><span class="topicref">步骤一：安装网关</span></li></ol><div class="wt_breadcrumb_ellipsis" onclick="expandBreadcrumbDiv()"></div><div class="wt_breadcrumb_collapse" style="display: none;"><div class="wt_breadcrumb_collapse_button" onclick="collapseBreadcrumbDiv()"></div></div></div>
+				
+				<div id="container_body" class="container">
+					<div id="contentArea">
+						<div class=" wt_topic_content body "><div class="nested0" id="GUID-513B3FDB-23E5-4FA2-BD5F-386A6A4E7ADF">
+    <h1 class="title topictitle1">步骤一：安装网关</h1>
+
+<p class="shortdesc">在服务器或者PC上安装 Device Gateway 服务。安装完成后先进行激活，激活后通过Web浏览器访问并使用 Device Gateway
+        服务。</p>
+
+<div class="topic concept nested1" xml:lang="zh-CN" lang="zh-CN" id="GUID-23CBBE01-6320-4F33-9650-CD0FB4CD3284">
+    <h2 class="title topictitle2">端口详情</h2>
+
+    <p class="shortdesc">安装 Device Gateway 前，确保默认端口没有被占用，否则网关服务将无法正常使用。</p>
+
+</div>
+<div class="topic task nested1" xml:lang="zh-CN" lang="zh-CN" id="GUID-0291D2A2-A9E8-444F-A7DC-7E235D4B1464">
+    <h2 class="title topictitle2">步骤一：安装Device Gateway</h2>
+
+<p class="shortdesc">在服务器或者PC的Windows 系统和Linux系统上安装 Device Gateway
+        服务。在Windows系统上安装成功后，可通过看门狗开启服务、停止服务或退出服务。</p>
+
+    <div class="topic task nested2" id="TASK_DXR_G5K_31C">
+        <h3 class="title topictitle3">在Windows系统上安装Device Gateway</h3>
+
+        <div class="body taskbody">
+            <ol class="ol steps" id="TASK_DXR_G5K_31C__STEPS_QM3_H5K_31C"><li class="li step" id="TASK_DXR_G5K_31C__GUID-EC9C0D50-2849-4C85-8C9E-DE847D212AE9">
+                    <span class="ph cmd">右键单击安装包，选择<span class="ph uicontrol">以管理员身份运行</span>，进入安装首页。</span>
+                </li>
+<li class="li step" id="TASK_DXR_G5K_31C__GUID-13D8EDFC-4E1F-495F-8013-018DB1492C89">
+                    <span class="ph cmd">单击<span class="ph uicontrol">下一步</span>开始安装。</span>
+                </li>
+<li class="li step" id="TASK_DXR_G5K_31C__GUID-A9FD82A8-E834-4006-9450-37F74B51F152">
+                    <span class="ph cmd">单击<span class="ph uicontrol">浏览...</span>选择遗留的配置文件，然后单击<span class="ph uicontrol">下一步</span>。</span>
+                </li>
+<li class="li step" id="TASK_DXR_G5K_31C__GUID-99F4F62C-ECA7-4601-9B54-70F3A9287A5C"><strong>可选操作： </strong>
+                    <span class="ph cmd">单击<span class="ph uicontrol">浏览...</span>，选择其他路径后，单击<span class="ph uicontrol">下一步</span>，将该服务安装到其他路径下。</span>
+                </li>
+<li class="li step" id="TASK_DXR_G5K_31C__GUID-4B7791AF-7B3D-4D1A-A467-638B5A23E88F"><strong>可选操作： </strong>
+                    <span class="ph cmd">若HTTP端口有冲突，修改HTTP端口号，否则安装无法继续。</span>
+                </li>
+<li class="li step" id="TASK_DXR_G5K_31C__GUID-89F3F4C5-3611-4904-8F42-FD563A4F21FE">
+                    <span class="ph cmd">单击<span class="ph uicontrol">安装</span>开始安装。</span>
+                </li>
+<li class="li step" id="TASK_DXR_G5K_31C__GUID-EBD70CB5-F9DA-4E41-A94C-94DA3BD49B96">
+                    <span class="ph cmd">阅读安装后的信息，单击<span class="ph uicontrol">结束</span>完成安装。</span>
+                </li>
+</ol>
+
+            <div class="section result" id="TASK_DXR_G5K_31C__GUID-34C15FBB-CF46-45DD-BCCF-AD24734E92EB">
+                <ul class="ul" id="TASK_DXR_G5K_31C__UL_BTL_ZQ4_M1C">
+                    <li class="li" id="TASK_DXR_G5K_31C__GUID-3898E9DC-5899-4A33-B82F-1D8BA204B6CD">
+                        <p class="p">安装成功后，将自动跳转至默认浏览器的Device Gateway登录界面。</p>
+
+                    </li>
+
+                    <li class="li" id="TASK_DXR_G5K_31C__GUID-5AC9C141-BB8B-453C-8421-453D7E79A860">
+                        <p class="p">安装成功后，看门狗服务将自动启动，并隐藏在桌面右下角通知栏。右键单击<img class="image icon" style="display:none;" id="TASK_DXR_G5K_31C__IMAGE_SQK_2R4_M1C" src="GUID-4384BCD2-F1C1-40EF-AD03-4BA02EC4EC0C-high.png" />，选择对应的操作可以停止或开启 Device Gateway
+                            服务或退出看门狗服务。</p>
+
+                    </li>
+
+                </ul>
+
+                <div class="note note" id="TASK_DXR_G5K_31C__GUID-4E46AAE9-893A-4678-9732-288BE5D944BC"><span class="notetitle">说明</span> 
+                    <ul class="ul" id="TASK_DXR_G5K_31C__UL_SM3_H5K_31C">
+                        <li class="li" id="TASK_DXR_G5K_31C__GUID-50112CA8-0F44-49DF-BF51-F52014A3C4D7">
+                            <p class="p">若远程安装 Device Gateway，需要登录到本地PC才能显示看门狗服务。</p>
+
+                        </li>
+
+                        <li class="li" id="TASK_DXR_G5K_31C__GUID-38921038-88CE-4174-BA2E-CEEAACA8442A">
+                            <p class="p">当重装 Device Gateway 时，有弹窗弹出，要求确认是否保存配置文件，可根据实际需要选择。</p>
+
+                        </li>
+
+                        <li class="li" id="TASK_DXR_G5K_31C__GUID-A8B70A22-36D2-4F56-841F-7045D0000E80">
+                            <p class="p">遗留配置页面如果能检测到之前版本 Device Gateway
+                                的默认安装路径的遗留配置，会显示并默认选中。</p>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="topic task nested2" id="TASK_GZT_K5K_31C">
+        <h3 class="title topictitle3">在Linux系统上安装Device Gateway</h3>
+
+        <div class="body taskbody">
+            <ol class="ol steps" id="TASK_GZT_K5K_31C__STEPS_N5B_K31_G5B"><li class="li step stepexpand" id="TASK_GZT_K5K_31C__GUID-BC2A3C05-49CB-4734-8997-DC10B8DCC7C3">
+                    <span class="ph cmd">新建一个文件夹，如/opt/test/DeviceGateway，作为 Device Gateway
+                        的安装目录，并将网关Linux安装包放在文件夹内。</span>
+                    <div class="itemgroup info">
+                        <div class="fig fignone" id="TASK_GZT_K5K_31C__FIG_DDP_XQ1_G5B">
+                            
+                            <img class="image" style="display:none;" id="TASK_GZT_K5K_31C__IMAGE_EDP_XQ1_G5B" src="GUID-FB0160BD-A11F-4C09-AF98-4ABEE9176A21-high.png" width="2067" />
+                        <div class="fig_caption"><span class="figcap">图 1 安装文件夹</span></div></div>
+
+                    </div>
+                </li>
+<li class="li step stepexpand" id="TASK_GZT_K5K_31C__GUID-DFE9A98C-0A7D-4447-81C9-FFA39D73498B">
+                    <span class="ph cmd">使用tar命令，将安装包解压到当前安装目录下。</span>
+                    <div class="itemgroup info">
+                        <div class="fig fignone" id="TASK_GZT_K5K_31C__FIG_XXH_KR1_G5B">
+                            
+                            <img class="image" style="display:none;" id="TASK_GZT_K5K_31C__IMAGE_YXH_KR1_G5B" src="GUID-67CC559D-D9EF-46A7-9B4A-5D9301F9C38C-high.png" width="2067" />
+                        <div class="fig_caption"><span class="figcap">图 2 解压安装包</span></div></div>
+
+                        <div class="fig fignone" id="TASK_GZT_K5K_31C__FIG_MVD_GR1_G5B">
+                            
+                            <img class="image" style="display:none;" id="TASK_GZT_K5K_31C__IMAGE_NVD_GR1_G5B" src="GUID-A1C3B624-D580-43D2-AFE1-D32BDFB36177-high.png" width="2067" />
+                        <div class="fig_caption"><span class="figcap">图 3 解压安装包</span></div></div>
+
+                    </div>
+                </li>
+<li class="li step stepexpand" id="TASK_GZT_K5K_31C__GUID-AD62E8FA-C1DB-41CF-9188-C11C05472DF2">
+                    <span class="ph cmd">使用chmod命令，给安装目录下的install.sh脚本配置执行权限。</span>
+                    <div class="itemgroup info">
+                        <div class="note note" id="TASK_GZT_K5K_31C__GUID-EB1F641F-CDF7-40B6-99EE-1A628116F24F"><span class="notetitle">说明</span> 
+                            <ul class="ul" id="TASK_GZT_K5K_31C__UL_DS2_5J1_G5B">
+                                <li class="li" id="TASK_GZT_K5K_31C__GUID-1477E5FC-0E71-4FDA-9582-92B76198D089">
+                                    <div class="fig fignone" id="TASK_GZT_K5K_31C__FIG_JQC_MR1_G5B">
+                                        
+                                        <img class="image" style="display:none;" id="TASK_GZT_K5K_31C__IMAGE_KQC_MR1_G5B" src="GUID-C915A6F0-3BF4-424B-9FAF-ABC9BBDC0225-high.png" width="2067" />
+                                    <div class="fig_caption"><span class="figcap">图 4 配置权限前</span></div></div>
+
+                                </li>
+
+                                <li class="li" id="TASK_GZT_K5K_31C__GUID-578E9423-0663-4A79-990A-E9CCA7032A0E">
+                                    <div class="fig fignone" id="TASK_GZT_K5K_31C__FIG_SVT_4R1_G5B">
+                                        
+                                        <img class="image" style="display:none;" id="TASK_GZT_K5K_31C__IMAGE_TVT_4R1_G5B" src="GUID-58CB1475-2FE0-484A-9DE6-91F1F420B212-high.png" width="2067" />
+                                    <div class="fig_caption"><span class="figcap">图 5 配置权限后</span></div></div>
+
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+                    </div>
+                </li>
+<li class="li step stepexpand" id="TASK_GZT_K5K_31C__GUID-EC818CD8-66D0-4785-8AB4-4D60A91811FD">
+                    <span class="ph cmd">执行install.sh脚本，安装 Device Gateway。</span>
+                    <ol type="a" class="ol substeps" id="TASK_GZT_K5K_31C__SUBSTEPS_ISG_BK1_G5B">
+                        <li class="li substep substepexpand" id="TASK_GZT_K5K_31C__GUID-87AEAC35-8E5B-40F3-8594-DBBD2F46600B">
+                            <span class="ph cmd">（可选）install脚本的--help选项，可以查看脚本支持的选项。</span>
+                            <div class="itemgroup info">
+                                <div class="fig fignone" id="TASK_GZT_K5K_31C__FIG_LLQ_QR1_G5B">
+                                    
+                                    <img class="image" style="display:none;" id="TASK_GZT_K5K_31C__IMAGE_MLQ_QR1_G5B" src="GUID-6E41F6C7-6D1F-40B9-B42C-7995E1758E6B-high.png" width="2067" />
+                                <div class="fig_caption"><span class="figcap">图 6 选项</span></div></div>
+
+                            </div>
+                        </li>
+
+                        <li class="li substep substepexpand" id="TASK_GZT_K5K_31C__GUID-46C661ED-F9D2-43C9-9AA0-DDC515EF473A">
+                            <span class="ph cmd">（可选）install脚本的--port选项，可以配置访问 Device Gateway
+                                的HTTP端口号，如果未配置，默认使用80端口。</span>
+                        </li>
+
+                        <li class="li substep substepexpand" id="TASK_GZT_K5K_31C__GUID-8B45F8C9-8732-4C4D-8503-50E94158D617">
+                            <span class="ph cmd">（可选）install脚本的--path选项，可以配置 Device Gateway 的遗留配置路径。如果之前安装过Linux版本的
+                                Device Gateway ，且不想重复配置设备和 Device Gateway
+                                参数，可以使用此参数指定遗留配置路径，安装后旧的遗留配置将在新安装的 Device Gateway
+                                中生效。如果未配置，则以默认参数安装。</span>
+                        </li>
+
+                        <li class="li substep substepexpand" id="TASK_GZT_K5K_31C__GUID-47FC4AFE-5874-48AE-BDEB-55164199823C">
+                            <span class="ph cmd">（可选）也可以选择不带选项安装install脚本。</span>
+                            <div class="itemgroup info">
+                                <div class="fig fignone" id="TASK_GZT_K5K_31C__FIG_THQ_TR1_G5B">
+                                    
+                                    <img class="image" style="display:none;" id="TASK_GZT_K5K_31C__IMAGE_UHQ_TR1_G5B" src="GUID-436C0B71-9E12-4D33-AAAA-BD81482C0617-high.png" width="2067" />
+                                <div class="fig_caption"><span class="figcap">图 7 不带选项安装</span></div></div>
+
+                            </div>
+                        </li>
+
+                    </ol>
+
+                    <div class="itemgroup info">
+                        <div class="note note" id="TASK_GZT_K5K_31C__GUID-8AC3A83D-8C6F-407E-88BA-F3E1878D2968"><span class="notetitle">说明</span> 
+                            <ul class="ul" id="TASK_GZT_K5K_31C__UL_OCK_FM1_G5B">
+                                <li class="li" id="TASK_GZT_K5K_31C__GUID-BE97B378-6293-4426-B8F2-FD0799FA45BA">
+                                    <p class="p">安装 Device Gateway 需以管理员运行。</p>
+
+                                </li>
+
+                                <li class="li" id="TASK_GZT_K5K_31C__GUID-8D12A540-A073-4EE9-8689-6BA6BFFD0810">
+                                    <p class="p">安装后会修改系统默认参数：/etc/systemd/system.conf中的DefaultLimitNOFILE修改为1000000，同时会禁用SELinux
+                                        。</p>
+
+                                </li>
+
+                                <li class="li" id="TASK_GZT_K5K_31C__GUID-EFA336C3-0416-4561-A8E5-5CA41A2461A0">
+                                    <p class="p">Device Gateway
+                                        安装时，会默认给当前目录下所有文件加上权限，以保证程序可以正常运行。</p>
+
+                                </li>
+
+                                <li class="li" id="TASK_GZT_K5K_31C__GUID-E08572C5-D496-4CE6-82CE-BE0C05A5E00D">
+                                    <p class="p">Device Gateway
+                                        安装时，会自动开启防火墙的网关默认端口，具体端口如下表所示：</p>
+
+                                    
+<div class="div_table"><table cellpadding="4" cellspacing="0" summary="" style="display:none;" id="tbl_rowfixed" class="table wt_table_rowfixed" frame="border" border="1" rules="all"></table><table cellpadding="4" cellspacing="0" summary="" id="TASK_GZT_K5K_31C__TABLE_CBV_KR4_M1C" class="table" frame="border" border="1" rules="all">
+                                            
+                                            
+                                            <thead class="thead" align="left">
+                                                <tr>
+                                                  <th class="entry" valign="top" width="50%" id="d1501e345">端口</th>
+
+                                                  <th class="entry" valign="top" width="50%" id="d1501e348">端口号</th>
+
+                                                </tr>
+
+                                            </thead>
+
+                                            <tbody class="tbody">
+                                                <tr>
+                                                  <td class="entry" valign="top" width="50%" headers="d1501e345 ">
+                                                  <p class="p">tcp端口</p>
+
+                                                  </td>
+
+                                                  <td class="entry" valign="top" width="50%" headers="d1501e348 ">
+                                                  <p class="p">HTTP端口号（默认80），443,554,7091,7661-7667,15000-17000</p>
+
+                                                  </td>
+
+                                                </tr>
+
+                                                <tr>
+                                                  <td class="entry" valign="top" width="50%" headers="d1501e345 ">
+                                                  <p class="p">udp端口</p>
+
+                                                  </td>
+
+                                                  <td class="entry" valign="top" width="50%" headers="d1501e348 ">
+                                                  <p class="p">7661,7662,15000-17000</p>
+
+                                                  </td>
+
+                                                </tr>
+
+                                            </tbody>
+
+                                        </table>
+</div>
+
+                                    <div class="fig fignone" id="TASK_GZT_K5K_31C__FIG_MGL_XR1_G5B">
+                                        
+                                        <img class="image" style="display:none;" id="TASK_GZT_K5K_31C__IMAGE_NGL_XR1_G5B" src="GUID-BF5F2017-8BF8-496C-9064-F6ACCC2F5A0A-high.png" width="2067" />
+                                    <div class="fig_caption"><span class="figcap">图 8 端口号</span></div></div>
+
+                                </li>
+
+                                <li class="li" id="TASK_GZT_K5K_31C__GUID-E0E8878C-A575-45C5-B46F-DB138EFA5AAE">
+                                    <p class="p">执行status.sh脚本可以查看Device Gateway 的当前状态。</p>
+
+                                </li>
+
+                                <li class="li" id="TASK_GZT_K5K_31C__GUID-9E3BBE66-658A-4EC8-85A2-8039A104E477">
+                                    <p class="p">执行start.sh脚本可以将处于停止状态的Device Gateway
+                                        启动，执行stop.sh脚本可以将处于运行状态的 Device Gateway 停止。</p>
+
+                                    <div class="fig fignone" id="TASK_GZT_K5K_31C__FIG_HH2_ZR1_G5B">
+                                        
+                                        <img class="image" style="display:none;" id="TASK_GZT_K5K_31C__IMAGE_IH2_ZR1_G5B" src="GUID-5040236B-71FA-4378-A81B-C496502D3CA6-high.png" width="2067" />
+                                    <div class="fig_caption"><span class="figcap">图 9 当前状态</span></div></div>
+
+                                </li>
+
+                                <li class="li" id="TASK_GZT_K5K_31C__GUID-3DDA662C-4AC1-4E36-AFE4-E37279EAC2CF">
+                                    <p class="p">执行uninstall.sh脚本可以卸载 Device
+                                        Gateway。卸载后，安装目录的文件会全部保留，用户可以手动删除。</p>
+
+                                    <div class="fig fignone" id="TASK_GZT_K5K_31C__FIG_B1T_1S1_G5B">
+                                        
+                                        <img class="image" style="display:none;" id="TASK_GZT_K5K_31C__IMAGE_C1T_1S1_G5B" src="GUID-FC9B1A77-B1D0-4135-90B8-DEE948CCC9F6-high.png" width="2067" />
+                                    <div class="fig_caption"><span class="figcap">图 10 卸载</span></div></div>
+
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+                    </div>
+                </li>
+</ol>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="topic task nested1" xml:lang="zh-CN" lang="zh-CN" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542">
+    <h2 class="title topictitle2">步骤二：激活Device Gateway</h2>
+
+    
+    <div class="body taskbody"><p class="shortdesc">安装完成后，Device Gateway
+        会自动生成一个管理员用户（admin）。为了数据安全，首次通过Web浏览器访问时，要求为admin用户创建密码，用来激活软件。激活后，才能进入Web界面进行配置和操作。</p>
+
+        <ol class="ol steps" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542__STEPS_AJ3_L54_M1C"><li class="li step stepexpand" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542__GUID-84245B1C-ECD4-4D4D-8517-5315567055F4">
+                <span class="ph cmd">进入激活界面。</span>
+                
+<table border="1" frame="hsides" rules="rows" cellpadding="4" cellspacing="0" summary="" class="simpletable choicetable choicetableborder" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542__CHOICETABLE_BJ3_L54_M1C">
+<thead><tr><th id="d1501e459-option" valign="bottom" align="left">Option</th>
+<th id="d1501e459-desc" valign="bottom" align="left">Description</th></tr></thead>
+<tbody>
+                    <tr class="strow chrow">
+                        <td valign="top" headers="d1501e459-option" id="d1501e463" class="stentry choption" width="50%"><strong>
+                            <p class="p">Windows系统：在本地安装并激活Device Gateway</p>
+
+                        </strong></td>
+
+                        <td valign="top" headers="d1501e459-desc d1501e463" class="stentry chdesc" width="50%">
+                            <p class="p">本地安装后会自动跳转到激活页面。</p>
+
+                        </td>
+
+                    </tr>
+
+                    <tr class="strow chrow">
+                        <td valign="top" headers="d1501e459-option" id="d1501e478" class="stentry choption" width="50%"><strong>
+                            <ul class="ul" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542__UL_CJ3_L54_M1C">
+                                <li class="li" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542__GUID-DB76356B-9FE2-473F-A635-18D5EF1BCBBA">
+                                    <p class="p">Windows系统：在本地安装后在其他电脑激活Device Gateway</p>
+
+                                </li>
+
+                                <li class="li" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542__GUID-F3DD3CD3-EAFB-4DFD-A758-E49770546571">Linux系统</li>
+
+                            </ul>
+
+                        </strong></td>
+
+                        <td valign="top" headers="d1501e459-desc d1501e478" class="stentry chdesc" width="50%">
+                            <p class="p">在浏览器地址栏中输入运行 Device Gateway
+                                    的PC或服务器的IP地址和端口号，然后按<span class="ph uicontrol">Enter</span>键。</p>
+
+                            <div class="note note" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542__GUID-5048C0B3-51C9-4A63-A845-11D0F9D3D28B"><span class="notetitle">说明</span> 
+                                <p class="p">默认端口号为80。若要修改端口详情，参见<a class="xref" href="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A.html#GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-CDC4A12D-FE5F-47E9-96AA-42622D1341AD">修改端口</a>。</p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody></table>
+
+            </li>
+<li class="li step stepexpand" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542__GUID-03521592-1651-4E75-A5D3-D182529B14C6">
+                <span class="ph cmd">为admin用户设置一个密码，并确认密码。</span>
+            </li>
+<li class="li step stepexpand" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542__GUID-9F502808-DA28-416E-A6BA-E94EB07411C3">
+                <span class="ph cmd">单击<span class="ph uicontrol">激活</span>。</span>
+                <div class="itemgroup info">
+                    <div class="fig fignone" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542__FIG_QYD_454_M1C">
+                        
+                        <img class="image" style="display:none;" id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542__IMAGE_NXB_PHV_M1C" src="GUID-33FD5FCB-C5C8-403C-9089-9F397DFA6967-high.png" width="2067" />
+                    <div class="fig_caption"><span class="figcap">图 11 激活界面</span></div></div>
+
+                </div>
+            </li>
+</ol>
+
+    </div>
+
+</div>
+</div>
+</div>
+						<div class=" wt_topic_wpp_content wt_pc_only "><div class=" wt_topic_wpp_content_flex "><div class="wt_topic_wpp_item like"></div><div class="wt_topic_wpp_item view"></div><div class="wt_topic_wpp_item share">分享</div></div></div>
+						
+						
+						
+					</div>
+				</div><!-- container_body -->
+				
+				<div class=" body_footer "><div onclick="prevTopic()" class=" body_footer_left link_button "><span>上一页</span></div><div onclick="nextTopic()" class=" body_footer_right link_button "><span>下一页</span></div></div>
+				<div class=" body_wpp mobile_only"><div class="wt_body_mobile_like"></div><div class="wt_body_mobile_view"></div></div>
+				<!-- <whc:webhelp_side_toc /> -->
+				
+			</div> <!-- middle_view content_area -->
+			<div class=" right_content wt_pc_only "><div class=" right_fixed_container "><div class="right_guide"><div class="feature_guide"><div>本页导航</div><ul><li onclick="scrollToAnchor($(this))" data-id="GUID-23CBBE01-6320-4F33-9650-CD0FB4CD3284" class="feature_guide_h2"><span class="link_button">端口详情</span></li><li onclick="scrollToAnchor($(this))" data-id="GUID-0291D2A2-A9E8-444F-A7DC-7E235D4B1464" class="feature_guide_h2"><span class="link_button">步骤一：安装Device Gateway</span></li><li onclick="scrollToAnchor($(this))" data-id="TASK_DXR_G5K_31C" class="feature_guide_h3"><span class="link_button">在Windows系统上安装Device Gateway</span></li><li onclick="scrollToAnchor($(this))" data-id="TASK_GZT_K5K_31C" class="feature_guide_h3"><span class="link_button">在Linux系统上安装Device Gateway</span></li><li onclick="scrollToAnchor($(this))" data-id="GUID-60B40DF3-0335-41B7-ADF8-B2FC3F27A542" class="feature_guide_h2"><span class="link_button">步骤二：激活Device Gateway</span></li></ul></div></div></div></div>
+		</div> <!-- content_box -->
+		
+		<!-- 置顶按钮 -->
+		<div class="body_to_top" onclick="scrollTopicTop()"></div> 
+		<!-- 评价反馈 -->
+		<div onclick="manualFeedback()" class=" body_feedback " data-href="https://wj.hikvision.com/#/public-survey?id=64c8b90d80e02e9e88feca2f"></div>
+		
+	</body>
+</html>

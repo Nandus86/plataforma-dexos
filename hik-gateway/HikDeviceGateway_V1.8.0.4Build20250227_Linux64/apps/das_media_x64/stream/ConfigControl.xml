@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Config>
+  <!-- 是否从pag目录下读取相关配置信息；如果读取pag配置，将会通过pag进行token验证中转 -->
+	<LoadFromConfig enable="0">
+		<Path>..\pag3\dag</Path>
+	</LoadFromConfig>
+	
+	<!-- 是否需要向cms注册 -->
+	<NeedRegisterToCms>0</NeedRegisterToCms>
+	
+	<!-- 是否支持流媒体、vod的rtsp V4.0协议的判断 -->
+  <SupportVtduVodV40RtspJudge>1</SupportVtduVodV40RtspJudge>
+
+   <!-- 是否支持Idenfitfy TOKEN 认证, 是否支持SEP 认证方式 统一控制-->
+   <SupportIdentifyToken>0</SupportIdentifyToken>
+   
+   <!-- 是否从Agent获取资源信息-->
+	 <NeedQueryAgent>0</NeedQueryAgent>
+	 
+	 <!-- 与ldm交互数据，是否需要加密-->
+	 <NeedLdmDataEncry>1</NeedLdmDataEncry>
+</Config>

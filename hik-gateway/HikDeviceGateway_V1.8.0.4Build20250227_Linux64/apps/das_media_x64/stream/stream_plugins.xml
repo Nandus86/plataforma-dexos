@@ -1,0 +1,3 @@
+<Plugins>
+  <Plugin id="private_stream">../plugins/private_stream_plugin/libprivate_stream_plugin.so</Plugin>
+</Plugins>

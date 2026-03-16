@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+<!--
+该配置文件用于配置网关里第三方设备取流URL格式，该设备是否需要转封装。
+配置说明：
+新增一种设备，增加一个Item。
+DeviceCode：设备代码，例如：亚安 38001，烽火 80001等。
+DeviceName: 设备名称，各个设备的英文缩写，要填写正确，长度小于9的英文字母
+TransForm：是否进行转封装。0，不转；1转。
+
+IsReConstructHead:是否重新组装头：为"1"使用组装头，use="0"不组装头。这样转换是为调用转封装库，因为转封装库只支持海康设备，不支持HVAG头的第三方设备。
+
+PreSystemFormatVal: 视频源转封装格式 
+SystemFormatVal: 视频目的转封装格式，定义如下：
+                              0x0// 没有系统层，纯音频流或视频流 ； 
+														  0x1 // 海康文件层 ；
+														  0x2 // PS封装；
+														  0x3 // TS封装； 
+														  0x4 // rtp封装 ；
+														  0x8 // 国标PS，主要用于国标场合 ；
+														  0x401 // rtp封装
+VideoFormatVal：转封装时候组装码流头信息：视频编码格式。(转封装时不转码，所以这个值不校验，自己保证填写正确)
+                           0x0 // 没有视频；
+													 0x1 // 标准H.264和海康H.264都可以用这个定义；
+													 0x3 // 标准MPEG4；
+													 0x4 //MJPEG ;
+													 0x0100 //标准H.264														  
+-->
+	<SpecialTransFormConfig>
+		<PsRtpFormat enable="1">
+			<Format DeviceCode="98181" DeviceName="db33"  TransForm="0" IsReConstructHead="1" PreSystemFormatVal="2" SystemFormatVal="8" VideoFormatVal="256"/>
+			<Format DeviceCode="20001" DeviceName="dahua" TransForm="0" IsReConstructHead="1" PreSystemFormatVal="0" SystemFormatVal="8" VideoFormatVal="256"/>
+		</PsRtpFormat>
+	</SpecialTransFormConfig>
+	
+<!--
+  MaxTransCodeNum为最大转码路数，默认为16；GpuDecodeMode, 0-组件自行决定，1-使用GPU解码，2-使用CPU解码
+	选择哪个转码库作为被使用的转码库；如果IsUse都为1，将会选择第一个作为被使用者；
+-->
+	<TransCodeConfig MaxTransCodeNum="24" GpuDecodeMode="0">
+		<TransCodeLib Name="vca" Path="./transcode/VcaTransCode/FormatConversion.dll" IsUse="1"/>
+	  <TransCodeLib Name="web" Path="./transcode/transcode/TransformClient.dll" IsUse="0"/> 
+	</TransCodeConfig>
+	
+<!--
+  ConsultTransCodeConfig为协商转码，既在取流url里面设置又在xml里面配置，两个条件都满足才会转码
+  DeviceIdenty为设备标识，如大华设备标识为dahua
+  Manufacturer为厂家编号，要与DecodeLayer_Plugin.ini里面标号一致。1-hikvision,2-dahua，可扩展。
+  Video：视频编码类型，0-私有264，1-标准h264，2-标准mpeg4，7-M-JPEG，-1保持原有
+	Audio：音频编码类型，0-OggVorbis，1-G711_U，2-G711_A
+	Form：码流封装类型，1-RTP封装，2-PS封装
+	Reso：分辨率：0-DCIF，1-CIF，2-QCIF，3-4CIF，4-2CIF，19-HD720p，21-HD900p，27-1920*1080
+	Quality：图象质量 0-最好 1-次好 2-较好 3-一般 4-较差 5-差
+	Bitrate：码率 1-16K，2-32K，3-48k，4-64K，5-80K，6-96K，7-128K，8-160k，9-192K，10-224K，11-256K，12-320K，13-384K，14-448K，15-512K，16-640K，17-768K，18-896K，19-1024K，20-1280K，21-1536K，22-1792K，23-2048K，24-3072K，25-4096K，26-8192K，27-16384K
+	Rate: 帧率 1-1/16，2-1/8，3-1/4，4-1/2，5-1，6-2，7-4，8-6，9-8，10-10，11-12，12-16，13-20，14-15，15-18，16－22
+-->
+	<ConsultTransCodeConfig>
+		<TransCode DeviceIdenty="dahua" Manufacturer="2" Video="1" Audio="0" Form="2" Reso="1" Quality="2" Bitrate="11" Rate="14" />
+	</ConsultTransCodeConfig>
+
+<!--
+  SpeedControlByPlayBackConfig为哪些设备回放要进行流控控制的配置
+	DeviceCode：设备代码，例如：亚安 38001，烽火 80001等。
+  DeviceName: 设备名称描述，这个不是关键字，只是用来描述说明 
+-->
+	<SpeedControlByPlayBackConfig>
+		<SpeedControl DeviceCode="20001" DeviceName="dahua"/>
+	</SpeedControlByPlayBackConfig>
+
+<!--
+  SpeedControlByUdpConfig是否在udp下进行流控（比如I帧附近时间码率过大，导致udp下分包）
+	Threshold：表示多少包sleep一次，比如MaxNum="6" MinNum="3"，表示最多每6个包sleep一次，最少每3个包sleep一次
+-->
+	<SpeedControlByUdpConfig enable="0">
+		<Threshold MaxNum="6" MinNum="3"/>
+	</SpeedControlByUdpConfig>
+</Config>

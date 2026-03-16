@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hplug>
+  <plugin fkey="ISUPDev" file="../../libIsupDev.so" delayload="false" />
+</hplug>

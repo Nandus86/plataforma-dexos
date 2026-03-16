@@ -1,0 +1,310 @@
+
+<!DOCTYPE html
+  PUBLIC "" "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:whc="http://www.daksys.com/webhelp/components" xml:lang="zh-cn" lang="zh-cn">
+	<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+      <meta name="copyright" content="©  杭州海康威视数字技术股份有限公司。保留一切权利。" /><meta name="DC.Type" content="concept" /><meta name="DC.Title" content="基础配置" /><meta name="abstract" content="可在基础配置模块配置报警转发等系统设置、导出系统日志、配置端口、HTTPS和配置存储路径等。本文重点介绍如何启用报警转发、启用私有数据转发、导出设备日志、配置是否记录设备操作日志、修改端口、配置HTTPS和心跳超时。" /><meta name="description" content="可在基础配置模块配置报警转发等系统设置、导出系统日志、配置端口、HTTPS和配置存储路径等。本文重点介绍如何启用报警转发、启用私有数据转发、导出设备日志、配置是否记录设备操作日志、修改端口、配置HTTPS和心跳超时。" /><meta name="DC.Relation" scheme="URI" content="GUID-C49BA8C1-B462-4189-94F7-E3FCA860DF7E.html" /><meta name="DC.Relation" scheme="URI" content="GUID-DCDD1249-95E5-47F1-8740-69F36D116558.html" /><meta name="DC.Format" content="XHTML" /><meta name="DC.Identifier" content="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A" /><meta name="DC.Language" content="zh-CN" /><title>基础配置</title><!-- Generated with dksgen version 1.0, build number 2023071300.  --><meta viewport="Content-Type" content="width=device-width, initial-scale=1.0" /><meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" /><meta name="wh-path2root" content="index.html" />
+		<!-- commonltr css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/css/commonltr.css" />
+		<!-- Bootstrap css -->
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/resources/js/jquery-ui.min.css" />
+		
+		<!-- Template css  -->
+		<link href="daksys-webhelp/template/resources/css/HIKVISION_color.css?buildId=2023071300" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_topic_m.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_expand.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_note.css?buildId=2023071300" />
+		<link rel="stylesheet" type="text/css" href="daksys-webhelp/template/resources/css/wt_steps.css?buildId=2023071300" />
+		
+		<!-- jquery js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-3.6.2.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery.highlight-3.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/jquery-ui.min.js"></script>
+		
+		<!-- common js  -->
+		<script type="text/javascript" src="daksys-webhelp/resources/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/base64.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/browserDetect.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/localization.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/js/parseuri.js"></script>
+		<script type="text/javascript" src="daksys-webhelp/resources/localization/strings.js"></script>
+		<!-- Template js -->
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_topic.js?buildId=2023071300"></script>
+		<script type="text/javascript" src="daksys-webhelp/template/resources/js/wt_expand.js?buildId=2023071300"></script>
+	</head>
+	<body class="wt_topic_page frmBody" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A" onload="topicOnload()">
+		<!-- get_lang -->
+		<div id="lang" style="display:none">zh-CN</div><div id="mapoutputclass" style="display:none"></div>
+		<input hidden="hidden" id="UDCode" value="UD13378B" /><input hidden="hidden" id="UDTrademark" value="" /><input hidden="hidden" id="Trademark" value="海康威视" />
+		
+		<div class="content_box">
+			<div class="middle_view content_area col-sm-9" id="content_area">
+				<div class=" wt_breadcrumb "><ol><li><span class="home topicref"><a href="javascript:void(0)" onclick="gotoFirstPage()">首页</a></span></li><li><span class="topicref"><a href="GUID-C49BA8C1-B462-4189-94F7-E3FCA860DF7E.html" data-id="GUID-C49BA8C1-B462-4189-94F7-E3FCA860DF7E">其他配置</a></span></li><li class="active"><span class="topicref">基础配置</span></li></ol><div class="wt_breadcrumb_ellipsis" onclick="expandBreadcrumbDiv()"></div><div class="wt_breadcrumb_collapse" style="display: none;"><div class="wt_breadcrumb_collapse_button" onclick="collapseBreadcrumbDiv()"></div></div></div>
+				
+				<div id="container_body" class="container">
+					<div id="contentArea">
+						<div class=" wt_topic_content body ">
+    <h1 class="title topictitle1">基础配置</h1>
+
+    
+    <div class="body conbody"><p class="shortdesc">可在基础配置模块配置报警转发等系统设置、导出系统日志、配置端口、HTTPS和配置存储路径等。本文重点介绍如何启用报警转发、启用私有数据转发、导出设备日志、配置是否记录设备操作日志、修改端口、配置HTTPS和心跳超时。</p>
+
+        <div class="section" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-5337D945-3955-4547-8876-32E1FB89B647"><h2 class="title sectiontitle">报警转发</h2>
+            
+            <p class="p">如需通过 Device Gateway
+                转发设备端的报警事件，需要启用报警转发功能。三方平台可布防订阅接口接收设备报警。默认不启用报警转发功能。</p>
+
+            <p class="p">单击<span class="ph menucascade"><span class="ph uicontrol">网关配置</span> &gt; <span class="ph uicontrol">系统设置</span> &gt; <span class="ph uicontrol">报警转发</span> &gt; <span class="ph uicontrol">启用</span></span>。</p>
+
+            <div class="fig fignone" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__FIG_HLG_X5F_VDC">
+                
+                <img class="image" style="display:none;" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__IMAGE_ILG_X5F_VDC" src="GUID-3EC8F2EA-7470-4458-88F5-853507319D81-high.png" width="2067" />
+            <div class="fig_caption"><span class="figcap">图 1 启用报警转发</span></div></div>
+
+        </div>
+
+        <div class="section" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-F89657AB-AFFB-4BCC-83AB-071A083E0CB1"><h2 class="title sectiontitle">私有数据转发</h2>
+            
+            <p class="p">如需通过 Device Gateway
+                实时转发回放/预览码流中包含的私有数据（VCA目标框、规则框等），需启用私有数据转发功能。默认不启用该功能。</p>
+
+            <p class="p">单击<span class="ph menucascade"><span class="ph uicontrol">网关配置</span> &gt; <span class="ph uicontrol">系统设置</span> &gt; <span class="ph uicontrol">私有数据转发</span> &gt; <span class="ph uicontrol">启用</span></span>。</p>
+
+            <div class="fig fignone" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__FIG_SVR_JXF_VDC">
+                
+                <img class="image" style="display:none;" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__IMAGE_TVR_JXF_VDC" src="GUID-4625EEC9-11C2-468F-87C6-4DD92D4B08DD-high.png" width="2067" />
+            <div class="fig_caption"><span class="figcap">图 2 私有数据转发</span></div></div>
+
+        </div>
+
+        <div class="section" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-BFDA0667-2E38-4394-9812-29B2908CA943"><h2 class="title sectiontitle">导出日志</h2>
+            
+            <ol class="ol" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__OL_IXF_X1K_31C">
+                <li class="li" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-E2B52657-EA48-425E-B6A5-09710390E915">
+                    <p class="p">单击<span class="ph menucascade"><span class="ph uicontrol">网关配置</span> &gt; <span class="ph uicontrol">系统维护</span> &gt; <span class="ph uicontrol">日志</span></span>。</p>
+
+                </li>
+
+                <li class="li" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-F3CE4356-D1AE-47C6-8D26-321076362487">
+                    <p class="p">勾选<span class="ph uicontrol">打开日志</span>，并选择日志等级。</p>
+
+                    <div class="note note" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-8FE3A520-A6D2-4D1A-A949-465C0ED4A089"><span class="notetitle">说明</span> 
+                        <p class="p">只记录等级等于或高于所选择等级的日志。</p>
+
+                    </div>
+
+                </li>
+
+                <li class="li" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-AC1AA2D5-701C-486E-B476-348A32CC01BF">
+                    <p class="p">单击<span class="ph uicontrol">导出</span>，导出日志文件到本地。</p>
+
+                </li>
+
+                <li class="li" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-6F451C2F-3A4A-4B52-9906-1978DE2773B1">
+                    <p class="p">（可选）单击<span class="ph uicontrol">保存</span>，保存日志等级等配置。</p>
+
+                </li>
+
+            </ol>
+
+            <div class="fig fignone" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__FIG_RTX_1VF_VDC">
+                
+                <img class="image" style="display:none;" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__IMAGE_STX_1VF_VDC" src="GUID-1F97DFBB-370C-44BD-B09A-349EFF286F54-high.png" width="2067" />
+            <div class="fig_caption"><span class="figcap">图 3 导出日志</span></div></div>
+
+        </div>
+
+        <div class="section" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-D0742E5F-8E98-4ED8-BB93-B992430AE145"><h2 class="title sectiontitle">设备操作日志</h2>
+            
+            <p class="p">为减少不必要的设备操作日志记录导致的日志文件膨胀，Device
+                Gateway支持设置是否记录设备透传操作的安全日志。如启用记录日志功能，系统将存储用户对已存在的设备的操作记录（已删除的设备将不再记录），并每隔180天自动清理日志。默认不启用记录日志功能。</p>
+
+            <p class="p">单击<span class="ph menucascade"><span class="ph uicontrol">网关配置</span> &gt; <span class="ph uicontrol">系统维护</span> &gt; <span class="ph uicontrol">设备操作日志</span> &gt; <span class="ph uicontrol">记录日志</span></span>。</p>
+
+            <div class="fig fignone" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__FIG_I3G_HXF_VDC">
+                
+                <img class="image" style="display:none;" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__IMAGE_J3G_HXF_VDC" src="GUID-D80D5AFC-BCB1-447E-B822-A6CF7A8B62E8-high.png" width="2067" />
+            <div class="fig_caption"><span class="figcap">图 4 设备操作日志</span></div></div>
+
+        </div>
+
+        <div class="section" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-CDC4A12D-FE5F-47E9-96AA-42622D1341AD"><h2 class="title sectiontitle">修改端口</h2>
+            
+            <p class="p">当默认的端口号被占用时，可以修改端口号。</p>
+
+            <p class="p">单击<span class="ph menucascade"><span class="ph uicontrol">网关配置</span> &gt; <span class="ph uicontrol">网络</span> &gt; <span class="ph uicontrol">端口</span></span>，编辑设备连接端口号和网关访问端口号后，保存配置。</p>
+
+            <div class="fig fignone" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__FIG_AS3_TCK_31C">
+                
+                <img class="image" style="display:none;" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__IMAGE_JVW_HX4_M1C" src="GUID-FD6687ED-730A-4EA2-9B56-E465386B2F04-high.png" width="2067" />
+            <div class="fig_caption"><span class="figcap">图 5 修改端口</span></div></div>
+
+        </div>
+
+        <div class="section" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-592612A6-BFC3-4048-980E-114012A22D76"><h2 class="title sectiontitle">配置HTTPS</h2>
+            
+            <p class="p">HTTPS 协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议，可提高Web
+                访问安全性。若设置端口号为443，IP地址为192.168.1.64，则需要再Web浏览器地址栏输入https://192.168.1.64:443进行访问。共有三种HTTPS证书的安装方式。</p>
+
+            <ol class="ol" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__OL_HPG_RLK_31C">
+                <li class="li" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-CB9DF949-017F-4CAB-A142-2B062A81CE46">
+                    <p class="p">单击<span class="ph menucascade"><span class="ph uicontrol">网关配置</span> &gt; <span class="ph uicontrol">网络</span> &gt; <span class="ph uicontrol">HTTPS</span></span>。</p>
+
+                </li>
+
+                <li class="li" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-C8B9219D-4F2B-47AF-BEEB-E33808A4DE35">
+                    <p class="p">选择一种证书安装方式并创建证书。</p>
+
+                    
+<div class="div_table"><table cellpadding="4" cellspacing="0" summary="" style="display:none;" id="tbl_rowfixed" class="table wt_table_rowfixed" frame="border" border="1" rules="all"></table><table cellpadding="4" cellspacing="0" summary="" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__TABLE_KMR_2MK_31C" class="table" frame="border" border="1" rules="all">
+                            
+                            
+                            <thead class="thead" align="left">
+                                <tr>
+                                    <th class="entry" valign="top" width="50%" id="d334e267">
+                                        <p class="p">Method</p>
+
+                                    </th>
+
+                                    <th class="entry" valign="top" width="50%" id="d334e273">
+                                        <p class="p">Description</p>
+
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody class="tbody">
+                                <tr>
+                                    <td class="entry" valign="top" width="50%" headers="d334e267 ">
+                                        <p class="p">创建私有证书</p>
+
+                                    </td>
+
+                                    <td class="entry" valign="top" width="50%" headers="d334e273 ">
+                                        <div class="p">在私有证书创建区域填写国家、域名/IP、有效期等参数后，单击<span class="ph uicontrol">保存</span>。<div class="note note" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-1572225E-B99E-4C63-B318-1C576D975465"><span class="notetitle">说明</span> 
+                                                <p class="p">如果已安装过证书，则创建私有证书选项显示为置灰状态。</p>
+
+                                            </div>
+</div>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td class="entry" valign="top" width="50%" headers="d334e267 ">
+                                        <p class="p">已有已签名证书，直接安装</p>
+
+                                    </td>
+
+                                    <td class="entry" valign="top" width="50%" headers="d334e273 ">
+                                        <p class="p">单击<span class="ph uicontrol">浏览</span>，选择本地已有的签名证书后，单击<span class="ph uicontrol">安装</span>。</p>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td class="entry" valign="top" width="50%" headers="d334e267 ">
+                                        <p class="p">先创建证书请求，再继续安装</p>
+
+                                    </td>
+
+                                    <td class="entry" valign="top" width="50%" headers="d334e273 ">
+                                        <div class="p">
+                                            <ol class="ol" type="a" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__OL_BPB_QW1_THB">
+                                                <li class="li" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-41CD3C9B-33E0-49E1-B8DA-25CCCEBBBD5F">
+                                                  <p class="p">单击<span class="ph uicontrol">创建</span>，弹出授创建权证书创建窗口。输入要求的信息，单击<span class="ph uicontrol">确定</span>完成请求。
+                                                  </p>
+
+                                                </li>
+
+                                                <li class="li" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-3C17C80D-E221-4334-A665-F3D7CD2D01D4">
+                                                  <p class="p">创建证书请求后，单击<span class="ph uicontrol">下载</span>，将证书下载后发给认证机构进行认证。</p>
+
+                                                </li>
+
+                                                <li class="li" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-C8BFF96A-8698-4060-AA57-EC38516DC941">
+                                                  <p class="p">经过第三方验证后，生成经过验证的证书。当收到签署的有效证书后，单击<span class="ph uicontrol">浏览</span>选择已下载且保存在本地的证书，然后单击<span class="ph uicontrol">安装</span>。</p>
+
+                                                </li>
+
+                                            </ol>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+</div>
+
+                </li>
+
+                <li class="li" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-65125533-D464-4C84-8873-F97B9F454C53">
+                    <p class="p">创建证书后，单击<span class="ph uicontrol">启用</span>，使安装的证书生效。</p>
+
+                </li>
+
+                <li class="li" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-9E994E6E-CA7C-41AE-A4CF-A34E42BAF5CF">
+                    <p class="p">单击<span class="ph uicontrol">保存</span>，保存当前设置。</p>
+
+                </li>
+
+            </ol>
+
+            <div class="fig fignone" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__FIG_A2M_QMK_31C">
+                
+                <img class="image" style="display:none;" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__IMAGE_B2M_QMK_31C" src="GUID-E4C7C226-C3C4-4AD2-AF70-DFE1B161F70B-high.png" width="2067" />
+            <div class="fig_caption"><span class="figcap">图 6 安装证书</span></div></div>
+
+        </div>
+
+        <div class="section" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-4AA43ED7-3877-49FF-BE57-706C6A0F81D7"><h2 class="title sectiontitle">配置心跳超时</h2>
+            
+            <p class="p">为防止网络不稳定导致设备频繁掉线，Device
+                Gateway支持配置设备心跳超时参数。默认心跳间隔30s，心跳超时阈值3次，即ISUP协议接入的设备每30秒发送一次心跳包，Device
+                Gateway在30秒内未收到心跳包则计为超时1次，超时3次即视为设备离线。</p>
+
+            <div class="fig fignone" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__FIG_YGR_3ZN_YDC">
+                
+                <img class="image" style="display:none;" id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__IMAGE_ZGR_3ZN_YDC" src="GUID-B0E7C100-8BCC-4C0A-9BB4-9DDCD7F74073-high.png" width="2067" />
+            <div class="fig_caption"><span class="figcap">图 7 心跳超时</span></div></div>
+
+        </div>
+
+    </div>
+
+
+</div>
+						<div class=" wt_topic_wpp_content wt_pc_only "><div class=" wt_topic_wpp_content_flex "><div class="wt_topic_wpp_item like"></div><div class="wt_topic_wpp_item view"></div><div class="wt_topic_wpp_item share">分享</div></div></div>
+						
+						<div class=" wt_related_links "><div class="related-links"><div class="relinfo reltasks"><strong>Related tasks</strong><br /><div class="related_link"><a class="navheader_parent_path" href="GUID-DCDD1249-95E5-47F1-8740-69F36D116558.html" title="Device Gateway 和第三方平台之间通过ISAPI协议进行通信。为了确保正常通信，需要配置的协议参数与第三方平台配置保持一致。">ISAPI协议管理</a></div></div></div></div>
+						
+					</div>
+				</div><!-- container_body -->
+				
+				<div class=" body_footer "><div onclick="prevTopic()" class=" body_footer_left link_button "><span>上一页</span></div><div onclick="nextTopic()" class=" body_footer_right link_button "><span>下一页</span></div></div>
+				<div class=" body_wpp mobile_only"><div class="wt_body_mobile_like"></div><div class="wt_body_mobile_view"></div></div>
+				<!-- <whc:webhelp_side_toc /> -->
+				
+			</div> <!-- middle_view content_area -->
+			<div class=" right_content wt_pc_only "><div class=" right_fixed_container "><div class="right_guide"><div class="feature_guide"><div>本页导航</div><ul><li onclick="scrollToAnchor($(this))" data-id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-5337D945-3955-4547-8876-32E1FB89B647" class="feature_guide_h2"><span class="link_button">报警转发</span></li><li onclick="scrollToAnchor($(this))" data-id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-F89657AB-AFFB-4BCC-83AB-071A083E0CB1" class="feature_guide_h2"><span class="link_button">私有数据转发</span></li><li onclick="scrollToAnchor($(this))" data-id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-BFDA0667-2E38-4394-9812-29B2908CA943" class="feature_guide_h2"><span class="link_button">导出日志</span></li><li onclick="scrollToAnchor($(this))" data-id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-D0742E5F-8E98-4ED8-BB93-B992430AE145" class="feature_guide_h2"><span class="link_button">设备操作日志</span></li><li onclick="scrollToAnchor($(this))" data-id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-CDC4A12D-FE5F-47E9-96AA-42622D1341AD" class="feature_guide_h2"><span class="link_button">修改端口</span></li><li onclick="scrollToAnchor($(this))" data-id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-592612A6-BFC3-4048-980E-114012A22D76" class="feature_guide_h2"><span class="link_button">配置HTTPS</span></li><li onclick="scrollToAnchor($(this))" data-id="GUID-118C7F48-7481-4C7F-9626-1BD6FD00FF5A__GUID-4AA43ED7-3877-49FF-BE57-706C6A0F81D7" class="feature_guide_h2"><span class="link_button">配置心跳超时</span></li></ul></div></div></div></div>
+		</div> <!-- content_box -->
+		
+		<!-- 置顶按钮 -->
+		<div class="body_to_top" onclick="scrollTopicTop()"></div> 
+		<!-- 评价反馈 -->
+		<div onclick="manualFeedback()" class=" body_feedback " data-href="https://wj.hikvision.com/#/public-survey?id=64c8b90d80e02e9e88feca2f"></div>
+		
+	</body>
+</html>

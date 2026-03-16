@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<packageinfo docVersion="0.5.0" 
+xmlns="http://www.hikvision.com/compomentModel/0.5.0/packageinfo" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.hikvision.com/compomentModel/0.5.0/packageinfo ../../schema/0.5.0/packageinfo.xsd">
+  <!--
+  资源包
+  type:    类型
+           dacDriverPack: 设备接入框架驱动包
+  id:      资源包标识
+           dacDriverPack时, 资源包标识="dac_<驱动标识>"
+  version: 资源包版本
+           dacDriverPack时, 资源包版本="<驱动版本>"
+  -->
+  <package type="dacDriverPack" id="dac_drv_type_hiksdk_general" version="1.2.0" />
+  <!--
+  资源属性, 用id, value形式便于数据库存储
+
+  dacDriverPack, resourcePack专属属性:
+      environments: 支持的环境列表, 逗号分隔, 用来指定驱动支持的操作系统
+
+  其他资源包属性:
+      displayName.zh_CN, displayName.en_US:  中文名称, 英文名称, 管理中心目前先只考虑中英文版, 直接写到描述文件里面
+
+      component.id:                          组件标识
+      component.compatibility.minor.version: 兼容的组件最低版本
+      component.compatibility.major.version: 兼容的组件最高版本
+      component.compatibility.minor.action:  不匹配的处理, warn:提示, reject:失败
+      component.compatibility.major.action:                major+warn 表示最佳匹配版本, 语言包能够较好适配低版本组件, 也能用于高版本组件, 但可能出现部分翻译缺失
+                                                           minor+reject 表示最低版本要求, 驱动包对接入组件有最低版本要求
+                                                           文档包要根据实际情况来选择匹配版本
+
+      unpack.dir:                            解压缩路径, 相对组件目录, 为空的话, 将资源包直接放到./resource目录, 组件、构架的资源有效
+
+  脚本不描述, 根据目录和文件名约定, 存在就执行, 资源打包工具需要校验提示一下
+      安装脚本:./script/install.[bat|sh]
+      卸载脚本:./script/uninstall.[bat|sh]
+  -->
+  <params>
+    <param id="displayName.zh_CN" value="海康私有协议设备类型获取驱动" />
+    <param id="displayName.en_US" value="Hikvision Private Protocol Device Type Driver" />
+    <param id="component.id" value="dac" />
+    <param id="component.compatibility.minor.version" value="1.0.0" />
+    <param id="component.compatibility.minor.action" value="reject" />
+    <param id="environments" value="serveros.winsvr2012r2x64,serveros.winsvr2016x64" />
+    <param id="unpack.dir" value="./resource/drivers/drv_type_hiksdk_general_1.2.0" />
+    <param id="log.path" value="./resource/drivers/drv_type_hiksdk_general_1.2.0/logs" />
+  </params>
+</packageinfo>

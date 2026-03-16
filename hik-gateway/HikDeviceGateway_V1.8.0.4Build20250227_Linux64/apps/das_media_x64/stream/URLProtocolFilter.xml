@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<URLProtocolFilterConfig>
+
+<SourceAddrRewrite enable="1">
+<Rewrite from_ip="127.0.0.1" from_port="7302", to_ip="127.0.0.1", to_port="7302" />
+<!--Rewrite from_ip="*" from_port="*", to_ip="127.0.0.1", to_port="7302" /-->
+</SourceAddrRewrite>
+
+<MediaFormat enable="1">
+  <Format UserAgent="Hikplayer" PluginId="pag_28181" Input_UnpackRtp="1" Output_PackRtp="0" PacketSize="8192" Payload=""/>
+  <Format UserAgent="ds900xmd" PluginId="pag_28181" Input_UnpackRtp="1" Output_PackRtp="0" PacketSize="8192" Payload=""/>
+  <Format UserAgent="ds600xmd" PluginId="pag_28181" Input_UnpackRtp="1" Output_PackRtp="0" PacketSize="8192" Payload=""/>
+  <Format UserAgent="*" PluginId="*" Input_UnpackRtp="0" Output_PackRtp="0" PacketSize="8192" Payload=""/>
+</MediaFormat>
+
+</URLProtocolFilterConfig>

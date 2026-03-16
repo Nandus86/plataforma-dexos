@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<packageinfo docVersion="0.5.0" xmlns="http://www.hikvision.com/compomentModel/0.5.0/packageinfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.hikvision.com/compomentModel/0.5.0/packageinfo ../../schema/0.5.0/packageinfo.xsd">
+<package type="dacDriverPack" id="dac_drv_vss_ehome_general" version="1.2.0"/>
+<params>
+<param id="displayName.zh_CN" value="eHome协议视频驱动"/>
+<param id="displayName.en_US" value="eHome Protocol Video Driver"/>
+<param id="component.id" value="dac"/>
+<param id="component.compatibility.minor.version" value="1.0.0"/>
+<param id="component.compatibility.minor.action" value="reject"/>
+<param id="environments" value="serveros.winsvr2012r2x64,serveros.winsvr2016x64"/>
+<param id="unpack.dir" value="./resource/drivers/drv_vss_ehome_general_1.2.0"/>
+<param id="log.path" value="./resource/drivers/drv_vss_ehome_general_1.2.0/logs"/>
+</params>
+</packageinfo>

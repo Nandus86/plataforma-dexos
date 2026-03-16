@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin>
+  <dump max_count="5" path="./" full_dump="true"/>
+  <dso file="libDagServer.so" />
+  <function init="IVMS_DAG_Init" uninit="IVMS_DAG_Uninit" start="IVMS_DAG_Start" stop="IVMS_DAG_Stop" msgcb="IVMS_DAG_SetNotifyCallBack" error="IVMS_DAG_GetLastError" version="IVMS_DAG_GetVersion" />
+</plugin>

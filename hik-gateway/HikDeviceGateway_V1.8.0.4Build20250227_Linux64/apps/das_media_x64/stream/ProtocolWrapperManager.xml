@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProtocolWrappers>
+  <ProtocolWrapper id="myrtsp" path="./libRTSPProtocolWrapper.so" />
+  <ProtocolWrapper id="basedevice" path="./libBaseDeviceProtocolWrapper.so" />
+  <ProtocolWrapper id="http" path="./libHttpProtocolWrapper.so" />
+  <ProtocolWrapper id="websocket" path="./libWebSocketProtocolWrapper.so" />
+</ProtocolWrappers>

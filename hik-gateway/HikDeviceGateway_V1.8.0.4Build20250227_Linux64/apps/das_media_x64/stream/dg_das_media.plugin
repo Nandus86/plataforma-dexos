@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin>
+  <dump max_count="5" path="./" full_dump="true"/>
+  <dso file="libMediaServer.so" />
+  <function init="MediaServer_DriveInit" uninit="MediaServer_Fini" start="MediaServer_Start" stop="MediaServer_Stop" msgcb="MediaServer_MsgCallback" error="MediaServer_GetLastError" version="MediaServer_GetVersion" />
+</plugin>

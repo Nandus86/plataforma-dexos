@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hplug>
+  <plugin fkey="IsapiDev" file="../../libIsapiDev_acs.so" delayload="false" />
+</hplug>

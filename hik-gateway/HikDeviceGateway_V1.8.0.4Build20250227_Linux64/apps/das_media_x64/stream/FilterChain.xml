@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Filters>
+  <Filter id="distribution" path="./libDistributionFilter.so" />
+  <Filter id="transmission" path="./libTransmissionFilter.so" />
+  <Filter id="transform" path="./libTransformFilter.so" />
+  <Filter id="transaudio" path="./libTransAudioFilter.so" />
+  <Filter id="flowcontrol" path="./libFlowControlFilter.so" />
+  <Filter id="frame_analyze" path="./libFrameAnalyzeFilter.so" />
+</Filters>

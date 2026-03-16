@@ -1,0 +1,4 @@
+<Plugins>
+  <Plugin id="ehome">../plugins/ehome_plugin/libehome_stream_plugin.so</Plugin>
+   <Plugin id="ehomeV5">../plugins/ehomeV5_plugin/libehomeV5_stream_plugin.so</Plugin>
+</Plugins>

@@ -1,0 +1,87 @@
+{
+    "CategoryList": [
+        {
+            "CategoryID": 1, 
+            "CategoryName": "General_Category", 
+            "GroupList": [
+                {
+                    "CategoryID": 1, 
+                    "groupID": 101, 
+                    "groupName": "Device_Management"
+                }, 
+                {
+                    "CategoryID": 1, 
+                    "groupID": 102, 
+                    "groupName": "Device_Operation"
+                }, 
+				{
+                    "CategoryID": 1, 
+                    "groupID": 105, 
+                    "groupName": "Video_and_Audio"
+                },
+                {
+                    "CategoryID": 1, 
+                    "groupID": 104, 
+                    "groupName": "Transmit_Device_ISAPI"
+                },
+                {
+                    "CategoryID": 1, 
+                    "groupID": 103, 
+                    "groupName": "Gateway_Maintenance"
+                }
+            ]
+        }, 
+        {
+            "CategoryID": 2, 
+            "CategoryName": "Video_Category", 
+            "GroupList": [
+                {
+                    "CategoryID": 2, 
+                    "groupID": 201, 
+                    "groupName": "Video_and_Audio"
+                }, 
+                {
+                    "CategoryID": 2, 
+                    "groupID": 202, 
+                    "groupName": "Device_Operation"
+                }
+            ]
+        }, 
+        {
+            "CategoryID": 3, 
+            "CategoryName": "AC_Category", 
+            "GroupList": [
+			    {
+                    "CategoryID": 3, 
+                    "groupID": 301, 
+                    "groupName": "Listening_Parameters_Configuration"
+                },
+                {
+                    "CategoryID": 3, 
+                    "groupID": 302, 
+                    "groupName": "Permission_Management"
+                }, 
+                {
+                    "CategoryID": 3, 
+                    "groupID": 303, 
+                    "groupName": "Event_Search"
+                }, 
+                {
+                    "CategoryID": 3, 
+                    "groupID": 304, 
+                    "groupName": "Door_Remote_Control"
+                }, 
+                {
+                    "CategoryID": 3, 
+                    "groupID": 305, 
+                    "groupName": "Door_Parameters"
+                }, 
+                {
+                    "CategoryID": 3, 
+                    "groupID": 306, 
+                    "groupName": "Person_Permission_Schedule"
+                }
+            ]
+        }
+    ]
+}

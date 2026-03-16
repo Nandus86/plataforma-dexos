@@ -68,13 +68,44 @@ callback_ref = None  # prevent GC
 
 def sdk_alarm_callback(command, alarmer, alarm_info, buf_len, user):
     """SDK callback when a device sends data via ISUP."""
-    global connected_devices
+    global connected_devices, device_user_id
     try:
         logger.info(f"📡 SDK Callback: command=0x{command:04X}, buf_len={buf_len}")
         
+        if alarmer:
+            from ctypes import cast, POINTER, Structure, c_byte, c_long, c_char, c_ushort
+            class NET_DVR_ALARMER(Structure):
+                _fields_ = [
+                    ("byUserIDValid", c_byte),
+                    ("bySerialValid", c_byte),
+                    ("byVersionValid", c_byte),
+                    ("byDeviceNameValid", c_byte),
+                    ("byMacAddrValid", c_byte),
+                    ("byLinkPortValid", c_byte),
+                    ("byDeviceIPValid", c_byte),
+                    ("bySocketIPValid", c_byte),
+                    ("lUserID", c_long),
+                    ("sSerialNumber", c_byte * 48),
+                    ("sDeviceVersion", c_byte * 48),
+                    ("sDeviceName", c_char * 32),
+                    ("byMacAddr", c_byte * 6),
+                    ("wLinkPort", c_ushort),
+                    ("sDeviceIP", c_char * 128),
+                    ("sSocketIP", c_char * 128),
+                    ("byIpProtocol", c_byte),
+                    ("byRes1", c_byte * 2),
+                    ("bJSONTransport", c_byte),
+                    ("sDeviceID", c_char * 256),
+                    ("wSocketPort", c_ushort),
+                    ("byRes2", c_byte * 6),
+                ]
+            al = cast(alarmer, POINTER(NET_DVR_ALARMER)).contents
+            if al.lUserID >= 0:
+                device_user_id = al.lUserID
+                logger.info(f"🎣 Pescado ID da Sessão ISUP ativo: {device_user_id}")
+
         if alarm_info and buf_len > 0:
             raw = ctypes.string_at(alarm_info, buf_len)
-            logger.debug(f"   Raw data (first 200 bytes): {raw[:200].hex()}")
             
             # Try to extract device info from the callback
             if command == 0x5002:  # COMM_ALARM_ACS

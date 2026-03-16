@@ -1,0 +1,3 @@
+<Plugins>
+  <Plugin id="IsapiDev_acs" delayload="false">./libIsapiDev_acs.so</Plugin>
+</Plugins>

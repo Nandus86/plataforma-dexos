@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+	<!--Socket超时配置，单位毫秒-->
+	<SocketTimeout>
+		<!--连接超时时间-->
+		<ConnectTime>5000</ConnectTime>
+		<!--发送和接收总超时时间-->
+		<SendAndRecvTime>10000</SendAndRecvTime>
+	</SocketTimeout>
+	
+	<!--与pag交互超时配置，单位毫秒-->
+	<PagTimeout>
+		<!--发送、接收pag回复总超时时间-->
+		<SendAndRecvTime>10000</SendAndRecvTime>
+	</PagTimeout>	
+	
+	<!--vag设备插件取流超时，单位毫秒-->
+	<DevicePluginTimeout>
+		<!--回放取流超时时间-->
+		<PlayBackTime>10000</PlayBackTime>
+	</DevicePluginTimeout>	
+	
+	<!--NCG上下级取流超时时间，单位毫秒-->
+	<PlatDevicePluginTimeout>
+		<!--实时取流超时时间-->
+		<RealPlayTime>10000</RealPlayTime>
+		<!--回放取流超时时间-->
+		<PlayBackTime>10000</PlayBackTime>
+	</PlatDevicePluginTimeout>	
+	
+</Config>

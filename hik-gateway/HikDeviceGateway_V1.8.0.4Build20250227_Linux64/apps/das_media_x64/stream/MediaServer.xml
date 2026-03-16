@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<configure>
+    <servers>
+        <server>
+            <service_id>1</service_id>
+            <protocol_filter_chain>chain://suppport_old_url/dasurl</protocol_filter_chain>
+            <service_url>myrtsp://:554?tcp_port_base=15000&tcp_port_count=2000&udp_port_base=15000&udp_port_count=2000&work_thread=64&user_agent=Media</service_url>
+        </server>
+        <server>
+            <service_id>2</service_id>
+            <protocol_filter_chain>chain://dasurl</protocol_filter_chain>
+            <service_url>http://:11081?work_thread=32&sendTimeout=5000&recvTimeout=300000&audioTalkPort=12081</service_url>
+        </server>
+        <server>
+            <service_id>3</service_id>
+            <protocol_filter_chain>chain://dasurl</protocol_filter_chain>
+            <service_url>websocket://:7314?work_thread=32&sendTimeout=5000&recvTimeout=30000</service_url>
+        </server>
+    </servers>
+    <environment>
+        <item name="local_ip" value="127.0.0.1" />
+        <item name="tcp_port_base" value="15000" />
+        <item name="tcp_port_count" value="2000" />
+        <item name="udp_port_base" value="15000" />
+        <item name="udp_port_count" value="2000" />
+        <item name="ISUPV5_port_preview" value="7664" />
+        <item name="ISUPV5_port_playback" value="7665" />
+        <item name="ISUPV5_port_twowayaudio" value="7666" />
+        <item name="ISUPV5" value="192.168.122.1" />
+        <!--<item name="1" value="10.17.130.101" />-->
+    </environment>
+	<metadataCfg>
+        <enable>0</enable>
+    </metadataCfg>
+</configure>
