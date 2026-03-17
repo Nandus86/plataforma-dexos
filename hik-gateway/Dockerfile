@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     iproute2 \
     procps \
     libxml2 \
+    psmisc \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -18,22 +19,37 @@ WORKDIR /app
 # Copiar os arquivos extraídos
 COPY HikDeviceGateway_V1.8.0.4Build20250227_Linux64/ .
 
-# Criar diretórios de log que o Nginx e o serviço esperam
-RUN mkdir -p /app/nginx/logs /app/logs /app/nginx/temp && \
-    chmod -R 777 /app/nginx/logs /app/logs /app/nginx/temp
+# Inicializar arquivos de configuração a partir dos templates (crítico!)
+RUN cp Config_Template.xml Config.xml && \
+    cp PrivateConfig_Template.xml PrivateConfig.xml && \
+    cp ISAPIConfig_Template.xml ISAPIConfig.xml
 
-# Dar permissão de execução em tudo
-RUN chmod +x -R /app
+# Garantir links simbólicos e diretórios de log
+RUN ln -sf /app/libssl.so.1.1 /usr/lib/libssl.so.1.1 && \
+    ln -sf /app/libcrypto.so.1.1 /usr/lib/libcrypto.so.1.1 && \
+    mkdir -p /app/nginx/logs /app/logs /app/nginx/temp /var/run && \
+    chmod -R 777 /app/nginx/logs /app/logs /app/nginx/temp /var/run && \
+    chmod +x -R /app
 
 # Configurar o ambiente de bibliotecas
 ENV LD_LIBRARY_PATH=/app:/app/lib:$LD_LIBRARY_PATH
 
-# Criar links simbólicos se necessário
-RUN ln -sf /app/libssl.so.1.1 /usr/lib/libssl.so.1.1 && \
-    ln -sf /app/libcrypto.so.1.1 /usr/lib/libcrypto.so.1.1
+# Criar script de inicialização robusto
+RUN echo '#!/bin/bash\n\
+echo "Iniciando Hik Device Gateway..."\n\
+# Rodar em modo service (background)\n\
+./DeviceGatewayService -service -instance=DeviceGatewayService\n\
+sleep 5\n\
+# Verificar se o Nginx subiu (o binário deveria subir, mas garantimos aqui)\n\
+if ! pgrep -f "DeviceGateway-nginx" > /dev/null; then\n\
+    echo "Nginx não iniciou automaticamente, tentando início manual..."\n\
+    ./nginx/DeviceGateway-nginx -p /app/nginx/ -c conf/nginx.conf\n\
+fi\n\
+echo "Gateway rodando. Monitorando logs..."\n\
+tail -f /app/logs/*.log /app/nginx/logs/*.log 2>/dev/null' > /app/entrypoint.sh && \
+chmod +x /app/entrypoint.sh
 
 # Expor portas
-EXPOSE 7660-7667/tcp 7660-7667/udp 8081 80 443
+EXPOSE 7660-7667/tcp 7660-7667/udp 8081 80 443 27000-27800
 
-# Rodar o serviço
-CMD ["./DeviceGatewayService"]
+CMD ["/app/entrypoint.sh"]
