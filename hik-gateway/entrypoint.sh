@@ -3,8 +3,10 @@
 mkdir -p /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db
 chmod -R 777 /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db
 
-# Injetar binding global no Config.xml para garantir que o gateway aceite conexões
-sed -i 's/<IP>.*<\/IP>/<IP>0.0.0.0<\/IP>/g' /app/Config.xml
+# Injetar binding global e o IP público do servidor no Config.xml
+IP_FINAL="138.197.113.117"
+echo "Forçando IP Público no Config: $IP_FINAL"
+sed -i "s/<IP>.*<\/IP>/<IP>$IP_FINAL<\/IP>/g" /app/Config.xml
 sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/g' /app/Config.xml
 
 echo "IP Detectado no Container: $(hostname -I)"

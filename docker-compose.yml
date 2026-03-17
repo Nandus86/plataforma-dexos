@@ -90,7 +90,7 @@ services:
     environment:
       - EXOUSIA_API_URL=http://exousia-backend:8000
       - BRIDGE_PORT=9500
-      - GATEWAY_URL=http://138.197.113.117:8081
+      - GATEWAY_URL=http://hik-gateway:8081
     depends_on:
       - hik-gateway
     networks:
@@ -102,7 +102,21 @@ services:
       dockerfile: Dockerfile
     container_name: hik-gateway
     restart: unless-stopped
-    network_mode: host
+    ports:
+      - "7660:7660/tcp"
+      - "7660:7660/udp"
+      - "7661:7661/tcp"
+      - "7661:7661/udp"
+      - "7662:7662/tcp"
+      - "7662:7662/udp"
+      - "7663:7663/tcp"
+      - "7663:7663/udp"
+      - "7664:7664/tcp"
+      - "7664:7664/udp"
+      - "7665:7665/tcp"
+      - "7665:7665/udp"
+      - "8081:8081"
+      - "8888:80"
     privileged: true
     cap_add:
       - NET_ADMIN
@@ -111,6 +125,8 @@ services:
       - net.ipv4.ip_local_port_range=1024 65535
       - net.ipv4.tcp_tw_reuse=1
       - net.ipv4.tcp_fin_timeout=30
+    networks:
+      - exousia-network
 
 volumes:
   exousia_postgres_data:
