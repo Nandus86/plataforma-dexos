@@ -19,10 +19,11 @@ WORKDIR /app
 # Copiar os arquivos extraídos
 COPY HikDeviceGateway_V1.8.0.4Build20250227_Linux64/ .
 
-# Inicializar arquivos de configuração a partir dos templates (crítico!)
+# Inicializar e ativar configurações (ativando os serviços que vem desligados por padrão)
 RUN cp Config_Template.xml Config.xml && \
     cp PrivateConfig_Template.xml PrivateConfig.xml && \
-    cp ISAPIConfig_Template.xml ISAPIConfig.xml
+    cp ISAPIConfig_Template.xml ISAPIConfig.xml && \
+    sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/g' Config.xml
 
 # Garantir links simbólicos e diretórios de log
 RUN ln -sf /app/libssl.so.1.1 /usr/lib/libssl.so.1.1 && \
@@ -34,19 +35,19 @@ RUN ln -sf /app/libssl.so.1.1 /usr/lib/libssl.so.1.1 && \
 # Configurar o ambiente de bibliotecas
 ENV LD_LIBRARY_PATH=/app:/app/lib:$LD_LIBRARY_PATH
 
-# Criar script de inicialização robusto
-RUN echo '#!/bin/bash\n\
+# Criar script de inicialização usando printf para garantir espaços e quebras de linha corretas
+RUN printf '#!/bin/bash\n\
 echo "Iniciando Hik Device Gateway..."\n\
 # Rodar em modo service (background)\n\
 ./DeviceGatewayService -service -instance=DeviceGatewayService\n\
 sleep 5\n\
-# Verificar se o Nginx subiu (o binário deveria subir, mas garantimos aqui)\n\
+# Verificar se o Nginx subiu\n\
 if ! pgrep -f "DeviceGateway-nginx" > /dev/null; then\n\
-    echo "Nginx não iniciou automaticamente, tentando início manual..."\n\
+    echo "Nginx nao iniciou automaticamente, tentando inicio manual..."\n\
     ./nginx/DeviceGateway-nginx -p /app/nginx/ -c conf/nginx.conf\n\
 fi\n\
 echo "Gateway rodando. Monitorando logs..."\n\
-tail -f /app/logs/*.log /app/nginx/logs/*.log 2>/dev/null' > /app/entrypoint.sh && \
+tail -f /app/logs/*.log /app/nginx/logs/*.log 2>/dev/null\n' > /app/entrypoint.sh && \
 chmod +x /app/entrypoint.sh
 
 # Expor portas
