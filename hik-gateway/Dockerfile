@@ -8,24 +8,25 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copiar os arquivos extraídos
+# Copiar os arquivos do SDK
 COPY HikDeviceGateway_V1.8.0.4Build20250227_Linux64/ .
 
-# Copiar scripts e configurações limpas
-COPY entrypoint.sh /app/entrypoint.sh
-COPY nginx_clean.conf /app/nginx/conf/nginx.conf
-
-# Inicializa configurações
+# Inicializar XMLs dos templates
 RUN cp Config_Template.xml Config.xml && \
     cp PrivateConfig_Template.xml PrivateConfig.xml && \
-    cp ISAPIConfig_Template.xml ISAPIConfig.xml && \
-    chmod +x /app/entrypoint.sh
+    cp ISAPIConfig_Template.xml ISAPIConfig.xml
 
-# Garantir links e diretórios
-RUN ln -sf /app/libssl.so.1.1 /usr/lib/libssl.so.1.1 && \
+# Limpar e copiar novas configurações
+RUN rm -f /app/nginx/conf/nginx.conf
+COPY nginx_clean.conf /app/nginx/conf/nginx.conf
+COPY entrypoint.sh /app/entrypoint.sh
+
+# Preparar binários e pastas
+RUN chmod +x /app/entrypoint.sh && \
+    ln -sf /app/libssl.so.1.1 /usr/lib/libssl.so.1.1 && \
     ln -sf /app/libcrypto.so.1.1 /usr/lib/libcrypto.so.1.1 && \
-    mkdir -p /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db && \
-    chmod -R 777 /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db && \
+    mkdir -p /app/nginx/logs /app/logs /app/nginx/temp /var/run && \
+    chmod -R 777 /app/nginx/logs /app/logs /app/nginx/temp /var/run && \
     chmod +x -R /app
 
 ENV LD_LIBRARY_PATH=/app:/app/lib:$LD_LIBRARY_PATH

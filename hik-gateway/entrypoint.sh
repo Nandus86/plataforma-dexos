@@ -1,21 +1,20 @@
 #!/bin/bash
-# Garantir que o IP interno seja injetado corretamente
-IP_INTERNO=$(hostname -I | awk '{print $1}')
-echo "IP Detectado no Container: $IP_INTERNO"
+# Forçar IP de escuta global
+echo "Iniciando Hik Device Gateway..."
 
-# Injetar o IP no Config.xml
-sed -i "s/<IP>0.0.0.0<\/IP>/<IP>$IP_INTERNO<\/IP>/g" /app/Config.xml
+# Injetar 0.0.0.0 para que ele escute em qualquer interface do container
+sed -i 's/<IP>.*<\/IP>/<IP>0.0.0.0<\/IP>/g' /app/Config.xml
 sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/g' /app/Config.xml
 
-echo "Iniciando Motor do Gateway..."
-# Execução direta com argumentos bem definidos
-/app/DeviceGatewayService -service -instance=DeviceGatewayService &
+echo "Subindo Motor (Engine)..."
+# Usando aspas para garantir que os espaços não sejam perdidos
+exec /app/DeviceGatewayService -service -instance=DeviceGatewayService &
 
 sleep 10
 
-echo "Iniciando Interface Web (Nginx)..."
-# Iniciar o nginx apontando para o binário customizado da Hikvision
+echo "Subindo Web Interface (Nginx)..."
+# O prefixo -p já aponta para /app/nginx/, então o conf deve ser relativo ou absoluto direto
 /app/nginx/DeviceGateway-nginx -p /app/nginx/ -c /app/nginx/conf/nginx.conf
 
-echo "Monitorando Logs..."
+echo "Logs ativos:"
 tail -f /app/logs/*.log 2>/dev/null
