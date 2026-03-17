@@ -3,11 +3,18 @@
 mkdir -p /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db
 chmod -R 777 /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db
 
-# Injetar o IP INTERNO do container no Config.xml
-# A Hikvision precisa de um IP que REALMENTE esteja em uma interface local para iniciar.
+# Injetar o IP INTERNO real detectado nas interfaces do container
 IP_INTERNO=$(hostname -I | awk '{print $1}')
-echo "Iniciando Motor do Gateway com IP Interno: $IP_INTERNO"
+echo "Configurando Gateway no IP Interno: $IP_INTERNO"
+
+# 1. Injetar IP
 sed -i "s/<IP>.*<\/IP>/<IP>$IP_INTERNO<\/IP>/g" /app/Config.xml
+
+# 2. Mover porta 80 do Motor para 8082 (evita conflito com Nginx)
+sed -i '/<HTTP>/,/<\/HTTP>/ s/<Port>80<\/Port>/<Port>8082<\/Port>/' /app/Config.xml
+sed -i '/<HTTP>/,/<\/HTTP>/ s/<Enable>0<\/Enable>/<Enable>1<\/Enable>/' /app/Config.xml
+
+# 3. Ativar ISAPI e outros serviços
 sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/g' /app/Config.xml
 
 echo "IPs Detectados no Container: $(hostname -I)"
