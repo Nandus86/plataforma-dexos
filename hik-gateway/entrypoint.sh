@@ -1,20 +1,22 @@
 #!/bin/bash
-# Forçar IP de escuta global
-echo "Iniciando Hik Device Gateway..."
+# Garantir permissões e diretórios no momento do boot
+mkdir -p /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db
+chmod -R 777 /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db
 
-# Injetar 0.0.0.0 para que ele escute em qualquer interface do container
+# Injetar binding global no Config.xml
 sed -i 's/<IP>.*<\/IP>/<IP>0.0.0.0<\/IP>/g' /app/Config.xml
 sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/g' /app/Config.xml
 
-echo "Subindo Motor (Engine)..."
-# Usando aspas para garantir que os espaços não sejam perdidos
-exec /app/DeviceGatewayService -service -instance=DeviceGatewayService &
+echo "IP Detectado no Container: $(hostname -I)"
+echo "Iniciando Motor do Gateway em background..."
 
-sleep 10
+# Iniciar o motor em background e deixar ele rodando
+/app/DeviceGatewayService -service -instance=DeviceGatewayService &
 
-echo "Subindo Web Interface (Nginx)..."
-# O prefixo -p já aponta para /app/nginx/, então o conf deve ser relativo ou absoluto direto
-/app/nginx/DeviceGateway-nginx -p /app/nginx/ -c /app/nginx/conf/nginx.conf
+# Pequena pausa para o motor liberar a porta 8081
+sleep 5
 
-echo "Logs ativos:"
-tail -f /app/logs/*.log 2>/dev/null
+echo "Iniciando Interface Web (Nginx) em foreground..."
+# Rodar o Nginx com 'exec' para ele ser o processo principal (PID 1) do container
+# Isso evita que o container morra e entre em loop de reinicializacao
+exec /app/nginx/DeviceGateway-nginx -p /app/nginx/ -c /app/nginx/conf/nginx.conf -g "daemon off;"
