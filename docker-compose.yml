@@ -109,6 +109,14 @@ services:
       - "7661-7667:7661-7667/udp"
       - "8081:8081"
       - "8080:80"
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    sysctls:
+      - net.ipv4.ip_local_port_range=1024 65535
+      - net.ipv4.tcp_tw_reuse=1
+      - net.ipv4.tcp_fin_timeout=30
     networks:
       - exousia-network
 
