@@ -29,10 +29,46 @@ static int nl_count = 0;
 /* Ponteiros reais */
 static int (*real_socket)(int, int, int) = NULL;
 static ssize_t (*real_recvfrom)(int, void*, size_t, int, struct sockaddr*, socklen_t*) = NULL;
+static int (*real_getifaddrs)(struct ifaddrs **) = NULL;
+static void (*real_freeifaddrs)(struct ifaddrs *) = NULL;
 
 static void init_funcs(void) {
     if (!real_socket) real_socket = dlsym(RTLD_NEXT, "socket");
     if (!real_recvfrom) real_recvfrom = dlsym(RTLD_NEXT, "recvfrom");
+    if (!real_getifaddrs) real_getifaddrs = dlsym(RTLD_NEXT, "getifaddrs");
+    if (!real_freeifaddrs) real_freeifaddrs = dlsym(RTLD_NEXT, "freeifaddrs");
+}
+
+/*
+ * Interceptar getifaddrs() para esconder completamente o IPv6 da Hikvision.
+ * O binário usa getifaddrs para detectar endereços IPv6 após o scan netlink.
+ * Retornamos uma lista filtrada contendo APENAS entradas AF_INET (IPv4).
+ */
+int getifaddrs(struct ifaddrs **ifap) {
+    init_funcs();
+    if (!real_getifaddrs) return -1;
+    int ret = real_getifaddrs(ifap);
+    if (ret != 0 || !ifap || !*ifap) return ret;
+
+    /* Caminhar pela lista ligada e remover entradas IPv6 */
+    struct ifaddrs *prev = NULL;
+    struct ifaddrs *cur = *ifap;
+    while (cur) {
+        struct ifaddrs *next = cur->ifa_next;
+        int is_v6 = (cur->ifa_addr && cur->ifa_addr->sa_family == AF_INET6);
+        if (is_v6) {
+            /* Pular esse nó: conectar prev ao next */
+            if (prev) prev->ifa_next = next;
+            else *ifap = next;
+            /* Liberar o nó IPv6 */
+            cur->ifa_next = NULL;
+            real_freeifaddrs(cur);
+        } else {
+            prev = cur;
+        }
+        cur = next;
+    }
+    return 0;
 }
 
 /* Interceptar socket() para rastrear FDs netlink */
@@ -58,8 +94,7 @@ static ssize_t build_response(void *buf, size_t buflen, uint32_t seq, uint32_t p
     unsigned char *p = (unsigned char *)buf;
     size_t total = 0;
 
-    int (*real_getifaddrs)(struct ifaddrs **) = dlsym(RTLD_NEXT, "getifaddrs");
-    void (*real_freeifaddrs)(struct ifaddrs *) = dlsym(RTLD_NEXT, "freeifaddrs");
+    init_funcs();
 
     if (!real_getifaddrs || real_getifaddrs(&ifas) != 0)
         return -1;
