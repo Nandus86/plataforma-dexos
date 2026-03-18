@@ -160,27 +160,26 @@ ssize_t recvfrom(int fd, void *buf, size_t len, int flags,
     if (is_nl(fd) && result >= 16) {
         struct nlmsghdr *nlh = (struct nlmsghdr *)buf;
         
-        /* 
-         * Se o kernel do Docker retornar UMA RESPOSTA VAZIA (apenas NLMSG_DONE),
-         * isso geralmente significa que pedimos IPs IPv4 e não recebemos nada.
-         * Injetamos nossos endereços IPv4 forjados.
-         */
         if (result == 20 && nlh->nlmsg_type == NLMSG_DONE) {
-            uint32_t orig_seq = nlh->nlmsg_seq;
-            uint32_t orig_pid = nlh->nlmsg_pid;
-            ssize_t fake = build_response(buf, len, orig_seq, orig_pid);
-            if (fake > 0) return fake;
+            /* 
+             * O binário faz DUAS consultas netlink por loop de detecção:
+             * 1. GETLINK (interfaces) -> responde 2916 bytes -> finaliza com DONE (20 bytes)
+             * 2. GETADDR (IPs IPv4) -> vazio no docker -> responde DONE (20 bytes)
+             * Precisamos injetar apenas no SEGUNDO DONE.
+             */
+            static int done_count = 0;
+            done_count++;
+            
+            if (done_count % 2 == 0) {
+                uint32_t orig_seq = nlh->nlmsg_seq;
+                uint32_t orig_pid = nlh->nlmsg_pid;
+                ssize_t fake = build_response(buf, len, orig_seq, orig_pid);
+                if (fake > 0) return fake;
+            }
         }
         
-        /*
-         * Se o kernel retornar ENDEREÇOS REAIS (RTM_NEWADDR), isso é quase
-         * certamente os endereços IPv6 do Docker (já que o IPv4 veio vazio).
-         * O parser IPv6 do Hikvision tem um bug em ambientes Docker.
-         * Nós ESCONDEMOS as respostas IPv6 transformando tudo num pacote "vazio".
-         */
         else if (result > 20 && nlh->nlmsg_type == RTM_NEWADDR) {
             struct ifaddrmsg *ifa = (struct ifaddrmsg *)NLMSG_DATA(nlh);
-            /* Confirmar se é realmente IPv6 antes de bloquear */
             if (ifa->ifa_family == AF_INET6) {
                 uint32_t seq = nlh->nlmsg_seq;
                 uint32_t pid = nlh->nlmsg_pid;
