@@ -1,34 +1,61 @@
 #!/bin/bash
-# Garantir permissões e diretórios no momento do boot
-mkdir -p /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db
-chmod -R 777 /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db
+set -e
 
-# Injetar o IP INTERNO real detectado nas interfaces do container
+cd /app
+
+# ==== PREPARAÇÃO DE AMBIENTE ====
+mkdir -p /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db /var/lock/subsys
+chmod -R 777 /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db /var/lock/subsys
+
+# ==== CONFIGURAÇÃO DE REDE ====
 IP_INTERNO=$(hostname -I | awk '{print $1}')
-echo "Configurando Gateway no IP Interno: $IP_INTERNO"
+echo "============================================="
+echo "IP Interno Detectado: $IP_INTERNO"
+echo "Todos os IPs: $(hostname -I)"
+echo "============================================="
 
-# 1. Injetar IP
-sed -i "s/<IP>.*<\/IP>/<IP>$IP_INTERNO<\/IP>/g" /app/Config.xml
+# Injetar o IP interno no Config.xml para rede
+sed -i "s/<IP>0\.0\.0\.0<\/IP>/<IP>$IP_INTERNO<\/IP>/g" /app/Config.xml
 
-# 2. Mover porta 80 do Motor para 8082 (evita conflito com Nginx)
-sed -i '/<HTTP>/,/<\/HTTP>/ s/<Port>80<\/Port>/<Port>8082<\/Port>/' /app/Config.xml
-sed -i '/<HTTP>/,/<\/HTTP>/ s/<Enable>0<\/Enable>/<Enable>1<\/Enable>/' /app/Config.xml
-
-# 3. Ativar ISAPI e outros serviços
+# Ativar TODOS os serviços necessários
 sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/g' /app/Config.xml
+sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/g' /app/ISAPIConfig.xml
 
-echo "IPs Detectados no Container: $(hostname -I)"
+# ==== CONFIGURAÇÃO DE SYSCTL (ignorar erros em containers) ====
+sysctl -w net.ipv4.conf.all.rp_filter=0 2>/dev/null || true
+sysctl -w net.ipv4.conf.default.rp_filter=0 2>/dev/null || true
+sysctl -w net.ipv4.conf.all.arp_announce=2 2>/dev/null || true
+sysctl -w net.ipv4.conf.default.arp_announce=2 2>/dev/null || true
+sysctl -w net.ipv4.conf.lo.arp_announce=2 2>/dev/null || true
 
-echo "Iniciando Motor do Gateway (Background)..."
-/app/DeviceGatewayService -service -instance=DeviceGatewayService &
+# ==== INICIAR O MOTOR ====
+echo "Iniciando DeviceGatewayService..."
+./DeviceGatewayService -service -instance=DeviceGatewayService &
+ENGINE_PID=$!
+echo "Motor PID: $ENGINE_PID"
 
-sleep 5
+# Aguardar o motor abrir a porta 8081
+echo "Aguardando porta 8081 ficar disponível..."
+for i in $(seq 1 30); do
+    if netstat -tlnp 2>/dev/null | grep -q ":8081"; then
+        echo "Porta 8081 aberta! Motor pronto."
+        break
+    fi
+    echo "Tentativa $i/30 - aguardando..."
+    sleep 2
+done
 
-echo "Iniciando Interface Web (Nginx Background)..."
-# Iniciar o Nginx sem o 'exec' para que o script continue
+# ==== INICIAR O NGINX ====
+echo "Iniciando Nginx (DeviceGateway-nginx)..."
 /app/nginx/DeviceGateway-nginx -p /app/nginx/ -c /app/nginx/conf/nginx.conf
 
-echo "Gateway em execução. Monitorando logs para manter o container vivo..."
-# O tail -f mantém o container rodando e permite que ambos os serviços (Gateway + Nginx) funcionem em paralelo
+echo "============================================="
+echo "Gateway em execução!"
+echo "  Motor: PID $ENGINE_PID"
+echo "  Nginx: porta 80"
+echo "  API:   porta 8081"
+echo "============================================="
+
+# Manter o container vivo monitorando logs
 touch /app/logs/ivms_service.log
-tail -f /app/logs/*.log /app/nginx/logs/*.log
+tail -f /app/logs/*.log /app/nginx/logs/*.log 2>/dev/null
