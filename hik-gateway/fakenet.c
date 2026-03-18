@@ -22,22 +22,16 @@
 #include <unistd.h>
 #include <ifaddrs.h>
 
-/* Rastreia sockets netlink e a familia da ultima requisicao (AF_INET ou AF_INET6) */
-struct nl_sock {
-    int fd;
-    int last_family;
-};
-static struct nl_sock nl_socks[64];
+/* Rastreia sockets netlink */
+static int nl_fds[64];
 static int nl_count = 0;
 
 /* Ponteiros reais */
 static int (*real_socket)(int, int, int) = NULL;
-static ssize_t (*real_sendto)(int, const void*, size_t, int, const struct sockaddr*, socklen_t) = NULL;
 static ssize_t (*real_recvfrom)(int, void*, size_t, int, struct sockaddr*, socklen_t*) = NULL;
 
 static void init_funcs(void) {
     if (!real_socket) real_socket = dlsym(RTLD_NEXT, "socket");
-    if (!real_sendto) real_sendto = dlsym(RTLD_NEXT, "sendto");
     if (!real_recvfrom) real_recvfrom = dlsym(RTLD_NEXT, "recvfrom");
 }
 
@@ -46,45 +40,15 @@ int socket(int domain, int type, int protocol) {
     init_funcs();
     int fd = real_socket(domain, type, protocol);
     if (fd >= 0 && domain == AF_NETLINK && protocol == NETLINK_ROUTE) {
-        if (nl_count < 64) {
-            nl_socks[nl_count].fd = fd;
-            nl_socks[nl_count].last_family = 0;
-            nl_count++;
-        }
+        if (nl_count < 64) nl_fds[nl_count++] = fd;
     }
     return fd;
 }
 
-static int get_nl_family(int fd) {
-    for (int i = 0; i < nl_count; i++) {
-        if (nl_socks[i].fd == fd) return nl_socks[i].last_family;
-    }
-    return -1;
-}
-
-static void set_nl_family(int fd, int family) {
-    for (int i = 0; i < nl_count; i++) {
-        if (nl_socks[i].fd == fd) {
-            nl_socks[i].last_family = family;
-            return;
-        }
-    }
-}
-
-/* Interceptar sendto para descobrir se a requisição é IPv4 ou IPv6 */
-ssize_t sendto(int fd, const void *buf, size_t len, int flags,
-               const struct sockaddr *dest_addr, socklen_t addrlen) {
-    init_funcs();
-    if (get_nl_family(fd) != -1 && len >= NLMSG_HDRLEN) {
-        struct nlmsghdr *nlh = (struct nlmsghdr *)buf;
-        if (nlh->nlmsg_type == RTM_GETADDR) {
-            struct ifaddrmsg *ifa = (struct ifaddrmsg *)NLMSG_DATA(nlh);
-            if (len >= NLMSG_HDRLEN + sizeof(struct ifaddrmsg)) {
-                set_nl_family(fd, ifa->ifa_family);
-            }
-        }
-    }
-    return real_sendto(fd, buf, len, flags, dest_addr, addrlen);
+static int is_nl(int fd) {
+    for (int i = 0; i < nl_count; i++)
+        if (nl_fds[i] == fd) return 1;
+    return 0;
 }
 
 /* Construir resposta RTM_NEWADDR com IP e índice reais. Preserva seq e pid da requisição. */
@@ -193,15 +157,33 @@ ssize_t recvfrom(int fd, void *buf, size_t len, int flags,
     init_funcs();
     ssize_t result = real_recvfrom(fd, buf, len, flags, src, addrlen);
 
-    int family = get_nl_family(fd);
-    if (family != -1) {
-        /* Se for consulta IPv6 (AF_INET6), mascara TODO o resultado e retorna apenas DONE */
-        if (family == AF_INET6) {
-            if (result > 0) {
-                /* Extrair seq e pid da primeira mensagem para forjar o DONE */
-                struct nlmsghdr *orig_nlh = (struct nlmsghdr *)buf;
-                uint32_t seq = orig_nlh->nlmsg_seq;
-                uint32_t pid = orig_nlh->nlmsg_pid;
+    if (is_nl(fd) && result >= 16) {
+        struct nlmsghdr *nlh = (struct nlmsghdr *)buf;
+        
+        /* 
+         * Se o kernel do Docker retornar UMA RESPOSTA VAZIA (apenas NLMSG_DONE),
+         * isso geralmente significa que pedimos IPs IPv4 e não recebemos nada.
+         * Injetamos nossos endereços IPv4 forjados.
+         */
+        if (result == 20 && nlh->nlmsg_type == NLMSG_DONE) {
+            uint32_t orig_seq = nlh->nlmsg_seq;
+            uint32_t orig_pid = nlh->nlmsg_pid;
+            ssize_t fake = build_response(buf, len, orig_seq, orig_pid);
+            if (fake > 0) return fake;
+        }
+        
+        /*
+         * Se o kernel retornar ENDEREÇOS REAIS (RTM_NEWADDR), isso é quase
+         * certamente os endereços IPv6 do Docker (já que o IPv4 veio vazio).
+         * O parser IPv6 do Hikvision tem um bug em ambientes Docker.
+         * Nós ESCONDEMOS as respostas IPv6 transformando tudo num pacote "vazio".
+         */
+        else if (result > 20 && nlh->nlmsg_type == RTM_NEWADDR) {
+            struct ifaddrmsg *ifa = (struct ifaddrmsg *)NLMSG_DATA(nlh);
+            /* Confirmar se é realmente IPv6 antes de bloquear */
+            if (ifa->ifa_family == AF_INET6) {
+                uint32_t seq = nlh->nlmsg_seq;
+                uint32_t pid = nlh->nlmsg_pid;
                 
                 memset(buf, 0, 20);
                 struct nlmsghdr *done = (struct nlmsghdr *)buf;
@@ -211,19 +193,6 @@ ssize_t recvfrom(int fd, void *buf, size_t len, int flags,
                 done->nlmsg_seq = seq;
                 done->nlmsg_pid = pid;
                 return 20;
-            }
-        } 
-        /* Se for consulta IPv4 (AF_INET) e for apenas DONE (20 bytes), injetamos */
-        else if (family == AF_INET && result == 20) {
-            struct nlmsghdr *orig_nlh = (struct nlmsghdr *)buf;
-            if (orig_nlh->nlmsg_type == NLMSG_DONE) {
-                uint32_t orig_seq = orig_nlh->nlmsg_seq;
-                uint32_t orig_pid = orig_nlh->nlmsg_pid;
-
-                ssize_t fake = build_response(buf, len, orig_seq, orig_pid);
-                if (fake > 0) {
-                    return fake;
-                }
             }
         }
     }
