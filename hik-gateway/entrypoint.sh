@@ -7,12 +7,6 @@ cd /app
 mkdir -p /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db /var/lock/subsys
 chmod -R 777 /app/nginx/logs /app/logs /app/nginx/temp /var/run /app/db /var/lock/subsys
 
-# Limpar estado stale do install
-rm -f /app/db/*.db /app/db/*.dat 2>/dev/null || true
-
-# Core dumps
-ulimit -c unlimited 2>/dev/null || true
-
 # ==== CONFIGURAÇÃO ====
 IP_INTERNO=$(hostname -I | awk '{print $1}')
 echo "============================================="
@@ -42,7 +36,7 @@ export LD_PRELOAD=/app/fakenet.so
 LAUNCHER_PID=$!
 echo "Launcher PID: $LAUNCHER_PID"
 
-# Aguardar o launcher sair (ele faz fork e sai com 0)
+# Aguardar o launcher sair (faz fork e sai com 0)
 echo "Aguardando daemon fazer fork..."
 sleep 5
 
@@ -55,33 +49,40 @@ for i in $(seq 1 10); do
         echo ">>> Daemon encontrado! DeviceGatewaySe PID=$SERVICE_PID <<<"
         break
     fi
+    # Tentar nome alternativo
+    SERVICE_PID=$(pgrep -f "DeviceGateway" 2>/dev/null | head -1)
+    if [ -n "$SERVICE_PID" ]; then
+        echo ">>> Daemon encontrado! DeviceGateway PID=$SERVICE_PID <<<"
+        break
+    fi
     echo "Procurando daemon filho... ($i/10)"
     sleep 2
 done
 
 if [ -z "$SERVICE_PID" ]; then
-    echo "!!! Daemon filho nao encontrado. Tentando PID alternativo..."
-    SERVICE_PID=$(pgrep -f "DeviceGateway" 2>/dev/null | grep -v "nginx" | head -1)
+    echo "!!! Nenhum daemon DeviceGateway ativo. Usando subprocessos..."
+    # Tentar monitorar qualquer subprocesso do gateway (dg_pss, dg_das_media)
+    SERVICE_PID=$(pgrep -f "dg_" 2>/dev/null | head -1)
 fi
 
 if [ -z "$SERVICE_PID" ]; then
-    echo "!!! ERRO FATAL: Nenhum processo DeviceGateway encontrado !!!"
-    echo "Processos rodando:"
-    ps aux 2>/dev/null || true
+    echo "!!! ERRO: Nenhum processo gateway encontrado !!!"
+    echo "Processos:" && ps aux 2>/dev/null
+    echo "Logs:"
+    find /app/logs -name "*.log" -exec echo "=== {} ===" \; -exec tail -20 {} \; 2>/dev/null || true
     exit 1
 fi
 
-echo "Monitorando daemon PID=$SERVICE_PID"
+echo "Monitorando PID=$SERVICE_PID"
 
 # ==== AGUARDAR PORTA 8081 ====
 echo "Aguardando porta 8081 (timeout: 120s)..."
 PORTA_OK=0
 for i in $(seq 1 60); do
-    # Verificar se o daemon filho ainda esta vivo
     if ! kill -0 $SERVICE_PID 2>/dev/null; then
         echo "!!! Daemon PID=$SERVICE_PID morreu na iteração $i !!!"
-        echo "--- Log ---"
-        tail -30 /app/logs/ivms_service.log 2>/dev/null || echo "(vazio)"
+        echo "--- Logs ---"
+        find /app/logs -name "*.log" -size +0c -exec echo "=== {} ===" \; -exec tail -20 {} \; 2>/dev/null || true
         break
     fi
 
@@ -91,26 +92,21 @@ for i in $(seq 1 60); do
         break
     fi
 
-    # A cada 10 iterações, mostrar portas abertas
     if [ $((i % 10)) -eq 0 ]; then
         echo "[$i/60] Portas ativas:"
         ss -tlnp 2>/dev/null | grep -v "127.0.0.11" || true
     else
-        echo "[$i/60] Aguardando 8081... (daemon PID $SERVICE_PID vivo)"
+        echo "[$i/60] Aguardando 8081... (PID $SERVICE_PID vivo)"
     fi
     sleep 2
 done
 
 if [ "$PORTA_OK" -eq 0 ]; then
-    echo "!!! AVISO: Porta 8081 nao abriu !!!"
-    echo "Portas abertas:"
-    ss -tlnp 2>/dev/null || true
-    echo "Processos:"
-    ps aux 2>/dev/null | grep -i "device\|dg_\|gateway" || true
-    echo "Log:"
-    tail -30 /app/logs/ivms_service.log 2>/dev/null || echo "(vazio)"
-    ls -la /app/logs/ 2>/dev/null || true
-    cat /app/logs/*.log 2>/dev/null | tail -50 || true
+    echo "!!! Porta 8081 nao abriu !!!"
+    echo "Portas:" && ss -tlnp 2>/dev/null || true
+    echo "Processos:" && ps aux 2>/dev/null | grep -i "device\|dg_\|gateway" || true
+    echo "--- Todos os logs ---"
+    find /app/logs -name "*.log" -size +0c -exec echo "=== {} ===" \; -exec tail -30 {} \; 2>/dev/null || true
 fi
 
 # ==== NGINX ====
@@ -122,17 +118,17 @@ echo "============================================="
 echo "Gateway ativo! Daemon PID=$SERVICE_PID | Nginx PID=$NGINX_PID"
 echo "============================================="
 
-# Manter container vivo monitorando o daemon
+# Manter container vivo
 touch /app/logs/ivms_service.log
-tail -f /app/logs/*.log /app/nginx/logs/*.log 2>/dev/null &
-TAIL_PID=$!
+(tail -f /app/logs/*.log /app/logs/**/*.log /app/nginx/logs/*.log 2>/dev/null || true) &
 
 while true; do
-    if ! kill -0 $SERVICE_PID 2>/dev/null; then
-        echo "!!! Daemon morreu (PID=$SERVICE_PID) !!!"
-        echo "--- Log ---"
-        tail -30 /app/logs/ivms_service.log 2>/dev/null || true
-        kill $NGINX_PID $TAIL_PID 2>/dev/null || true
+    # Verificar se ALGUM processo gateway esta vivo
+    if ! pgrep -f "DeviceGateway\|dg_pss\|dg_das" >/dev/null 2>&1; then
+        echo "!!! Todos os processos gateway morreram !!!"
+        echo "--- Logs finais ---"
+        find /app/logs -name "*.log" -size +0c -exec echo "=== {} ===" \; -exec tail -20 {} \; 2>/dev/null || true
+        kill $NGINX_PID 2>/dev/null || true
         exit 1
     fi
     sleep 10
