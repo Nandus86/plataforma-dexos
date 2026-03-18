@@ -19,14 +19,16 @@ echo "IP Interno: $IP_INTERNO"
 echo "Todos IPs: $(hostname -I)"
 echo "============================================="
 
-# Injetar IP no Config.xml
-sed -i "s/<IP>0\.0\.0\.0<\/IP>/<IP>$IP_INTERNO<\/IP>/g" /app/Config.xml
+# NÃO alterar IP - deixar 0.0.0.0 para escutar em todas as interfaces
 
-# Ativar APENAS HTTP (dentro do bloco <HTTP>)
-sed -i '/<HTTP>/,/<\/HTTP>/s/<Enable>0<\/Enable>/<Enable>1<\/Enable>/' /app/Config.xml
+# Ativar TODOS os serviços em Config.xml
+sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/g' /app/Config.xml
+
+# Desabilitar HTTPS (não temos certificados)
+sed -i '/<HTTPS>/,/<\/HTTPS>/s/<Enable>1<\/Enable>/<Enable>0<\/Enable>/' /app/Config.xml
 
 # Ativar ISAPI
-sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/' /app/ISAPIConfig.xml
+sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/g' /app/ISAPIConfig.xml
 
 # Log level debug
 sed -i 's/<Level>3<\/Level>/<Level>6<\/Level>/g' /app/Config.xml
