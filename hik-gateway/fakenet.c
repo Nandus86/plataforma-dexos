@@ -26,15 +26,29 @@
 static int nl_fds[64];
 static int nl_count = 0;
 
+/* Tracks the family requested by each sequence number */
+struct seq_family {
+    uint32_t seq;
+    unsigned char family;
+};
+static struct seq_family seq_history[256];
+static int seq_hist_idx = 0;
+
 /* Ponteiros reais */
 static int (*real_socket)(int, int, int) = NULL;
 static ssize_t (*real_recvfrom)(int, void*, size_t, int, struct sockaddr*, socklen_t*) = NULL;
+static ssize_t (*real_sendto)(int, const void*, size_t, int, const struct sockaddr*, socklen_t) = NULL;
+static ssize_t (*real_send)(int, const void*, size_t, int) = NULL;
+static ssize_t (*real_sendmsg)(int, const struct msghdr*, int) = NULL;
 static int (*real_getifaddrs)(struct ifaddrs **) = NULL;
 static void (*real_freeifaddrs)(struct ifaddrs *) = NULL;
 
 static void init_funcs(void) {
     if (!real_socket) real_socket = dlsym(RTLD_NEXT, "socket");
     if (!real_recvfrom) real_recvfrom = dlsym(RTLD_NEXT, "recvfrom");
+    if (!real_sendto) real_sendto = dlsym(RTLD_NEXT, "sendto");
+    if (!real_send) real_send = dlsym(RTLD_NEXT, "send");
+    if (!real_sendmsg) real_sendmsg = dlsym(RTLD_NEXT, "sendmsg");
     if (!real_getifaddrs) real_getifaddrs = dlsym(RTLD_NEXT, "getifaddrs");
     if (!real_freeifaddrs) real_freeifaddrs = dlsym(RTLD_NEXT, "freeifaddrs");
 }
@@ -87,9 +101,52 @@ static int is_nl(int fd) {
     return 0;
 }
 
-/* Construir resposta RTM_NEWADDR com IP e índice reais. Preserva seq e pid da requisição. */
-static ssize_t build_response(void *buf, size_t buflen, uint32_t seq, uint32_t pid) {
-    /* (código original do build_response mantido inalterado) */
+static void record_seq_family(uint32_t seq, unsigned char family) {
+    seq_history[seq_hist_idx].seq = seq;
+    seq_history[seq_hist_idx].family = family;
+    seq_hist_idx = (seq_hist_idx + 1) % 256;
+}
+
+static unsigned char get_seq_family(uint32_t seq) {
+    for (int i = 0; i < 256; i++) {
+        if (seq_history[i].seq == seq) {
+            return seq_history[i].family;
+        }
+    }
+    return AF_UNSPEC;
+}
+
+static void inspect_outgoing(int fd, const void *buf, size_t len) {
+    if (!is_nl(fd) || len < sizeof(struct nlmsghdr)) return;
+    struct nlmsghdr *nlh = (struct nlmsghdr *)buf;
+    if (nlh->nlmsg_type == RTM_GETADDR) {
+        struct rtgenmsg *rtgen = (struct rtgenmsg *)NLMSG_DATA(nlh);
+        record_seq_family(nlh->nlmsg_seq, rtgen->rtgen_family);
+    }
+}
+
+ssize_t sendto(int fd, const void *buf, size_t len, int flags,
+               const struct sockaddr *dest_addr, socklen_t addrlen) {
+    init_funcs();
+    inspect_outgoing(fd, buf, len);
+    return real_sendto(fd, buf, len, flags, dest_addr, addrlen);
+}
+
+ssize_t send(int fd, const void *buf, size_t len, int flags) {
+    init_funcs();
+    inspect_outgoing(fd, buf, len);
+    return real_send(fd, buf, len, flags);
+}
+
+ssize_t sendmsg(int fd, const struct msghdr *msg, int flags) {
+    init_funcs();
+    if (msg && msg->msg_iov && msg->msg_iovlen > 0) {
+        inspect_outgoing(fd, msg->msg_iov[0].iov_base, msg->msg_iov[0].iov_len);
+    }
+    return real_sendmsg(fd, msg, flags);
+}
+
+static ssize_t build_response(void *buf, size_t buflen, uint32_t seq, uint32_t pid, unsigned char requested_family) {
     struct ifaddrs *ifas, *ifa;
     unsigned char *p = (unsigned char *)buf;
     size_t total = 0;
@@ -100,7 +157,14 @@ static ssize_t build_response(void *buf, size_t buflen, uint32_t seq, uint32_t p
         return -1;
 
     for (ifa = ifas; ifa; ifa = ifa->ifa_next) {
-        if (!ifa->ifa_addr || ifa->ifa_addr->sa_family != AF_INET) continue;
+        if (!ifa->ifa_addr) continue;
+        
+        // Only inject requested family (or both if UNSPEC)
+        if (requested_family != AF_UNSPEC && ifa->ifa_addr->sa_family != requested_family) continue;
+        
+        // Skip IPv6 for now, as we only want to reliably provide IPv4
+        if (ifa->ifa_addr->sa_family != AF_INET) continue;
+        
         struct sockaddr_in *sin = (struct sockaddr_in *)ifa->ifa_addr;
         /* Ignorar loopback (127.x.x.x) */
         if ((ntohl(sin->sin_addr.s_addr) & 0xFF000000) == 0x7F000000) continue;
@@ -196,23 +260,17 @@ ssize_t recvfrom(int fd, void *buf, size_t len, int flags,
         struct nlmsghdr *nlh = (struct nlmsghdr *)buf;
         
         if (result == 20 && nlh->nlmsg_type == NLMSG_DONE) {
-            /* 
-             * O binário faz DUAS consultas netlink por loop de detecção:
-             * 1. GETLINK (interfaces) -> responde 2916 bytes -> finaliza com DONE (20 bytes)
-             * 2. GETADDR (IPs IPv4) -> vazio no docker -> responde DONE (20 bytes)
-             * Precisamos injetar apenas no SEGUNDO DONE.
-             */
-            static int done_count = 0;
-            done_count++;
+            uint32_t orig_seq = nlh->nlmsg_seq;
+            uint32_t orig_pid = nlh->nlmsg_pid;
+            unsigned char req_fam = get_seq_family(orig_seq);
             
-            if (done_count % 2 == 0) {
-                uint32_t orig_seq = nlh->nlmsg_seq;
-                uint32_t orig_pid = nlh->nlmsg_pid;
-                ssize_t fake = build_response(buf, len, orig_seq, orig_pid);
+            // Only inject if the request was for AF_INET (IPv4) or AF_UNSPEC.
+            // DO NOT inject IPv4 records if the request was specifically for IPv6!
+            if (req_fam == AF_INET || req_fam == AF_UNSPEC) {
+                ssize_t fake = build_response(buf, len, orig_seq, orig_pid, req_fam);
                 if (fake > 0) return fake;
             }
         }
-        
         else if (result > 20 && nlh->nlmsg_type == RTM_NEWADDR) {
             struct ifaddrmsg *ifa = (struct ifaddrmsg *)NLMSG_DATA(nlh);
             if (ifa->ifa_family == AF_INET6) {
