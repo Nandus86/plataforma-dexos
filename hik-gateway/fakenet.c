@@ -27,11 +27,12 @@ static int nl_fds[64];
 static int nl_count = 0;
 
 /* Tracks the family requested by each sequence number */
-struct seq_family {
+struct seq_info {
     uint32_t seq;
     unsigned char family;
+    int is_getaddr;
 };
-static struct seq_family seq_history[256];
+static struct seq_info seq_history[256];
 static int seq_hist_idx = 0;
 
 /* Ponteiros reais */
@@ -55,8 +56,6 @@ static void init_funcs(void) {
 
 /*
  * Interceptar getifaddrs() para esconder completamente o IPv6 da Hikvision.
- * O binário usa getifaddrs para detectar endereços IPv6 após o scan netlink.
- * Retornamos uma lista filtrada contendo APENAS entradas AF_INET (IPv4).
  */
 int getifaddrs(struct ifaddrs **ifap) {
     init_funcs();
@@ -64,17 +63,14 @@ int getifaddrs(struct ifaddrs **ifap) {
     int ret = real_getifaddrs(ifap);
     if (ret != 0 || !ifap || !*ifap) return ret;
 
-    /* Caminhar pela lista ligada e remover entradas IPv6 */
     struct ifaddrs *prev = NULL;
     struct ifaddrs *cur = *ifap;
     while (cur) {
         struct ifaddrs *next = cur->ifa_next;
         int is_v6 = (cur->ifa_addr && cur->ifa_addr->sa_family == AF_INET6);
         if (is_v6) {
-            /* Pular esse nó: conectar prev ao next */
             if (prev) prev->ifa_next = next;
             else *ifap = next;
-            /* Liberar o nó IPv6 */
             cur->ifa_next = NULL;
             real_freeifaddrs(cur);
         } else {
@@ -85,7 +81,6 @@ int getifaddrs(struct ifaddrs **ifap) {
     return 0;
 }
 
-/* Interceptar socket() para rastrear FDs netlink */
 int socket(int domain, int type, int protocol) {
     init_funcs();
     int fd = real_socket(domain, type, protocol);
@@ -101,27 +96,33 @@ static int is_nl(int fd) {
     return 0;
 }
 
-static void record_seq_family(uint32_t seq, unsigned char family) {
+static void record_seq(uint32_t seq, int is_getaddr, unsigned char family) {
     seq_history[seq_hist_idx].seq = seq;
+    seq_history[seq_hist_idx].is_getaddr = is_getaddr;
     seq_history[seq_hist_idx].family = family;
     seq_hist_idx = (seq_hist_idx + 1) % 256;
 }
 
-static unsigned char get_seq_family(uint32_t seq) {
+/* Returns a pointer to the tracking info, or NULL if not found */
+static struct seq_info* get_seq_info(uint32_t seq) {
     for (int i = 0; i < 256; i++) {
-        if (seq_history[i].seq == seq) {
-            return seq_history[i].family;
+        if (seq_history[i].seq == seq && seq_history[i].is_getaddr != 0) {
+            return &seq_history[i];
         }
     }
-    return AF_UNSPEC;
+    return NULL;
 }
 
 static void inspect_outgoing(int fd, const void *buf, size_t len) {
     if (!is_nl(fd) || len < sizeof(struct nlmsghdr)) return;
     struct nlmsghdr *nlh = (struct nlmsghdr *)buf;
+    
     if (nlh->nlmsg_type == RTM_GETADDR) {
         struct rtgenmsg *rtgen = (struct rtgenmsg *)NLMSG_DATA(nlh);
-        record_seq_family(nlh->nlmsg_seq, rtgen->rtgen_family);
+        record_seq(nlh->nlmsg_seq, 1, rtgen->rtgen_family);
+    } else {
+        /* Record other requests as not-GETADDR so we never inject on them */
+        record_seq(nlh->nlmsg_seq, 0, 0);
     }
 }
 
@@ -146,7 +147,7 @@ ssize_t sendmsg(int fd, const struct msghdr *msg, int flags) {
     return real_sendmsg(fd, msg, flags);
 }
 
-static ssize_t build_response(void *buf, size_t buflen, uint32_t seq, uint32_t pid, unsigned char requested_family) {
+static ssize_t build_response(void *buf, size_t buflen, uint32_t seq, uint32_t pid) {
     struct ifaddrs *ifas, *ifa;
     unsigned char *p = (unsigned char *)buf;
     size_t total = 0;
@@ -159,10 +160,7 @@ static ssize_t build_response(void *buf, size_t buflen, uint32_t seq, uint32_t p
     for (ifa = ifas; ifa; ifa = ifa->ifa_next) {
         if (!ifa->ifa_addr) continue;
         
-        // Only inject requested family (or both if UNSPEC)
-        if (requested_family != AF_UNSPEC && ifa->ifa_addr->sa_family != requested_family) continue;
-        
-        // Skip IPv6 for now, as we only want to reliably provide IPv4
+        // We only inject IPv4 
         if (ifa->ifa_addr->sa_family != AF_INET) continue;
         
         struct sockaddr_in *sin = (struct sockaddr_in *)ifa->ifa_addr;
@@ -262,13 +260,15 @@ ssize_t recvfrom(int fd, void *buf, size_t len, int flags,
         if (result == 20 && nlh->nlmsg_type == NLMSG_DONE) {
             uint32_t orig_seq = nlh->nlmsg_seq;
             uint32_t orig_pid = nlh->nlmsg_pid;
-            unsigned char req_fam = get_seq_family(orig_seq);
             
-            // Only inject if the request was for AF_INET (IPv4) or AF_UNSPEC.
-            // DO NOT inject IPv4 records if the request was specifically for IPv6!
-            if (req_fam == AF_INET || req_fam == AF_UNSPEC) {
-                ssize_t fake = build_response(buf, len, orig_seq, orig_pid, req_fam);
-                if (fake > 0) return fake;
+            struct seq_info *info = get_seq_info(orig_seq);
+            
+            // Only inject if we KNOW this sequence was an RTM_GETADDR for IPv4 / UNSPEC
+            if (info != NULL && info->is_getaddr) {
+                if (info->family == AF_INET || info->family == AF_UNSPEC) {
+                    ssize_t fake = build_response(buf, len, orig_seq, orig_pid);
+                    if (fake > 0) return fake;
+                }
             }
         }
         else if (result > 20 && nlh->nlmsg_type == RTM_NEWADDR) {
