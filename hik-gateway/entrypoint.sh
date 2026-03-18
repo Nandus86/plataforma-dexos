@@ -49,7 +49,6 @@ sleep 5
 unset LD_PRELOAD
 SERVICE_PID=""
 for i in $(seq 1 10); do
-    # Tentar encontrar qualquer processo do gateway
     SERVICE_PID=$(pgrep -f "DeviceGatewaySe" 2>/dev/null | head -1)
     [ -n "$SERVICE_PID" ] && echo ">>> Daemon: DeviceGatewaySe PID=$SERVICE_PID <<<" && break
 
@@ -70,13 +69,20 @@ if [ -z "$SERVICE_PID" ]; then
     exit 1
 fi
 
+# Funcao para checar se algum processo gateway esta vivo
+gateway_alive() {
+    pgrep -f "DeviceGatewaySe" >/dev/null 2>&1 && return 0
+    pgrep -f "dg_pss" >/dev/null 2>&1 && return 0
+    pgrep -f "dg_das_media" >/dev/null 2>&1 && return 0
+    return 1
+}
+
 # ==== AGUARDAR PORTA 8081 ====
 echo "Aguardando porta 8081 (timeout: 120s)..."
 PORTA_OK=0
 for i in $(seq 1 60); do
-    if ! pgrep -f "DeviceGateway\|dg_pss\|dg_das" >/dev/null 2>&1; then
+    if ! gateway_alive; then
         echo "!!! Todos processos gateway morreram na iteração $i !!!"
-        echo "--- Logs ---"
         find /app/logs -name "*.log" -size +0c -exec echo "=== {} ===" \; -exec tail -30 {} \; 2>/dev/null
         break
     fi
@@ -99,8 +105,8 @@ done
 if [ "$PORTA_OK" -eq 0 ]; then
     echo "!!! Porta 8081 nao abriu !!!"
     echo "Portas:" && ss -tlnp 2>/dev/null || true
-    echo "Processos:" && ps aux 2>/dev/null | grep -i "device\|dg_\|gateway" || true
-    echo "--- Todos logs ---"
+    echo "Processos:" && ps aux 2>/dev/null | grep -iE "device|dg_|gateway" || true
+    echo "--- Logs ---"
     find /app/logs -name "*.log" -size +0c -exec echo "=== {} ===" \; -exec tail -30 {} \; 2>/dev/null
 fi
 
@@ -117,7 +123,7 @@ touch /app/logs/ivms_service.log
 (tail -f /app/logs/*.log /app/logs/**/*.log /app/nginx/logs/*.log 2>/dev/null || true) &
 
 while true; do
-    if ! pgrep -f "DeviceGateway\|dg_pss\|dg_das" >/dev/null 2>&1; then
+    if ! gateway_alive; then
         echo "!!! Todos processos gateway morreram !!!"
         find /app/logs -name "*.log" -size +0c -exec echo "=== {} ===" \; -exec tail -20 {} \; 2>/dev/null
         kill $NGINX_PID 2>/dev/null || true
