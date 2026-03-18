@@ -33,25 +33,70 @@ export LD_PRELOAD=/app/fakenet.so
 ENGINE_PID=$!
 echo "Motor PID: $ENGINE_PID"
 
-# Aguardar porta 8081
-echo "Aguardando porta 8081..."
-for i in $(seq 1 30); do
-    if netstat -tlnp 2>/dev/null | grep -q ":8081"; then
-        echo ">>> PORTA 8081 ABERTA! Motor OK! <<<"
+# ==== AGUARDAR PORTA 8081 ====
+echo "Aguardando porta 8081 (timeout: 120s)..."
+PORTA_OK=0
+for i in $(seq 1 60); do
+    # Verificar se o processo ainda está vivo
+    if ! kill -0 $ENGINE_PID 2>/dev/null; then
+        echo "!!! Motor PID=$ENGINE_PID MORREU na iteração $i !!!"
+        echo "Últimas linhas do log:"
+        tail -20 /app/logs/ivms_service.log 2>/dev/null || true
         break
     fi
+
+    # Tentar detectar a porta 8081 de múltiplas formas
+    if ss -tlnp 2>/dev/null | grep -q ':8081'; then
+        PORTA_OK=1
+        echo ">>> PORTA 8081 ABERTA (ss)! Motor OK! <<<"
+        break
+    fi
+
+    if grep -q '00000000:1F91 ' /proc/net/tcp 2>/dev/null; then
+        PORTA_OK=1
+        echo ">>> PORTA 8081 ABERTA (/proc/net/tcp)! Motor OK! <<<"
+        break
+    fi
+
+    if netstat -tlnp 2>/dev/null | grep -q ':8081'; then
+        PORTA_OK=1
+        echo ">>> PORTA 8081 ABERTA (netstat)! Motor OK! <<<"
+        break
+    fi
+
+    echo "[$i/60] Aguardando 8081... (PID $ENGINE_PID vivo)"
     sleep 2
 done
+
+if [ "$PORTA_OK" -eq 0 ]; then
+    echo "!!! AVISO: Porta 8081 nao detectada apos 120s. Iniciando Nginx mesmo assim para diagnóstico... !!!"
+    echo "Portas abertas pelo motor:"
+    ss -tlnp 2>/dev/null | grep "$ENGINE_PID" || true
+    cat /proc/net/tcp 2>/dev/null | head -20 || true
+fi
 
 # ==== INICIAR NGINX (sem LD_PRELOAD) ====
 unset LD_PRELOAD
 echo "Iniciando Nginx..."
-/app/nginx/DeviceGateway-nginx -p /app/nginx/ -c /app/nginx/conf/nginx.conf
+/app/nginx/DeviceGateway-nginx -p /app/nginx/ -c /app/nginx/conf/nginx.conf &
+NGINX_PID=$!
 
 echo "============================================="
-echo "Gateway ativo! Motor PID=$ENGINE_PID"
+echo "Gateway ativo! Motor PID=$ENGINE_PID | Nginx PID=$NGINX_PID"
 echo "============================================="
 
-# Manter container vivo
+# Manter container vivo e monitorar processos
 touch /app/logs/ivms_service.log
-tail -f /app/logs/*.log /app/nginx/logs/*.log 2>/dev/null
+tail -f /app/logs/*.log /app/nginx/logs/*.log 2>/dev/null &
+TAIL_PID=$!
+
+# Vigiar se o motor morreu
+while true; do
+    if ! kill -0 $ENGINE_PID 2>/dev/null; then
+        echo "!!! Motor morreu (PID=$ENGINE_PID). Encerrando container... !!!"
+        kill $NGINX_PID 2>/dev/null || true
+        kill $TAIL_PID 2>/dev/null || true
+        exit 1
+    fi
+    sleep 10
+done
