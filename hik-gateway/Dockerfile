@@ -4,23 +4,23 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     libcap2 libcap2-bin net-tools iproute2 procps libxml2 \
-    psmisc dos2unix curl kmod \
+    psmisc dos2unix curl gcc \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copiar TODOS os arquivos do SDK original
+# Copiar arquivos do SDK original
 COPY HikDeviceGateway_V1.8.0.4Build20250227_Linux64/ .
 
-# 1. Preparar XMLs a partir dos templates
+# 1. Preparar XMLs
 RUN mv Config_Template.xml Config.xml && \
     mv PrivateConfig_Template.xml PrivateConfig.xml && \
     mv ISAPIConfig_Template.xml ISAPIConfig.xml
 
-# 2. Copiar sfrzcfg para /etc
+# 2. sfrzcfg
 RUN cp -f /app/sfrzcfg /etc/sfrzcfg
 
-# 3. Configurar ldconfig
+# 3. ldconfig
 RUN echo "/app" >> /etc/ld.so.conf && \
     echo "/app/apps/das_media_x64/stream" >> /etc/ld.so.conf && \
     echo "/app/apps/das_media_x64/plugins/ehomeV5_plugin" >> /etc/ld.so.conf && \
@@ -41,10 +41,15 @@ RUN chmod +x -R /app
 # 7. Instalação oficial do binário
 RUN cd /app && ./DeviceGatewayService -install || true
 
-# 8. Substituir nginx.conf pelo nosso (baseado no original, sem blocos incompativeis)
+# 8. Compilar a biblioteca de interceptação de rede
+COPY fakenet.c /app/fakenet.c
+RUN gcc -shared -fPIC -o /app/fakenet.so /app/fakenet.c -ldl && \
+    rm /app/fakenet.c
+
+# 9. Substituir nginx.conf
 COPY nginx_gateway.conf /app/nginx/conf/nginx.conf
 
-# 9. Copiar entrypoint
+# 10. Entrypoint
 COPY entrypoint.sh /app/entrypoint.sh
 RUN dos2unix /app/entrypoint.sh /app/nginx/conf/nginx.conf && \
     chmod +x /app/entrypoint.sh
