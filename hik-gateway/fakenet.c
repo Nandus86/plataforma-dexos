@@ -187,15 +187,28 @@ ssize_t recvfrom(int fd, void *buf, size_t len, int flags,
     init_funcs();
     ssize_t result = real_recvfrom(fd, buf, len, flags, src, addrlen);
 
-    /* Primeira resposta NLMSG_DONE em socket netlink = substituir */
+    /*
+     * O binário faz DUAS consultas netlink:
+     *   1. RTM_GETLINK (interfaces) → resposta grande → NLMSG_DONE (1º)
+     *   2. RTM_GETADDR (IPs)        → resposta vazia  → NLMSG_DONE (2º)
+     *
+     * Precisamos PULAR o 1º DONE e SUBSTITUIR o 2º com IPs reais.
+     */
+    static int done_count = 0;
+
     if (!injected && is_nl(fd) && result >= 16) {
         struct nlmsghdr *nlh = (struct nlmsghdr *)buf;
         if (nlh->nlmsg_type == NLMSG_DONE) {
-            ssize_t fake = build_response(buf, len);
-            if (fake > 0) {
-                injected = 1;
-                return fake;
+            done_count++;
+            if (done_count >= 2) {
+                /* Este é o DONE do RTM_GETADDR - substituir! */
+                ssize_t fake = build_response(buf, len);
+                if (fake > 0) {
+                    injected = 1;
+                    return fake;
+                }
             }
+            /* done_count == 1: é o DONE do RTM_GETLINK, deixar passar */
         }
     }
 
