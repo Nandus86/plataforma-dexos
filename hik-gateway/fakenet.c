@@ -1,6 +1,7 @@
 /*
  * fakenet.c - LD_PRELOAD para injetar IPv4 em respostas netlink
- * Maquina de estados receive-only. Sem hooks de send.
+ * + Hook bind() para forçar escuta em 0.0.0.0 (todas interfaces)
+ * + Filtro getifaddrs() para esconder IPv6
  */
 #define _GNU_SOURCE
 #include <dlfcn.h>
@@ -29,12 +30,43 @@ static int (*real_socket)(int, int, int) = NULL;
 static ssize_t (*real_recvfrom)(int, void*, size_t, int, struct sockaddr*, socklen_t*) = NULL;
 static int (*real_getifaddrs)(struct ifaddrs **) = NULL;
 static void (*real_freeifaddrs)(struct ifaddrs *) = NULL;
+static int (*real_bind)(int, const struct sockaddr*, socklen_t) = NULL;
 
 static void init_funcs(void) {
     if (!real_socket)      real_socket      = dlsym(RTLD_NEXT, "socket");
     if (!real_recvfrom)    real_recvfrom    = dlsym(RTLD_NEXT, "recvfrom");
     if (!real_getifaddrs)  real_getifaddrs  = dlsym(RTLD_NEXT, "getifaddrs");
     if (!real_freeifaddrs) real_freeifaddrs = dlsym(RTLD_NEXT, "freeifaddrs");
+    if (!real_bind)        real_bind        = dlsym(RTLD_NEXT, "bind");
+}
+
+/*
+ * bind() hook: forçar 0.0.0.0 em vez de IP específico
+ * O drv_isup_dev faz bind(10.132.0.2:7661) → aparelho não conecta
+ * Com este hook: bind(0.0.0.0:7661) → aceita de qualquer interface
+ */
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
+    init_funcs();
+    if (!real_bind) real_bind = dlsym(RTLD_NEXT, "bind");
+
+    if (addr && addr->sa_family == AF_INET) {
+        struct sockaddr_in *sin = (struct sockaddr_in *)addr;
+        uint32_t ip = ntohl(sin->sin_addr.s_addr);
+
+        /* Só interceptar IPs não-loopback e não-wildcard */
+        if (ip != 0 && (ip & 0xFF000000) != 0x7F000000) {
+            struct sockaddr_in modified = *sin;
+            modified.sin_addr.s_addr = htonl(INADDR_ANY); /* 0.0.0.0 */
+
+            char ipstr[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, &sin->sin_addr, ipstr, sizeof(ipstr));
+            fprintf(stderr, "fakenet: bind %s:%d -> 0.0.0.0:%d\n",
+                    ipstr, ntohs(sin->sin_port), ntohs(sin->sin_port));
+
+            return real_bind(sockfd, (struct sockaddr *)&modified, sizeof(modified));
+        }
+    }
+    return real_bind(sockfd, addr, addrlen);
 }
 
 /*
