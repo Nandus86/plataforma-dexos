@@ -51,6 +51,12 @@ echo "Iniciando DeviceGatewayService..."
 export LD_PRELOAD=/app/fakenet.so
 echo ">>> fakenet.so ATIVADO (filtro IPv6 essencial) <<<"
 
+# CRÍTICO: O serviço verifica se este lockfile existe.
+# Sem ele: "lockfile does not exist, and current service will exit"
+# O systemd normalmente cria isso, mas no Docker não existe systemd.
+touch /var/lock/subsys/DeviceGatewayService
+echo ">>> Lockfile criado: /var/lock/subsys/DeviceGatewayService <<<"
+
 ./DeviceGatewayService -service -instance=DeviceGatewayService &
 LAUNCHER_PID=$!
 echo "Launcher PID: $LAUNCHER_PID"
