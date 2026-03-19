@@ -45,15 +45,11 @@ fi
 
 # ==== INICIAR MOTOR (daemon que faz fork) ====
 echo "Iniciando DeviceGatewayService..."
-
-# Em modo --network=host (NETWORK_HOST=1), desabilitar fakenet.so
-# pois as interfaces reais estão disponíveis e o fakenet pode interferir
-if [ "${NETWORK_HOST:-0}" = "1" ]; then
-    echo ">>> Modo NETWORK_HOST: fakenet.so DESATIVADO (interfaces reais disponíveis) <<<"
-else
-    export LD_PRELOAD=/app/fakenet.so
-    echo ">>> Modo Docker bridge: fakenet.so ATIVADO <<<"
-fi
+# fakenet.so SEMPRE necessário: filtra IPv6 que confunde o gateway
+# Sem ele: 19 IPs (IPv4+IPv6) → gateway trava em 10s
+# Com ele: 5 IPs (só IPv4) → porta 8081 abre OK
+export LD_PRELOAD=/app/fakenet.so
+echo ">>> fakenet.so ATIVADO (filtro IPv6 essencial) <<<"
 
 ./DeviceGatewayService -service -instance=DeviceGatewayService &
 LAUNCHER_PID=$!
