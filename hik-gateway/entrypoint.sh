@@ -36,6 +36,13 @@ sed -i 's/<Level>3<\/Level>/<Level>6<\/Level>/g' /app/Config.xml
 echo "Config.xml Enable status:"
 grep -n "Enable" /app/Config.xml
 
+# ==== NGINX PORT (para --network=host, porta 80 já está em uso) ====
+NGINX_PORT=${NGINX_PORT:-80}
+if [ "$NGINX_PORT" != "80" ]; then
+    sed -i "s/listen       80;/listen       $NGINX_PORT;/" /app/nginx/conf/nginx.conf
+    echo "Nginx configurado para porta: $NGINX_PORT"
+fi
+
 # ==== INICIAR MOTOR (daemon que faz fork) ====
 echo "Iniciando DeviceGatewayService..."
 export LD_PRELOAD=/app/fakenet.so
