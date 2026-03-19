@@ -45,7 +45,16 @@ fi
 
 # ==== INICIAR MOTOR (daemon que faz fork) ====
 echo "Iniciando DeviceGatewayService..."
-export LD_PRELOAD=/app/fakenet.so
+
+# Em modo --network=host (NETWORK_HOST=1), desabilitar fakenet.so
+# pois as interfaces reais estão disponíveis e o fakenet pode interferir
+if [ "${NETWORK_HOST:-0}" = "1" ]; then
+    echo ">>> Modo NETWORK_HOST: fakenet.so DESATIVADO (interfaces reais disponíveis) <<<"
+else
+    export LD_PRELOAD=/app/fakenet.so
+    echo ">>> Modo Docker bridge: fakenet.so ATIVADO <<<"
+fi
+
 ./DeviceGatewayService -service -instance=DeviceGatewayService &
 LAUNCHER_PID=$!
 echo "Launcher PID: $LAUNCHER_PID"
@@ -120,9 +129,18 @@ if [ "$PORTA_OK" -eq 0 ]; then
 fi
 
 # ==== NGINX ====
-echo "Iniciando Nginx..."
-/app/nginx/DeviceGateway-nginx -p /app/nginx/ -c /app/nginx/conf/nginx.conf &
-NGINX_PID=$!
+# O gateway já inicia seu próprio nginx internamente.
+# Só iniciamos manualmente se o gateway NÃO tiver feito isso.
+sleep 2
+if ! pgrep -f "DeviceGateway-nginx" >/dev/null 2>&1; then
+    echo "Iniciando Nginx manualmente..."
+    /app/nginx/DeviceGateway-nginx -p /app/nginx/ -c /app/nginx/conf/nginx.conf &
+    NGINX_PID=$!
+    echo "Nginx PID=$NGINX_PID"
+else
+    NGINX_PID=$(pgrep -f "DeviceGateway-nginx" 2>/dev/null | head -1)
+    echo "Nginx ja iniciado pelo gateway (PID=$NGINX_PID)"
+fi
 
 echo "============================================="
 echo "Gateway ativo! Daemon PID=$SERVICE_PID | Nginx PID=$NGINX_PID"
