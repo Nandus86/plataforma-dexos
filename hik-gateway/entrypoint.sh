@@ -34,14 +34,14 @@ sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/g' /app/ISAPIConfig.xml
 sed -i 's/<Level>3<\/Level>/<Level>6<\/Level>/g' /app/Config.xml
 
 # Forçar escuta em todas as interfaces (0.0.0.0)
-# Evita que o gateway fique preso no IP interno 10.132.0.2
-sed -i 's/<LocalIP>[^<]*<\/LocalIP>/<LocalIP>0.0.0.0<\/LocalIP>/g' /app/Config.xml
-sed -i 's/<ListenIP>[^<]*<\/ListenIP>/<ListenIP>0.0.0.0<\/ListenIP>/g' /app/Config.xml
-echo ">>> IP de escuta forçado para 0.0.0.0 <<<"
+# "Marretar" qualquer menção ao IP interno em todos os arquivos de config
+echo ">>> Localizando e substituindo IP local 10.132.0.2 por 0.0.0.0 em todos os configs..."
+find /app -type f \( -name "*.xml" -o -name "*.conf" -o -name "*.properties" \) -exec sed -i 's/10.132.0.2/0.0.0.0/g' {} +
+echo ">>> Substituição concluída <<<"
 
 echo "Config.xml Enable status:"
 grep -n "Enable" /app/Config.xml
-grep -n "IP" /app/Config.xml
+grep -i "IP" /app/Config.xml | head -n 20
 
 # ==== NGINX PORT (para --network=host, porta 80 já está em uso) ====
 NGINX_PORT=${NGINX_PORT:-80}
