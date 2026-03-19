@@ -11,6 +11,7 @@ from app.models.content import LessonPlan, Material, Announcement
 from app.models.occurrence import Occurrence, OccurrenceType
 from app.models.class_group import ClassGroup, ClassGroupStudent, ClassGroupSubject, ClassGroupStudentSubject, ClassGroupSubjectProfessor, ShiftType, ClassSchedule
 from app.models.academic_period import AcademicPeriod, PeriodBreak, NonSchoolDay, ExtraSchoolDay, BreakType, NonSchoolDayReason
+from app.models.device import Device
 
 __all__ = [
     "Tenant", "Institution",
@@ -22,4 +23,5 @@ __all__ = [
     "Occurrence", "OccurrenceType",
     "ClassGroup", "ClassGroupStudent", "ClassGroupSubject", "ClassGroupStudentSubject", "ClassGroupSubjectProfessor", "ShiftType",
     "AcademicPeriod", "PeriodBreak", "NonSchoolDay", "ClassSchedule", "ExtraSchoolDay", "BreakType", "NonSchoolDayReason",
+    "Device",
 ]
