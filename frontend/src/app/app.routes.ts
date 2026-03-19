@@ -129,6 +129,12 @@ export const routes: Routes = [
                 data: { roles: ['superadmin', 'admin', 'coordenacao'] },
             },
             {
+                path: 'devices',
+                loadChildren: () => import('./features/devices/devices.routes').then(m => m.DEVICE_ROUTES),
+                canActivate: [RoleGuard],
+                data: { roles: ['superadmin', 'admin'] }
+            },
+            {
                 path: '',
                 redirectTo: 'dashboard',
                 pathMatch: 'full',

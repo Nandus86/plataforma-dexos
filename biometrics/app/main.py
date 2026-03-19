@@ -68,10 +68,11 @@ async def receive_event_root(request: Request):
 class UserCreateRequest(BaseModel):
     employee_no: str
     name: str
+    dev_index: str | None = None
 
 @app.post("/device/users")
 async def create_device_user(user: UserCreateRequest):
-    mgr = HikvisionUserManager()
+    mgr = HikvisionUserManager(dev_index=user.dev_index)
     result = await mgr.add_user(
         employee_no=user.employee_no,
         name=user.name,
@@ -81,20 +82,65 @@ async def create_device_user(user: UserCreateRequest):
     raise HTTPException(status_code=500, detail=result)
 
 @app.get("/device/users")
-async def list_device_users():
-    mgr = HikvisionUserManager()
+async def list_device_users(dev_index: str | None = None):
+    mgr = HikvisionUserManager(dev_index=dev_index)
     result = await mgr.search_users()
     if result.get("status") == "ok":
         return result
     raise HTTPException(status_code=500, detail=result)
 
 @app.delete("/device/users/{employee_no}")
-async def delete_device_user(employee_no: str):
-    mgr = HikvisionUserManager()
+async def delete_device_user(employee_no: str, dev_index: str | None = None):
+    mgr = HikvisionUserManager(dev_index=dev_index)
     result = await mgr.delete_user(employee_no)
     if result.get("status") == "ok":
         return result
     raise HTTPException(status_code=500, detail=result)
+
+# === Novos Endpoints de Gestão de Dispositivos e Transferência ===
+
+@app.get("/gateway/devices")
+async def get_gateway_devices():
+    mgr = HikvisionUserManager()
+    result = await mgr.get_gateway_devices()
+    if result.get("status") == "ok":
+        return result
+    raise HTTPException(status_code=500, detail=result)
+
+class BiometricTransferRequest(BaseModel):
+    employee_no: str
+    transmitter_index: str
+    receiver_index: str
+    types: list[str]  # ["face", "fingerprint", "password"]
+
+@app.post("/gateway/transfer/biometrics")
+async def transfer_biometrics(req: BiometricTransferRequest):
+    tx_mgr = HikvisionUserManager(dev_index=req.transmitter_index)
+    rx_mgr = HikvisionUserManager(dev_index=req.receiver_index)
+    
+    results = {"fingerprint": None, "face": None, "password": None}
+    
+    # 1. Transferir Digital
+    if "fingerprint" in req.types:
+        tx_res = await tx_mgr.search_fingerprint(req.employee_no)
+        if tx_res.get("status") == "ok":
+            # Extrair dados e enviar para o receptor
+            rx_res = await rx_mgr.set_fingerprint(req.employee_no, tx_res["data"])
+            results["fingerprint"] = rx_res
+        else:
+            results["fingerprint"] = tx_res
+
+    # 2. Transferir Face
+    if "face" in req.types:
+        tx_res = await tx_mgr.search_face(req.employee_no)
+        if tx_res.get("status") == "ok":
+             # Extrair dados e enviar para o receptor
+            rx_res = await rx_mgr.set_face_data(req.employee_no, tx_res["data"])
+            results["face"] = rx_res
+        else:
+            results["face"] = tx_res
+
+    return {"status": "completed", "results": results}
 
 # Health check
 @app.get("/health")

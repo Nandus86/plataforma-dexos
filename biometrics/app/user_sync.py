@@ -197,3 +197,55 @@ class HikvisionUserManager:
             "POST", "/ISAPI/Intelligent/FDLib/FaceDataRecord?format=json",
             json_data=body
         )
+
+    # === NOVOS MÉTODOS PARA GESTÃO DE DISPOSITIVOS E MIGRAÇÃO ===
+
+    async def get_gateway_devices(self) -> dict:
+        """Fetch all connected devices from the Hik Device Gateway."""
+        # Nota: O Gateway costuma expor a lista de dispositivos no próprio Nginx ou via API ISAPI
+        # De acordo com testes anteriores, usamos o endpoint de deviceList.
+        return await self._request(
+            "GET", "/ISAPI/ContentMgmt/DeviceMgmt/deviceList?format=json"
+        )
+
+    async def search_fingerprint(self, employee_no: str) -> dict:
+        """Get fingerprint templates for a specific user from the device."""
+        body = {
+            "FingerPrintSearchCond": {
+                "searchID": "1",
+                "employeeNoList": [{"employeeNo": employee_no}]
+            }
+        }
+        return await self._request(
+            "POST", "/ISAPI/AccessControl/FingerPrint/Search?format=json",
+            json_data=body
+        )
+
+    async def set_fingerprint(self, employee_no: str, data: dict) -> dict:
+        """Upload fingerprint templates to the device."""
+        # A data deve vir no formato esperado pelo SetUp (contendo FingerPrintCfg)
+        return await self._request(
+            "POST", "/ISAPI/AccessControl/FingerPrint/SetUp?format=json",
+            json_data=data
+        )
+
+    async def search_face(self, employee_no: str) -> dict:
+        """Get face data for a specific user from the device."""
+        body = {
+            "FaceDataSearch": {
+                "searchID": "1",
+                "employeeNo": employee_no
+            }
+        }
+        return await self._request(
+            "POST", "/ISAPI/Intelligent/FDLib/FaceDataSearch?format=json",
+            json_data=body
+        )
+
+    async def set_face_data(self, employee_no: str, data: dict) -> dict:
+        """Upload face data to the device."""
+        # A data deve vir no formato esperado pelo FaceDataRecord
+        return await self._request(
+            "POST", "/ISAPI/Intelligent/FDLib/FaceDataRecord?format=json",
+            json_data=data
+        )

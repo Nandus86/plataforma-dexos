@@ -108,6 +108,15 @@ export class LayoutComponent implements OnInit {
             ],
         },
         {
+            label: 'Dispositivos', icon: 'devices', expanded: false,
+            roles: ['superadmin', 'admin'],
+            items: [
+                { label: 'Terminais Hikvision', icon: 'router', route: '/devices', roles: ['superadmin', 'admin'], featureKey: 'settings' },
+                { label: 'Sincronização', icon: 'sync', route: '/devices/sync', roles: ['superadmin', 'admin'], featureKey: 'settings' },
+                { label: 'Migrar Biometria', icon: 'move_up', route: '/devices/migrate', roles: ['superadmin', 'admin'], featureKey: 'settings' },
+            ],
+        },
+        {
             label: 'Sistema', icon: 'settings', expanded: false,
             roles: ['superadmin', 'admin'],
             items: [
