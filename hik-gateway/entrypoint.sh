@@ -33,8 +33,15 @@ sed -i 's/<Enable>0<\/Enable>/<Enable>1<\/Enable>/g' /app/ISAPIConfig.xml
 # Log level debug
 sed -i 's/<Level>3<\/Level>/<Level>6<\/Level>/g' /app/Config.xml
 
+# Forçar escuta em todas as interfaces (0.0.0.0)
+# Evita que o gateway fique preso no IP interno 10.132.0.2
+sed -i 's/<LocalIP>[^<]*<\/LocalIP>/<LocalIP>0.0.0.0<\/LocalIP>/g' /app/Config.xml
+sed -i 's/<ListenIP>[^<]*<\/ListenIP>/<ListenIP>0.0.0.0<\/ListenIP>/g' /app/Config.xml
+echo ">>> IP de escuta forçado para 0.0.0.0 <<<"
+
 echo "Config.xml Enable status:"
 grep -n "Enable" /app/Config.xml
+grep -n "IP" /app/Config.xml
 
 # ==== NGINX PORT (para --network=host, porta 80 já está em uso) ====
 NGINX_PORT=${NGINX_PORT:-80}
