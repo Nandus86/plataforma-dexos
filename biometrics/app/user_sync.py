@@ -125,26 +125,17 @@ class HikvisionUserManager:
 
     async def add_user(self, employee_no: str, name: str,
                        user_type: str = "normal") -> dict:
-        """Add a user to the device."""
+        """Add a user to the device (Gateway format: UserInfo as array)."""
         body = {
-            "UserInfo": {
+            "UserInfo": [{
                 "employeeNo": employee_no,
                 "name": name,
                 "userType": user_type,
                 "Valid": {
-                    "enable": True,
                     "beginTime": "2020-01-01T00:00:00",
-                    "endTime": "2037-12-31T23:59:59",
-                    "timeType": "local"
-                },
-                "doorRight": "1",
-                "RightPlan": [
-                    {
-                        "doorNo": 1,
-                        "planTemplateNo": "1"
-                    }
-                ]
-            }
+                    "endTime": "2037-12-31T23:59:59"
+                }
+            }]
         }
         return await self._request(
             "POST", "/ISAPI/AccessControl/UserInfo/Record?format=json",
@@ -201,47 +192,52 @@ class HikvisionUserManager:
     # === NOVOS MÉTODOS PARA GESTÃO DE DISPOSITIVOS E MIGRAÇÃO ===
 
     async def get_gateway_devices(self) -> dict:
-        """Fetch all connected devices from the Hik Device Gateway."""
-        # O Hik Device Gateway oficial via ISUP não possui endpoint /deviceList nativo público
-        return {"status": "ok", "data": {"DeviceList": {"Device": []}}}
-
-    async def search_fingerprint(self, employee_no: str) -> dict:
-        """Get fingerprint templates for a specific user from the device."""
+        """Fetch connected devices from the Hik Device Gateway using POST deviceList."""
         body = {
-            "FingerPrintSearchCond": {
-                "searchID": "1",
-                "employeeNoList": [{"employeeNo": employee_no}]
+            "SearchDescription": {
+                "position": 0,
+                "maxResult": 100,
+                "Filter": {
+                    "key": "",
+                    "devType": "",
+                    "protocolType": ["ehomeV5"],
+                    "devStatus": ["online", "offline"]
+                }
             }
         }
         return await self._request(
-            "POST", "/ISAPI/AccessControl/FingerPrint/Search?format=json",
+            "POST", "/ISAPI/ContentMgmt/DeviceMgmt/deviceList?format=json",
             json_data=body
         )
 
-    async def set_fingerprint(self, employee_no: str, data: dict) -> dict:
-        """Upload fingerprint templates to the device."""
-        # A data deve vir no formato esperado pelo SetUp (contendo FingerPrintCfg)
-        return await self._request(
-            "POST", "/ISAPI/AccessControl/FingerPrint/SetUp?format=json",
-            json_data=data
-        )
-
-    async def search_face(self, employee_no: str) -> dict:
-        """Get face data for a specific user from the device."""
+    async def set_fingerprint(self, employee_no: str, finger_data: str, finger_id: int = 1) -> dict:
+        """Add fingerprint to the device via FingerPrintDownload (Gateway endpoint)."""
         body = {
-            "FaceDataSearch": {
-                "searchID": "1",
-                "employeeNo": employee_no
+            "FingerPrintCfg": {
+                "employeeNo": employee_no,
+                "fingerPrintID": finger_id,
+                "fingerData": finger_data
             }
         }
         return await self._request(
-            "POST", "/ISAPI/Intelligent/FDLib/FaceDataSearch?format=json",
+            "POST", "/ISAPI/AccessControl/FingerPrintDownload?format=json",
+            json_data=body
+        )
+
+    async def capture_fingerprint_on_device(self, finger_no: int = 1) -> dict:
+        """Trigger fingerprint capture on the physical device reader."""
+        body = {
+            "CaptureFingerPrintCond": {
+                "fingerNo": finger_no
+            }
+        }
+        return await self._request(
+            "POST", "/ISAPI/AccessControl/CaptureFingerPrint?format=json",
             json_data=body
         )
 
     async def set_face_data(self, employee_no: str, data: dict) -> dict:
-        """Upload face data to the device."""
-        # A data deve vir no formato esperado pelo FaceDataRecord
+        """Add face data to the device via FaceDataRecord (Gateway endpoint)."""
         return await self._request(
             "POST", "/ISAPI/Intelligent/FDLib/FaceDataRecord?format=json",
             json_data=data

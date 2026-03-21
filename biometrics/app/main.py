@@ -115,32 +115,20 @@ class BiometricTransferRequest(BaseModel):
 
 @app.post("/gateway/transfer/biometrics")
 async def transfer_biometrics(req: BiometricTransferRequest):
-    tx_mgr = HikvisionUserManager(dev_index=req.transmitter_index)
-    rx_mgr = HikvisionUserManager(dev_index=req.receiver_index)
-    
-    results = {"fingerprint": None, "face": None, "password": None}
-    
-    # 1. Transferir Digital
-    if "fingerprint" in req.types:
-        tx_res = await tx_mgr.search_fingerprint(req.employee_no)
-        if tx_res.get("status") == "ok":
-            # Extrair dados e enviar para o receptor
-            rx_res = await rx_mgr.set_fingerprint(req.employee_no, tx_res["data"])
-            results["fingerprint"] = rx_res
-        else:
-            results["fingerprint"] = tx_res
-
-    # 2. Transferir Face
-    if "face" in req.types:
-        tx_res = await tx_mgr.search_face(req.employee_no)
-        if tx_res.get("status") == "ok":
-             # Extrair dados e enviar para o receptor
-            rx_res = await rx_mgr.set_face_data(req.employee_no, tx_res["data"])
-            results["face"] = rx_res
-        else:
-            results["face"] = tx_res
-
-    return {"status": "completed", "results": results}
+    """
+    Migração de biometria entre terminais.
+    LIMITAÇÃO: O Hik Device Gateway NÃO expõe endpoints para LER/EXTRAIR
+    digitais ou fotos existentes de um terminal. Só é possível ADICIONAR ou DELETAR.
+    A migração requer acesso direto ao terminal (mesma rede local) ou
+    que os dados biométricos sejam recebidos de outra fonte.
+    """
+    return {
+        "status": "unsupported",
+        "message": "O Gateway Hikvision não suporta extração de digitais/fotos de um terminal. "
+                   "Os endpoints disponíveis permitem apenas ADICIONAR (FingerPrintDownload, FaceDataRecord) "
+                   "ou DELETAR biometria. Para migrar, os dados precisam ser re-capturados no novo terminal.",
+        "available_actions": ["add_fingerprint", "capture_fingerprint", "add_face", "delete_fingerprint", "delete_face"]
+    }
 
 # Health check
 @app.get("/health")
