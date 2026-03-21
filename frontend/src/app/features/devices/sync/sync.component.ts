@@ -101,7 +101,8 @@ export class SyncComponent implements OnInit {
     this.syncing = true;
     this.progress = 0;
 
-    this.api.post('/devices/sync-all', {}, { params: { device_ids: selectedIds } }).subscribe({
+    const query = selectedIds.map(id => `device_ids=${id}`).join('&');
+    this.api.post(`/devices/sync-all?${query}`, {}).subscribe({
       next: () => {
         this.progress = 100;
         this.snack.open('Sincronização iniciada com sucesso!', 'OK', { duration: 3000 });

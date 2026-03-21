@@ -147,7 +147,7 @@ export class DevicesComponent implements OnInit {
         if (res.data && res.data.DeviceList && res.data.DeviceList.Device) {
             let list = Array.isArray(res.data.DeviceList.Device) ? res.data.DeviceList.Device : [res.data.DeviceList.Device];
             // Filter out already registered
-            this.gatewayDevices = list.filter(g => !this.devices.some(d => d.dev_index === g.UUID));
+            this.gatewayDevices = list.filter((g: any) => !this.devices.some((d: any) => d.dev_index === g.UUID));
         } else {
             this.gatewayDevices = [];
         }
