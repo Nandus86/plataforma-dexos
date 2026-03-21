@@ -27,7 +27,7 @@ class Settings:
     BRIDGE_PORT: int = int(os.getenv("BRIDGE_PORT", "9500"))
 
     # Hikvision Gateway (New Build 2025)
-    GATEWAY_URL: str = os.getenv("GATEWAY_URL", "http://hik-gateway:8081")
+    GATEWAY_URL: str = os.getenv("GATEWAY_URL", "http://hik-gateway:80")
     HIKVISION_DEV_INDEX: str = os.getenv("HIKVISION_DEV_INDEX", "1")
 
     # Logging

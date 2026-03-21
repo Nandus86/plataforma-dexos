@@ -90,7 +90,7 @@ services:
     environment:
       - EXOUSIA_API_URL=http://exousia-backend:8000
       - BRIDGE_PORT=9500
-      - GATEWAY_URL=http://hik-gateway:8081
+      - GATEWAY_URL=http://hik-gateway:80
     depends_on:
       - hik-gateway
     networks:

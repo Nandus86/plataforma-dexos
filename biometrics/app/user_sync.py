@@ -59,7 +59,7 @@ class HikvisionUserManager:
                 
                 logger.info(f"🚀 Usando Hik Gateway: {method} {url}")
                 
-                async with httpx.AsyncClient(auth=self.auth, timeout=20.0, verify=False) as client:
+                async with httpx.AsyncClient(timeout=20.0, verify=False) as client:
                     response = await client.request(
                         method, url, json=json_data, 
                         content=xml_data.encode("utf-8") if xml_data else None
