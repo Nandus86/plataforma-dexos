@@ -202,11 +202,8 @@ class HikvisionUserManager:
 
     async def get_gateway_devices(self) -> dict:
         """Fetch all connected devices from the Hik Device Gateway."""
-        # Nota: O Gateway costuma expor a lista de dispositivos no próprio Nginx ou via API ISAPI
-        # De acordo com testes anteriores, usamos o endpoint de deviceList.
-        return await self._request(
-            "GET", "/ISAPI/ContentMgmt/DeviceMgmt/deviceList?format=json"
-        )
+        # O Hik Device Gateway oficial via ISUP não possui endpoint /deviceList nativo público
+        return {"status": "ok", "data": {"DeviceList": {"Device": []}}}
 
     async def search_fingerprint(self, employee_no: str) -> dict:
         """Get fingerprint templates for a specific user from the device."""

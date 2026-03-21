@@ -106,8 +106,11 @@ import { ApiService } from '../../core/services/api.service';
                     </div>
 
                     <div *ngIf="gatewayDevices.length === 0" class="text-center p-4">
-                        <div class="spinner-grow text-primary spinner-grow-sm mb-2" role="status"></div>
-                        <p class="small text-muted m-0">Nenhum novo terminal pendente...</p>
+                        <mat-icon class="text-muted mb-2">find_in_page</mat-icon>
+                        <p class="small text-muted mb-3">Nenhum terminal pendente encontrado no cache.</p>
+                        <button mat-stroked-button color="primary" (click)="addManualDevice()">
+                            <mat-icon>add</mat-icon> Adicionar Manualmente
+                        </button>
                     </div>
                 </mat-card-content>
             </mat-card>
@@ -172,6 +175,12 @@ export class DevicesComponent implements OnInit {
       },
       error: (e: any) => this.snack.open('Erro ao registrar: ' + (e.error?.detail || e.message), 'OK', { duration: 3000 })
     });
+  }
+
+  addManualDevice() {
+    const devIndex = prompt('Informe o UUID (devIndex) do terminal, conforme exibido nos logs:', '');
+    if (!devIndex) return;
+    this.registerDevice({ UUID: devIndex, deviceModel: 'Terminal Hikvision' });
   }
 
   deleteDevice(id: string) {
