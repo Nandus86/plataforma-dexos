@@ -59,7 +59,7 @@ class HikvisionUserManager:
                 
                 logger.info(f"🚀 Usando Hik Gateway: {method} {url}")
                 
-                async with httpx.AsyncClient(timeout=20.0, verify=False) as client:
+                async with httpx.AsyncClient(timeout=20.0, verify=False, follow_redirects=True) as client:
                     response = await client.request(
                         method, url, json=json_data, 
                         content=xml_data.encode("utf-8") if xml_data else None
@@ -95,19 +95,9 @@ class HikvisionUserManager:
             logger.debug(f"Erro no túnel SDK (esperado se não conectado): {e}")
 
         # 3. ÚLTIMO RECURSO: CONEXÃO DIRETA (Só funciona se estiver na mesma rede local)
-        port_str = f":{self.port}" if self.port not in (80, 443) else ""
-        direct_url = f"http://{self.host}{port_str}{path}"
-        logger.info(f"🌐 Fallback final: Requisição HTTP direta: {method} {direct_url}")
-        
-        try:
-            async with httpx.AsyncClient(auth=self.auth, timeout=10.0, verify=False) as client:
-                response = await client.request(method, direct_url, json=json_data, content=xml_data)
-            
-            if response.status_code in (200, 201):
-                return {"status": "ok", "data": response.json()}
-            return {"status": "error", "code": response.status_code, "message": response.text}
-        except Exception as e:
-            return {"status": "error", "message": f"All connection attempts failed: {str(e)}"}
+        # Desabilitado: o fallback direto envia ISAPI para o host errado em ambiente Docker
+        logger.warning(f"❌ Todas as tentativas falharam para {method} {path}")
+        return {"status": "error", "message": f"Gateway e SDK falharam para {path}"}
 
     async def search_users(self, start: int = 0, count: int = 30) -> dict:
         """Search/list users on the device."""
