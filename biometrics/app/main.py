@@ -117,66 +117,86 @@ class BiometricTransferRequest(BaseModel):
 async def transfer_biometrics(req: BiometricTransferRequest):
     """
     Migração de biometria entre terminais.
-    Usa FingerPrintUpload para EXTRAIR do transmissor e FingerPrintDownload para ENVIAR ao receptor.
     """
+    logger.info(f"=== MIGRATE START === employee={req.employee_no} TX={req.transmitter_index} RX={req.receiver_index} types={req.types}")
+    
     tx_mgr = HikvisionUserManager(dev_index=req.transmitter_index)
     rx_mgr = HikvisionUserManager(dev_index=req.receiver_index)
     
     results = {"fingerprint": None, "face": None}
+    debug_log = []
     
     # 1. Transferir Digital
     if "fingerprint" in req.types:
         try:
-            # Extrair do transmissor via FingerPrintUpload
+            debug_log.append(f"Step 1: Extracting fingerprint from TX={req.transmitter_index}")
             tx_res = await tx_mgr.get_fingerprints(req.employee_no)
+            debug_log.append(f"Step 2: Extract result: {str(tx_res)[:300]}")
             logger.info(f"FingerPrint extract result: {tx_res}")
             
             if tx_res.get("status") == "ok" and tx_res.get("data"):
                 fp_data = tx_res["data"]
-                # O retorno contém FingerPrintCfg com fingerData
-                # Enviar cada digital encontrada para o receptor
+                debug_log.append(f"Step 3: fp_data type={type(fp_data).__name__}, keys={list(fp_data.keys()) if isinstance(fp_data, dict) else 'N/A'}")
+                
                 if isinstance(fp_data, dict):
                     cfg = fp_data.get("FingerPrintCfg", fp_data)
+                    debug_log.append(f"Step 4: cfg type={type(cfg).__name__}")
+                    
                     if isinstance(cfg, list):
-                        for fp in cfg:
+                        for i, fp in enumerate(cfg):
                             finger_data = fp.get("fingerData", "")
                             finger_id = fp.get("fingerPrintID", 1)
+                            debug_log.append(f"Step 5a: finger[{i}] id={finger_id} data_len={len(finger_data)}")
                             if finger_data:
                                 rx_res = await rx_mgr.set_fingerprint(req.employee_no, finger_data, finger_id)
+                                debug_log.append(f"Step 6a: push result: {str(rx_res)[:200]}")
                                 results["fingerprint"] = rx_res
                     elif isinstance(cfg, dict):
                         finger_data = cfg.get("fingerData", "")
                         finger_id = cfg.get("fingerPrintID", 1)
+                        debug_log.append(f"Step 5b: single finger id={finger_id} data_len={len(finger_data)}")
                         if finger_data:
                             rx_res = await rx_mgr.set_fingerprint(req.employee_no, finger_data, finger_id)
+                            debug_log.append(f"Step 6b: push result: {str(rx_res)[:200]}")
                             results["fingerprint"] = rx_res
+                        else:
+                            debug_log.append("Step 5b: NO fingerData found in cfg")
+                            results["fingerprint"] = {"status": "error", "message": "fingerData vazio na resposta"}
                     else:
-                        results["fingerprint"] = {"status": "error", "message": "Formato inesperado na resposta de digital"}
+                        debug_log.append(f"Step 4: unexpected cfg type: {type(cfg).__name__}")
+                        results["fingerprint"] = {"status": "error", "message": "Formato inesperado"}
                 else:
-                    results["fingerprint"] = {"status": "error", "message": "Nenhum dado de digital retornado"}
+                    debug_log.append(f"Step 3: fp_data not dict, type={type(fp_data).__name__}")
+                    results["fingerprint"] = {"status": "error", "message": "Dados não são dict"}
             else:
+                debug_log.append(f"Step 2b: extraction failed or no data")
                 results["fingerprint"] = tx_res
         except Exception as e:
-            logger.error(f"Fingerprint transfer error: {e}")
+            logger.error(f"Fingerprint transfer error: {e}", exc_info=True)
+            debug_log.append(f"EXCEPTION: {str(e)}")
             results["fingerprint"] = {"status": "error", "message": str(e)}
 
     # 2. Transferir Face
     if "face" in req.types:
         try:
+            debug_log.append(f"Face Step 1: Extracting from TX={req.transmitter_index}")
             tx_res = await tx_mgr.get_face_data(req.employee_no)
+            debug_log.append(f"Face Step 2: result: {str(tx_res)[:300]}")
             logger.info(f"Face extract result: {tx_res}")
             
             if tx_res.get("status") == "ok" and tx_res.get("data"):
-                # Enviar dados de face para o receptor
                 rx_res = await rx_mgr.set_face_data(req.employee_no, tx_res["data"])
+                debug_log.append(f"Face Step 3: push result: {str(rx_res)[:200]}")
                 results["face"] = rx_res
             else:
                 results["face"] = tx_res
         except Exception as e:
-            logger.error(f"Face transfer error: {e}")
+            logger.error(f"Face transfer error: {e}", exc_info=True)
+            debug_log.append(f"Face EXCEPTION: {str(e)}")
             results["face"] = {"status": "error", "message": str(e)}
 
-    return {"status": "completed", "results": results}
+    logger.info(f"=== MIGRATE END === results={results}")
+    return {"status": "completed", "results": results, "debug": debug_log}
 
 # Health check
 @app.get("/health")
