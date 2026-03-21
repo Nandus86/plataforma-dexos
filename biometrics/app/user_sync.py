@@ -66,9 +66,14 @@ class HikvisionUserManager:
                     )
                 
                 if response.status_code in (200, 201):
-                    return {"status": "ok", "data": response.json() if "json" in response.headers.get("Content-Type", "") else response.text}
+                    try:
+                        resp_data = response.json() if "json" in response.headers.get("Content-Type", "") else response.text
+                    except Exception:
+                        resp_data = response.text
+                    logger.info(f"✅ Gateway OK ({response.status_code}): {str(resp_data)[:500]}")
+                    return {"status": "ok", "data": resp_data}
                 else:
-                    logger.warning(f"⚠️ Gateway retornou {response.status_code}. Tentando fallback...")
+                    logger.warning(f"⚠️ Gateway retornou {response.status_code}. Body: {response.text[:500]}. Tentando fallback...")
             except Exception as e:
                 logger.error(f"❌ Erro ao usar Gateway: {e}")
 
