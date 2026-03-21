@@ -242,3 +242,40 @@ class HikvisionUserManager:
             "POST", "/ISAPI/Intelligent/FDLib/FaceDataRecord?format=json",
             json_data=data
         )
+
+    # === MÉTODOS DE EXTRAÇÃO (para migração entre terminais) ===
+
+    async def get_fingerprints(self, employee_no: str) -> dict:
+        """
+        Extract fingerprint templates from device via FingerPrintUpload.
+        Uses the Gateway generic ISAPI passthrough.
+        FingerPrintUpload = terminal 'uploads' its stored data to the server.
+        """
+        body = {
+            "FingerPrintCond": {
+                "searchID": "1",
+                "employeeNo": employee_no
+            }
+        }
+        return await self._request(
+            "POST", "/ISAPI/AccessControl/FingerPrintUpload?format=json",
+            json_data=body
+        )
+
+    async def get_face_data(self, employee_no: str) -> dict:
+        """
+        Search/extract face data from device.
+        Uses FDLib/FDSearch to find face records for a given employee.
+        """
+        body = {
+            "searchResultPosition": 0,
+            "maxResults": 10,
+            "FaceInfoCond": {
+                "employeeNo": employee_no
+            }
+        }
+        return await self._request(
+            "POST", "/ISAPI/Intelligent/FDLib/FDSearch?format=json",
+            json_data=body
+        )
+

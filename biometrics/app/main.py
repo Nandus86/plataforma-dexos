@@ -117,18 +117,66 @@ class BiometricTransferRequest(BaseModel):
 async def transfer_biometrics(req: BiometricTransferRequest):
     """
     Migração de biometria entre terminais.
-    LIMITAÇÃO: O Hik Device Gateway NÃO expõe endpoints para LER/EXTRAIR
-    digitais ou fotos existentes de um terminal. Só é possível ADICIONAR ou DELETAR.
-    A migração requer acesso direto ao terminal (mesma rede local) ou
-    que os dados biométricos sejam recebidos de outra fonte.
+    Usa FingerPrintUpload para EXTRAIR do transmissor e FingerPrintDownload para ENVIAR ao receptor.
     """
-    return {
-        "status": "unsupported",
-        "message": "O Gateway Hikvision não suporta extração de digitais/fotos de um terminal. "
-                   "Os endpoints disponíveis permitem apenas ADICIONAR (FingerPrintDownload, FaceDataRecord) "
-                   "ou DELETAR biometria. Para migrar, os dados precisam ser re-capturados no novo terminal.",
-        "available_actions": ["add_fingerprint", "capture_fingerprint", "add_face", "delete_fingerprint", "delete_face"]
-    }
+    tx_mgr = HikvisionUserManager(dev_index=req.transmitter_index)
+    rx_mgr = HikvisionUserManager(dev_index=req.receiver_index)
+    
+    results = {"fingerprint": None, "face": None}
+    
+    # 1. Transferir Digital
+    if "fingerprint" in req.types:
+        try:
+            # Extrair do transmissor via FingerPrintUpload
+            tx_res = await tx_mgr.get_fingerprints(req.employee_no)
+            logger.info(f"FingerPrint extract result: {tx_res}")
+            
+            if tx_res.get("status") == "ok" and tx_res.get("data"):
+                fp_data = tx_res["data"]
+                # O retorno contém FingerPrintCfg com fingerData
+                # Enviar cada digital encontrada para o receptor
+                if isinstance(fp_data, dict):
+                    cfg = fp_data.get("FingerPrintCfg", fp_data)
+                    if isinstance(cfg, list):
+                        for fp in cfg:
+                            finger_data = fp.get("fingerData", "")
+                            finger_id = fp.get("fingerPrintID", 1)
+                            if finger_data:
+                                rx_res = await rx_mgr.set_fingerprint(req.employee_no, finger_data, finger_id)
+                                results["fingerprint"] = rx_res
+                    elif isinstance(cfg, dict):
+                        finger_data = cfg.get("fingerData", "")
+                        finger_id = cfg.get("fingerPrintID", 1)
+                        if finger_data:
+                            rx_res = await rx_mgr.set_fingerprint(req.employee_no, finger_data, finger_id)
+                            results["fingerprint"] = rx_res
+                    else:
+                        results["fingerprint"] = {"status": "error", "message": "Formato inesperado na resposta de digital"}
+                else:
+                    results["fingerprint"] = {"status": "error", "message": "Nenhum dado de digital retornado"}
+            else:
+                results["fingerprint"] = tx_res
+        except Exception as e:
+            logger.error(f"Fingerprint transfer error: {e}")
+            results["fingerprint"] = {"status": "error", "message": str(e)}
+
+    # 2. Transferir Face
+    if "face" in req.types:
+        try:
+            tx_res = await tx_mgr.get_face_data(req.employee_no)
+            logger.info(f"Face extract result: {tx_res}")
+            
+            if tx_res.get("status") == "ok" and tx_res.get("data"):
+                # Enviar dados de face para o receptor
+                rx_res = await rx_mgr.set_face_data(req.employee_no, tx_res["data"])
+                results["face"] = rx_res
+            else:
+                results["face"] = tx_res
+        except Exception as e:
+            logger.error(f"Face transfer error: {e}")
+            results["face"] = {"status": "error", "message": str(e)}
+
+    return {"status": "completed", "results": results}
 
 # Health check
 @app.get("/health")
