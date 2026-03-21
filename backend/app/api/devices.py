@@ -12,7 +12,7 @@ from app.models.device import Device
 from app.schemas.device import DeviceCreate, DeviceUpdate, DeviceResponse
 from app.config import settings
 
-router = APIRouter(prefix="/devices", tags=["Devices"])
+router = APIRouter()
 
 @router.post("/", response_model=DeviceResponse)
 async def create_device(device_in: DeviceCreate, db: AsyncSession = Depends(get_db)):
