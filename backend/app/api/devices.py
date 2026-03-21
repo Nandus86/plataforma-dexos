@@ -1,22 +1,25 @@
+import logging
 from uuid import UUID
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 import httpx
-
-
 
 from app.database import get_db
 from app.models.device import Device
+from app.models.user import User, UserRole
 from app.schemas.device import DeviceCreate, DeviceUpdate, DeviceResponse
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 @router.post("/", response_model=DeviceResponse)
 async def create_device(device_in: DeviceCreate, db: AsyncSession = Depends(get_db)):
-    # Check if dev_index already exists
     result = await db.execute(select(Device).filter(Device.dev_index == device_in.dev_index))
     if result.scalars().first():
         raise HTTPException(status_code=400, detail="Device already registered")
@@ -87,26 +90,70 @@ async def sync_all_students_to_devices(
     device_ids: List[UUID] = Query(...), 
     db: AsyncSession = Depends(get_db)
 ):
-    """Trigger a bulk synchronization of all students to multiple devices."""
-    # Logic to iterate students and call biometrics bridge for each device
-    # For now, just a placeholder for the UI
-    return {"status": "started", "device_count": len(device_ids)}
+    """Bulk sync: query all students and POST each one to biometrics bridge for each selected device."""
+    # 1. Fetch selected devices to get their dev_index
+    devices_result = await db.execute(
+        select(Device).filter(Device.id.in_(device_ids), Device.is_active == True)
+    )
+    devices = devices_result.scalars().all()
+    if not devices:
+        raise HTTPException(status_code=404, detail="No active devices found for given IDs")
+
+    # 2. Fetch all students (role == ALUNO)
+    students_result = await db.execute(
+        select(User).filter(User.role == UserRole.ALUNO, User.is_active == True)
+    )
+    students = students_result.scalars().all()
+
+    if not students:
+        return {"status": "completed", "synced": 0, "errors": 0, "message": "Nenhum aluno ativo encontrado"}
+
+    # 3. For each device, send each student to the biometrics bridge
+    synced = 0
+    errors = 0
+    bio_url = f"{settings.BIOMETRICS_SERVICE_URL}/device/users"
+
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        for device in devices:
+            for student in students:
+                try:
+                    ra = str(student.registration_number) if student.registration_number else str(student.id)[:8]
+                    await client.post(bio_url, json={
+                        "employee_no": ra,
+                        "name": student.name,
+                        "dev_index": device.dev_index
+                    })
+                    synced += 1
+                except Exception as e:
+                    logger.error(f"Sync error: student={student.name} device={device.name}: {e}")
+                    errors += 1
+
+    return {
+        "status": "completed",
+        "synced": synced,
+        "errors": errors,
+        "devices": len(devices),
+        "students": len(students)
+    }
+
+
+class MigrateBiometricsRequest(BaseModel):
+    employee_no: str
+    transmitter_index: str
+    receiver_index: str
+    types: List[str]  # ["fingerprint", "face", "password"]
+
 
 @router.post("/migrate-biometrics")
-async def migrate_biometrics(
-    employee_no: str, 
-    transmitter_index: str, 
-    receiver_index: str, 
-    types: List[str]
-):
+async def migrate_biometrics(req: MigrateBiometricsRequest):
     """Proxy to migrate biometric data between terminals."""
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=30.0) as client:
         try:
             payload = {
-                "employee_no": employee_no,
-                "transmitter_index": transmitter_index,
-                "receiver_index": receiver_index,
-                "types": types
+                "employee_no": req.employee_no,
+                "transmitter_index": req.transmitter_index,
+                "receiver_index": req.receiver_index,
+                "types": req.types
             }
             response = await client.post(
                 f"{settings.BIOMETRICS_SERVICE_URL}/gateway/transfer/biometrics",
