@@ -101,7 +101,7 @@ async def sync_all_students_to_devices(
 
     # 2. Fetch all students (role == ALUNO)
     students_result = await db.execute(
-        select(User).filter(User.role == UserRole.ALUNO, User.is_active == True)
+        select(User).filter(User.role == UserRole.ESTUDANTE, User.is_active == True)
     )
     students = students_result.scalars().all()
 
