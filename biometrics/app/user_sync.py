@@ -249,7 +249,9 @@ class HikvisionUserManager:
         body = {
             "FingerPrintCond": {
                 "searchID": "1",
-                "employeeNo": employee_no
+                "employeeNo": employee_no,
+                "cardReaderNo": 0,
+                "fingerPrintID": 0
             }
         }
         return await self._request(
