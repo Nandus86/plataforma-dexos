@@ -97,6 +97,28 @@ async def delete_device_user(employee_no: str, dev_index: str | None = None):
         return result
     raise HTTPException(status_code=500, detail=result)
 
+
+class DeviceFingerprintRequest(BaseModel):
+    employee_no: str
+    dev_index: str
+    finger_id: int = 1
+    finger_data: str
+
+@app.post("/device/fingerprint")
+async def send_device_fingerprint(req: DeviceFingerprintRequest):
+    """
+    Envia uma digital específica para um terminal usando ISAPI FingerPrintDownload.
+    """
+    mgr = HikvisionUserManager(dev_index=req.dev_index)
+    result = await mgr.set_fingerprint(
+        employee_no=req.employee_no, 
+        finger_data=req.finger_data, 
+        finger_id=req.finger_id
+    )
+    if result.get("status") == "ok":
+        return result
+    raise HTTPException(status_code=500, detail=result)
+
 # === Novos Endpoints de Gestão de Dispositivos e Transferência ===
 
 @app.get("/gateway/devices")
