@@ -126,14 +126,18 @@ async def gateway_capture_fingerprint(req: CaptureFingerprintRequest):
     
     if res.get("status") == "ok" and res.get("data"):
         data = res["data"]
-        # Extrair fingerData do CaptureFingerPrintResult ou FingerPrintCfg
-        result = data.get("CaptureFingerPrintResult", data)
+        # O Gateway retorna o node "CaptureFingerPrint"
+        result = data.get("CaptureFingerPrint", data)
+        if not isinstance(result, dict):
+            # Fallback se for uma outra key desconhecida (ex: CaptureFingerPrintResult)
+            result = data.get("CaptureFingerPrintResult", data)
+            
         finger_data = result.get("fingerData", "") if isinstance(result, dict) else ""
         
         if finger_data:
             return {"status": "ok", "fingerData": finger_data}
         else:
-            return {"status": "error", "message": "Captura retornou sem fingerData"}
+            return {"status": "error", "message": "Captura retornou sem fingerData", "raw": data}
     
     return res
 
