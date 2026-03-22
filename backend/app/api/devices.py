@@ -11,7 +11,10 @@ import httpx
 from app.database import get_db
 from app.models.device import Device
 from app.models.user import User, UserRole
+from app.models.biometric_data import BiometricData
 from app.schemas.device import DeviceCreate, DeviceUpdate, DeviceResponse
+from app.schemas.biometric_data import BiometricDataResponse
+
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -162,3 +165,143 @@ async def migrate_biometrics(req: MigrateBiometricsRequest):
             return response.json()
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
+
+class CaptureFingerprintRequest(BaseModel):
+    user_id: UUID
+    dev_index: str
+    finger_no: int = 1
+
+@router.post("/capture-fingerprint")
+async def capture_fingerprint(req: CaptureFingerprintRequest, db: AsyncSession = Depends(get_db)):
+    """Ações: 1. Chama Gateway para capturar; 2. Salva no BD; 3. Envia para todos os outros Devices"""
+    # 1. Obter usuário e garantir que existe
+    user = await db.get(User, req.user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    ra = str(user.registration_number) if user.registration_number else str(user.id)[:8]
+
+    # 2. Chamar Biometrics Bridge para capturar no dev_index informado
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            capture_res = await client.post(
+                f"{settings.BIOMETRICS_SERVICE_URL}/gateway/capture-fingerprint",
+                json={"dev_index": req.dev_index, "finger_no": req.finger_no}
+            )
+            capture_data = capture_res.json()
+        except Exception as e:
+            logger.error(f"Failed to connect to biometrics bridge: {e}")
+            raise HTTPException(status_code=500, detail="Falha ao contatar serviço de biometria")
+
+    if capture_data.get("status") != "ok" or not capture_data.get("fingerData"):
+        raise HTTPException(status_code=400, detail=f"Falha na captura: {capture_data.get('message', capture_data)}")
+
+    finger_data_b64 = capture_data["fingerData"]
+
+    # 3. Salvar digital no Banco de Dados
+    # Primeiro checamos se já existe esse finger_id para esse usuáriol
+    existing_query = select(BiometricData).filter(
+        BiometricData.user_id == user.id,
+        BiometricData.biometric_type == "fingerprint",
+        BiometricData.finger_id == req.finger_no
+    )
+    existing_res = await db.execute(existing_query)
+    existing_bio = existing_res.scalars().first()
+
+    if existing_bio:
+        existing_bio.data = finger_data_b64
+    else:
+        new_bio = BiometricData(
+            user_id=user.id,
+            tenant_id=user.tenant_id,
+            biometric_type="fingerprint",
+            finger_id=req.finger_no,
+            data=finger_data_b64
+        )
+        db.add(new_bio)
+    
+    await db.commit()
+
+    # 4. Distribuir a digital nova para TODOS os devices ativos (incluindo o que originou para garantir sync, ou pular se quiser)
+    devices_res = await db.execute(select(Device).filter(Device.is_active == True))
+    devices = devices_res.scalars().all()
+    
+    sync_results = []
+    bio_url = f"{settings.BIOMETRICS_SERVICE_URL}/device/users"
+    
+    # Enviamos a digital capturada para todo mundo 
+    # (Em um sistema robusto pode-se chamar um endpoint de sincronizacao especifica)
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        for d in devices:
+            if d.dev_index == req.dev_index:
+                # Opcional: pular o device onde foi capturado pois teoricamente ja tem, mas mandar via API garante que ele salvou o usuario localmente
+                pass
+            
+            try:
+                # Usa O MESMO ENDPOINT de criar usuario, mas agora teremos que alterar a API de biometria para receber FingerData tb ?
+                # Como precisamos enviar uma digital especifica e o endpoint antigo era apenas info do usuario, vamos usar um endpoint de force push
+                push_res = await client.post(
+                    f"{settings.BIOMETRICS_SERVICE_URL}/device/fingerprint",
+                    json={
+                        "employee_no": ra,
+                        "dev_index": d.dev_index,
+                        "finger_id": req.finger_no,
+                        "finger_data": finger_data_b64
+                    }
+                )
+                sync_results.append({"device": d.name, "status": "ok", "detail": push_res.json()})
+            except Exception as e:
+                sync_results.append({"device": d.name, "status": "error", "message": str(e)})
+
+    return {
+        "status": "completed",
+        "fingerprint": "saved",
+        "sync_results": sync_results
+    }
+
+
+@router.get("/biometrics/{user_id}", response_model=List[BiometricDataResponse])
+async def get_user_biometrics(user_id: UUID, db: AsyncSession = Depends(get_db)):
+    """Retorna digitais salvas para um usuário"""
+    query = select(BiometricData).filter(BiometricData.user_id == user_id)
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+@router.post("/distribute-biometrics/{user_id}")
+async def distribute_biometrics(user_id: UUID, db: AsyncSession = Depends(get_db)):
+    """Reenvia todas as digitais de um aluno para todos terminais ativos (sync forçado)"""
+    user = await db.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    ra = str(user.registration_number) if user.registration_number else str(user.id)[:8]
+
+    bios_res = await db.execute(select(BiometricData).filter(BiometricData.user_id == user_id))
+    bios = bios_res.scalars().all()
+    
+    devices_res = await db.execute(select(Device).filter(Device.is_active == True))
+    devices = devices_res.scalars().all()
+
+    results = []
+    
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        for bio in bios:
+            if bio.biometric_type == "fingerprint":
+                for d in devices:
+                    try:
+                        res = await client.post(
+                            f"{settings.BIOMETRICS_SERVICE_URL}/device/fingerprint",
+                            json={
+                                "employee_no": ra,
+                                "dev_index": d.dev_index,
+                                "finger_id": bio.finger_id,
+                                "finger_data": bio.data
+                            }
+                        )
+                        results.append({"device": d.name, "finger_id": bio.finger_id, "status": "ok"})
+                    except Exception as e:
+                        results.append({"device": d.name, "finger_id": bio.finger_id, "status": "error", "message": str(e)})
+
+    return {"status": "completed", "results": results}
+

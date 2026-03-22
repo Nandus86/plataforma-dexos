@@ -40,6 +40,12 @@ export class StudentDialogComponent implements OnInit {
     form!: FormGroup;
     loading = false;
     isEditing = false;
+    
+    // Biometria
+    devices: any[] = [];
+    selectedDevice: string = '';
+    savedBiometrics: any[] = [];
+    isCapturing = false;
 
     constructor(
         private fb: FormBuilder,
@@ -53,9 +59,49 @@ export class StudentDialogComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.loadDevices();
         if (this.isEditing) {
             this.loadFullProfile(this.data.student.id);
+            this.loadSavedBiometrics(this.data.student.id);
         }
+    }
+
+    loadDevices() {
+        this.api.get<any[]>('/devices/').subscribe({
+            next: (res) => this.devices = res || [],
+            error: () => console.error('Erro ao listar devices')
+        });
+    }
+
+    loadSavedBiometrics(userId: string) {
+        this.api.get<any[]>(`/devices/biometrics/${userId}`).subscribe({
+            next: (res) => this.savedBiometrics = res || [],
+            error: () => console.error('Erro ao listar biometrias')
+        });
+    }
+
+    captureFingerprint() {
+        if (!this.selectedDevice || !this.data.student?.id) return;
+        
+        this.isCapturing = true;
+        this.snackBar.open('Acionando leitor... coloque o dedo no terminal', '', { duration: 4000 });
+        
+        this.api.post('/devices/capture-fingerprint', {
+            user_id: this.data.student.id,
+            dev_index: this.selectedDevice,
+            finger_no: 1 // Default index 1
+        }).subscribe({
+            next: (res) => {
+                this.isCapturing = false;
+                this.snackBar.open('Digital capturada e distribuída com sucesso!', 'OK', { duration: 3000 });
+                this.loadSavedBiometrics(this.data.student.id);
+            },
+            error: (err) => {
+                this.isCapturing = false;
+                const msg = err?.error?.detail || 'Erro na captura. O aluno colocou o dedo?';
+                this.snackBar.open(msg, 'OK', { duration: 5000 });
+            }
+        });
     }
 
     loadFullProfile(id: string) {

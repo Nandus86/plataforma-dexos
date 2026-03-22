@@ -112,6 +112,30 @@ class BiometricTransferRequest(BaseModel):
     transmitter_index: str
     receiver_index: str
     types: list[str]  # ["face", "fingerprint", "password"]
+class CaptureFingerprintRequest(BaseModel):
+    dev_index: str
+    finger_no: int = 1
+
+@app.post("/gateway/capture-fingerprint")
+async def gateway_capture_fingerprint(req: CaptureFingerprintRequest):
+    """
+    Aciona o leitor do terminal para capturar digital e retorna o template base64.
+    """
+    mgr = HikvisionUserManager(dev_index=req.dev_index)
+    res = await mgr.capture_fingerprint_on_device(finger_no=req.finger_no)
+    
+    if res.get("status") == "ok" and res.get("data"):
+        data = res["data"]
+        # Extrair fingerData do CaptureFingerPrintResult ou FingerPrintCfg
+        result = data.get("CaptureFingerPrintResult", data)
+        finger_data = result.get("fingerData", "") if isinstance(result, dict) else ""
+        
+        if finger_data:
+            return {"status": "ok", "fingerData": finger_data}
+        else:
+            return {"status": "error", "message": "Captura retornou sem fingerData"}
+    
+    return res
 
 @app.post("/gateway/transfer/biometrics")
 async def transfer_biometrics(req: BiometricTransferRequest):
