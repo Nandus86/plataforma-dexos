@@ -131,43 +131,57 @@ async def transfer_biometrics(req: BiometricTransferRequest):
         try:
             debug_log.append(f"Step 1: Extracting fingerprint from TX={req.transmitter_index}")
             tx_res = await tx_mgr.get_fingerprints(req.employee_no)
-            debug_log.append(f"Step 2: Extract result: {str(tx_res)[:300]}")
+            debug_log.append(f"Step 2: Extract result: {str(tx_res)[:500]}")
             logger.info(f"FingerPrint extract result: {tx_res}")
             
             if tx_res.get("status") == "ok" and tx_res.get("data"):
                 fp_data = tx_res["data"]
-                debug_log.append(f"Step 3: fp_data type={type(fp_data).__name__}, keys={list(fp_data.keys()) if isinstance(fp_data, dict) else 'N/A'}")
+                debug_log.append(f"Step 3: fp_data keys={list(fp_data.keys()) if isinstance(fp_data, dict) else type(fp_data).__name__}")
                 
                 if isinstance(fp_data, dict):
-                    cfg = fp_data.get("FingerPrintCfg", fp_data)
-                    debug_log.append(f"Step 4: cfg type={type(cfg).__name__}")
+                    # O Gateway retorna FingerPrintInfo (não FingerPrintCfg)
+                    fp_info = fp_data.get("FingerPrintInfo", fp_data)
                     
-                    if isinstance(cfg, list):
-                        for i, fp in enumerate(cfg):
-                            finger_data = fp.get("fingerData", "")
-                            finger_id = fp.get("fingerPrintID", 1)
-                            debug_log.append(f"Step 5a: finger[{i}] id={finger_id} data_len={len(finger_data)}")
-                            if finger_data:
-                                rx_res = await rx_mgr.set_fingerprint(req.employee_no, finger_data, finger_id)
-                                debug_log.append(f"Step 6a: push result: {str(rx_res)[:200]}")
-                                results["fingerprint"] = rx_res
-                    elif isinstance(cfg, dict):
-                        finger_data = cfg.get("fingerData", "")
-                        finger_id = cfg.get("fingerPrintID", 1)
-                        debug_log.append(f"Step 5b: single finger id={finger_id} data_len={len(finger_data)}")
-                        if finger_data:
+                    # Checar se é NoFP (sem digital cadastrada)
+                    if isinstance(fp_info, dict) and fp_info.get("status") == "NoFP":
+                        debug_log.append("Step 4: Terminal respondeu NoFP - nenhuma digital para esse employeeNo")
+                        results["fingerprint"] = {"status": "error", "message": f"Nenhuma digital cadastrada no terminal TX para employeeNo={req.employee_no}"}
+                    else:
+                        # Procura FingerPrintCfg dentro de FingerPrintInfo, ou no nível raiz
+                        cfg = None
+                        if isinstance(fp_info, dict):
+                            cfg = fp_info.get("FingerPrintCfg", fp_info)
+                        elif isinstance(fp_info, list):
+                            cfg = fp_info
+                        
+                        debug_log.append(f"Step 4: cfg type={type(cfg).__name__ if cfg else 'None'}")
+                        
+                        if isinstance(cfg, list):
+                            transferred = 0
+                            for i, fp in enumerate(cfg):
+                                finger_data = fp.get("fingerData", "")
+                                finger_id = fp.get("fingerPrintID", 1)
+                                debug_log.append(f"Step 5: finger[{i}] id={finger_id} data_len={len(finger_data)}")
+                                if finger_data:
+                                    rx_res = await rx_mgr.set_fingerprint(req.employee_no, finger_data, finger_id)
+                                    debug_log.append(f"Step 6: push result: {str(rx_res)[:200]}")
+                                    results["fingerprint"] = rx_res
+                                    transferred += 1
+                            if transferred == 0:
+                                results["fingerprint"] = {"status": "error", "message": "Digitais encontradas mas sem fingerData"}
+                        elif isinstance(cfg, dict) and cfg.get("fingerData"):
+                            finger_data = cfg["fingerData"]
+                            finger_id = cfg.get("fingerPrintID", 1)
+                            debug_log.append(f"Step 5: single finger id={finger_id} data_len={len(finger_data)}")
                             rx_res = await rx_mgr.set_fingerprint(req.employee_no, finger_data, finger_id)
-                            debug_log.append(f"Step 6b: push result: {str(rx_res)[:200]}")
+                            debug_log.append(f"Step 6: push result: {str(rx_res)[:200]}")
                             results["fingerprint"] = rx_res
                         else:
-                            debug_log.append("Step 5b: NO fingerData found in cfg")
-                            results["fingerprint"] = {"status": "error", "message": "fingerData vazio na resposta"}
-                    else:
-                        debug_log.append(f"Step 4: unexpected cfg type: {type(cfg).__name__}")
-                        results["fingerprint"] = {"status": "error", "message": "Formato inesperado"}
+                            debug_log.append(f"Step 4: no usable fingerprint data found in response")
+                            results["fingerprint"] = {"status": "error", "message": "Formato de resposta sem fingerData"}
                 else:
-                    debug_log.append(f"Step 3: fp_data not dict, type={type(fp_data).__name__}")
-                    results["fingerprint"] = {"status": "error", "message": "Dados não são dict"}
+                    debug_log.append(f"Step 3: fp_data not a dict")
+                    results["fingerprint"] = {"status": "error", "message": "Resposta inesperada do terminal"}
             else:
                 debug_log.append(f"Step 2b: extraction failed or no data")
                 results["fingerprint"] = tx_res
