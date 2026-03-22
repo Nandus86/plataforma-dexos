@@ -14,6 +14,8 @@ class BiometricData(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
     tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=True, index=True)
     
+    registration_number = Column(String(50), nullable=True)  # MATRICULA (RA) ENVIADA AO RELOGIO
+    
     biometric_type = Column(String(50), nullable=False)  # "fingerprint" or "face"
     finger_id = Column(Integer, nullable=True)           # 1-10 for fingerprint, None for face
     data = Column(Text, nullable=False)                  # base64 fingerData or faceData

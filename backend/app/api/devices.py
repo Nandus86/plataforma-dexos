@@ -210,10 +210,12 @@ async def capture_fingerprint(req: CaptureFingerprintRequest, db: AsyncSession =
 
     if existing_bio:
         existing_bio.data = finger_data_b64
+        existing_bio.registration_number = ra
     else:
         new_bio = BiometricData(
             user_id=user.id,
             tenant_id=user.tenant_id,
+            registration_number=ra,
             biometric_type="fingerprint",
             finger_id=req.finger_no,
             data=finger_data_b64

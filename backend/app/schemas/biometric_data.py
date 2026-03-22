@@ -5,9 +5,11 @@ from pydantic import BaseModel
 
 
 class BiometricDataBase(BaseModel):
+    registration_number: Optional[str] = None
     biometric_type: str
     finger_id: Optional[int] = None
     data: str
+
 
 
 class BiometricDataCreate(BiometricDataBase):
