@@ -142,29 +142,61 @@ async def sync_all_students_to_devices(
 
 class MigrateBiometricsRequest(BaseModel):
     employee_no: str
-    transmitter_index: str
     receiver_index: str
     types: List[str]  # ["fingerprint", "face", "password"]
 
 
 @router.post("/migrate-biometrics")
-async def migrate_biometrics(req: MigrateBiometricsRequest):
-    """Proxy to migrate biometric data between terminals."""
+async def migrate_biometrics(req: MigrateBiometricsRequest, db: AsyncSession = Depends(get_db)):
+    """Injeta biometrias (salvas no banco) de um RA para o terminal destino selecionado."""
+    # 1. Busca os dados biométricos salvos para este RA
+    bios_query = select(BiometricData).filter(BiometricData.registration_number == req.employee_no)
+    bios_res = await db.execute(bios_query)
+    bios = bios_res.scalars().all()
+    
+    if not bios:
+        return {"status": "error", "message": f"Nenhuma biometria salva encontrada no banco para RA: {req.employee_no}"}
+
+    results = {"fingerprint": None, "face": None}
+    
+    # 2. Envia para o aparelho destino
     async with httpx.AsyncClient(timeout=30.0) as client:
-        try:
-            payload = {
-                "employee_no": req.employee_no,
-                "transmitter_index": req.transmitter_index,
-                "receiver_index": req.receiver_index,
-                "types": req.types
-            }
-            response = await client.post(
-                f"{settings.BIOMETRICS_SERVICE_URL}/gateway/transfer/biometrics",
-                json=payload
-            )
-            return response.json()
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        if "fingerprint" in req.types:
+            fingers = [b for b in bios if b.biometric_type == "fingerprint"]
+            if not fingers:
+                results["fingerprint"] = {"status": "error", "message": "Nenhuma digital salva"}
+            else:
+                success_count = 0
+                errors = []
+                for finger in fingers:
+                    try:
+                        res = await client.post(
+                            f"{settings.BIOMETRICS_SERVICE_URL}/device/fingerprint",
+                            json={
+                                "employee_no": req.employee_no,
+                                "dev_index": req.receiver_index,
+                                "finger_id": finger.finger_id,
+                                "finger_data": finger.data
+                            }
+                        )
+                        if res.status_code == 200:
+                            success_count += 1
+                        else:
+                            errors.append(res.text)
+                    except Exception as e:
+                        errors.append(str(e))
+                
+                if success_count > 0:
+                    results["fingerprint"] = {"status": "ok", "message": f"{success_count} digitais enviadas com sucesso."}
+                else:
+                    results["fingerprint"] = {"status": "error", "message": f"Falha ao enviar digitais: {errors}"}
+
+        # Para face/password, a mesma lógica poderia ser adicionada futuramente
+        if "face" in req.types:
+            results["face"] = {"status": "error", "message": "Face não suportada ainda (não implementado DB)."}
+
+    return {"status": "completed", "results": results}
+
 
 class CaptureFingerprintRequest(BaseModel):
     user_id: UUID

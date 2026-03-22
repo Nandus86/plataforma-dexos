@@ -22,8 +22,8 @@ import { ApiService } from '../../../core/services/api.service';
   template: `
     <div class="page-container p-4">
       <div class="header-section mb-4">
-        <h1 class="h3 mb-1">Migração de Biometria</h1>
-        <p class="text-secondary text-sm">Transfira digitais entre terminais. O aluno precisa colocar o dedo no leitor do terminal transmissor durante o processo.</p>
+        <h1 class="h3 mb-1">Distribuição de Biometria / Injeção</h1>
+        <p class="text-secondary text-sm">Transfira digitais salvas no banco de dados para um terminal específico.</p>
       </div>
 
       <div class="row g-4">
@@ -39,24 +39,14 @@ import { ApiService } from '../../../core/services/api.service';
             </mat-form-field>
 
             <div class="row g-3 mb-4">
-               <!-- Transmissor -->
-               <div class="col-md-6">
-                <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Terminal Transmissor</mat-label>
-                    <mat-select [(ngModel)]="transmitter">
-                        <mat-option *ngFor="let d of devices" [value]="d.dev_index">{{ d.name }}</mat-option>
-                    </mat-select>
-                    <mat-hint>Onde a digital já existe</mat-hint>
-                </mat-form-field>
-               </div>
                <!-- Receptor -->
-               <div class="col-md-6">
+               <div class="col-md-12">
                 <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Terminal Receptor</mat-label>
+                    <mat-label>Terminal Destino (Receptor)</mat-label>
                     <mat-select [(ngModel)]="receiver">
                         <mat-option *ngFor="let d of devices" [value]="d.dev_index">{{ d.name }}</mat-option>
                     </mat-select>
-                    <mat-hint>Para onde enviar os dados</mat-hint>
+                    <mat-hint>Para qual catraca/relógio enviar a digital</mat-hint>
                 </mat-form-field>
                </div>
             </div>
@@ -71,9 +61,9 @@ import { ApiService } from '../../../core/services/api.service';
             </div>
 
             <div class="d-grid mt-2">
-                <button mat-flat-button color="primary" [disabled]="loading || !employeeId || !transmitter || !receiver" (click)="migrate()">
-                    <mat-icon>{{ loading ? 'sync' : 'swap_horiz' }}</mat-icon>
-                    {{ loading ? 'Migrando...' : 'Executar Migração' }}
+                <button mat-flat-button color="primary" [disabled]="loading || !employeeId || !receiver" (click)="migrate()">
+                    <mat-icon>{{ loading ? 'sync' : 'publish' }}</mat-icon>
+                    {{ loading ? 'Enviando...' : 'Injetar Digital' }}
                 </button>
             </div>
           </mat-card>
@@ -104,7 +94,6 @@ import { ApiService } from '../../../core/services/api.service';
 export class MigrateComponent implements OnInit {
   devices: any[] = [];
   employeeId = '';
-  transmitter = '';
   receiver = '';
   loading = false;
   lastResult: any = null;
@@ -131,18 +120,17 @@ export class MigrateComponent implements OnInit {
     
     this.api.post('/devices/migrate-biometrics', {
       employee_no: this.employeeId,
-      transmitter_index: this.transmitter,
       receiver_index: this.receiver,
       types: selectedTypes
     }).subscribe({
       next: (res: any) => {
           this.loading = false;
           this.lastResult = res;
-          this.snack.open('Migração concluída', 'OK', { duration: 3000 });
+          this.snack.open('Injeção concluída', 'OK', { duration: 3000 });
       },
       error: (e: any) => {
           this.loading = false;
-          this.snack.open('Erro na migração: ' + (e.error?.detail || e.message), 'OK', { duration: 5000 });
+          this.snack.open('Erro na injeção: ' + (e.error?.detail || e.message), 'OK', { duration: 5000 });
       }
     });
   }
