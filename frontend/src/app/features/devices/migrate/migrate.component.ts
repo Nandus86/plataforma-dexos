@@ -23,7 +23,7 @@ import { ApiService } from '../../../core/services/api.service';
     <div class="page-container p-4">
       <div class="header-section mb-4">
         <h1 class="h3 mb-1">Migração de Biometria</h1>
-        <p class="text-secondary text-sm">Transfira digitais, fotos e senhas de um terminal para outro usando o ID do Aluno.</p>
+        <p class="text-secondary text-sm">Transfira digitais entre terminais. O aluno precisa colocar o dedo no leitor do terminal transmissor durante o processo.</p>
       </div>
 
       <div class="row g-4">

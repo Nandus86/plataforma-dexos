@@ -126,64 +126,43 @@ async def transfer_biometrics(req: BiometricTransferRequest):
     results = {"fingerprint": None, "face": None}
     debug_log = []
     
-    # 1. Transferir Digital
+    # 1. Transferir Digital (via captura no leitor do terminal TX)
     if "fingerprint" in req.types:
         try:
-            debug_log.append(f"Step 1: Extracting fingerprint from TX={req.transmitter_index}")
-            tx_res = await tx_mgr.get_fingerprints(req.employee_no)
-            debug_log.append(f"Step 2: Extract result: {str(tx_res)[:500]}")
-            logger.info(f"FingerPrint extract result: {tx_res}")
+            debug_log.append(f"Step 1: Capturing fingerprint on TX={req.transmitter_index} (aluno deve colocar o dedo no leitor)")
+            
+            # CaptureFingerPrint - aciona o leitor do terminal para capturar
+            tx_res = await tx_mgr.capture_fingerprint_on_device(finger_no=1)
+            debug_log.append(f"Step 2: Capture result: {str(tx_res)[:500]}")
+            logger.info(f"FingerPrint capture result: {tx_res}")
             
             if tx_res.get("status") == "ok" and tx_res.get("data"):
-                fp_data = tx_res["data"]
-                debug_log.append(f"Step 3: fp_data keys={list(fp_data.keys()) if isinstance(fp_data, dict) else type(fp_data).__name__}")
+                capture_data = tx_res["data"]
+                debug_log.append(f"Step 3: capture_data keys={list(capture_data.keys()) if isinstance(capture_data, dict) else type(capture_data).__name__}")
                 
-                if isinstance(fp_data, dict):
-                    # O Gateway retorna FingerPrintInfo (não FingerPrintCfg)
-                    fp_info = fp_data.get("FingerPrintInfo", fp_data)
-                    
-                    # Checar se é NoFP (sem digital cadastrada)
-                    if isinstance(fp_info, dict) and fp_info.get("status") == "NoFP":
-                        debug_log.append("Step 4: Terminal respondeu NoFP - nenhuma digital para esse employeeNo")
-                        results["fingerprint"] = {"status": "error", "message": f"Nenhuma digital cadastrada no terminal TX para employeeNo={req.employee_no}"}
-                    else:
-                        # Procura FingerPrintCfg dentro de FingerPrintInfo, ou no nível raiz
-                        cfg = None
-                        if isinstance(fp_info, dict):
-                            cfg = fp_info.get("FingerPrintCfg", fp_info)
-                        elif isinstance(fp_info, list):
-                            cfg = fp_info
-                        
-                        debug_log.append(f"Step 4: cfg type={type(cfg).__name__ if cfg else 'None'}")
-                        
-                        if isinstance(cfg, list):
-                            transferred = 0
-                            for i, fp in enumerate(cfg):
-                                finger_data = fp.get("fingerData", "")
-                                finger_id = fp.get("fingerPrintID", 1)
-                                debug_log.append(f"Step 5: finger[{i}] id={finger_id} data_len={len(finger_data)}")
-                                if finger_data:
-                                    rx_res = await rx_mgr.set_fingerprint(req.employee_no, finger_data, finger_id)
-                                    debug_log.append(f"Step 6: push result: {str(rx_res)[:200]}")
-                                    results["fingerprint"] = rx_res
-                                    transferred += 1
-                            if transferred == 0:
-                                results["fingerprint"] = {"status": "error", "message": "Digitais encontradas mas sem fingerData"}
-                        elif isinstance(cfg, dict) and cfg.get("fingerData"):
-                            finger_data = cfg["fingerData"]
-                            finger_id = cfg.get("fingerPrintID", 1)
-                            debug_log.append(f"Step 5: single finger id={finger_id} data_len={len(finger_data)}")
-                            rx_res = await rx_mgr.set_fingerprint(req.employee_no, finger_data, finger_id)
-                            debug_log.append(f"Step 6: push result: {str(rx_res)[:200]}")
-                            results["fingerprint"] = rx_res
-                        else:
-                            debug_log.append(f"Step 4: no usable fingerprint data found in response")
-                            results["fingerprint"] = {"status": "error", "message": "Formato de resposta sem fingerData"}
+                # Extrair fingerData do resultado da captura
+                finger_data = None
+                if isinstance(capture_data, dict):
+                    # Pode vir em CaptureFingerPrintResult ou FingerPrintCfg
+                    result = capture_data.get("CaptureFingerPrintResult", capture_data)
+                    if isinstance(result, dict):
+                        finger_data = result.get("fingerData", "")
+                        debug_log.append(f"Step 4: fingerData len={len(finger_data) if finger_data else 0}")
+                
+                if finger_data:
+                    # Enviar para o terminal RX via FingerPrintDownload
+                    debug_log.append(f"Step 5: Pushing fingerprint to RX={req.receiver_index}")
+                    rx_res = await rx_mgr.set_fingerprint(req.employee_no, finger_data, finger_id=1)
+                    debug_log.append(f"Step 6: Push result: {str(rx_res)[:200]}")
+                    results["fingerprint"] = rx_res
                 else:
-                    debug_log.append(f"Step 3: fp_data not a dict")
-                    results["fingerprint"] = {"status": "error", "message": "Resposta inesperada do terminal"}
+                    debug_log.append("Step 4: No fingerData in capture response")
+                    results["fingerprint"] = {
+                        "status": "error", 
+                        "message": "Captura retornou sem fingerData. O aluno colocou o dedo no leitor do terminal transmissor?"
+                    }
             else:
-                debug_log.append(f"Step 2b: extraction failed or no data")
+                debug_log.append(f"Step 2b: capture failed")
                 results["fingerprint"] = tx_res
         except Exception as e:
             logger.error(f"Fingerprint transfer error: {e}", exc_info=True)

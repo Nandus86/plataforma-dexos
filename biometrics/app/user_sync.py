@@ -243,15 +243,13 @@ class HikvisionUserManager:
     async def get_fingerprints(self, employee_no: str) -> dict:
         """
         Extract fingerprint templates from device via FingerPrintUpload.
-        Uses the Gateway generic ISAPI passthrough.
-        FingerPrintUpload = terminal 'uploads' its stored data to the server.
+        NOTA: O Gateway NÃO lista FingerPrintUpload no protocolList.
+        Este endpoint pode não funcionar via Gateway/ISUP.
         """
         body = {
             "FingerPrintCond": {
                 "searchID": "1",
-                "employeeNo": employee_no,
-                "cardReaderNo": 0,
-                "fingerPrintID": 0
+                "employeeNo": employee_no
             }
         }
         return await self._request(
