@@ -20,9 +20,6 @@
 
     <!-- Table -->
     <div class="table-card glass-card relative">
-        <div *ngIf="loading" class="loading-overlay">
-            <mat-spinner diameter="40"></mat-spinner>
-        </div>
 
         <table mat-table [dataSource]="dataSource" matSort class="dark-table">
             <ng-container matColumnDef="name">
@@ -71,10 +68,11 @@
             <!-- Row shown when there is no matching data. -->
             <tr class="mat-row" *matNoDataRow>
                 <td class="mat-cell empty-cell" colspan="5">
-                    <div class="empty-state">
+                    <div class="empty-state" *ngIf="!loading">
                         <mat-icon>people_outline</mat-icon>
                         <p>Nenhum estudante encontrado</p>
                     </div>
+                    <app-skeleton *ngIf="loading" type="table" [rows]="3"></app-skeleton>
                 </td>
             </tr>
         </table>

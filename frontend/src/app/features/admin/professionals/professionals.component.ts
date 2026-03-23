@@ -19,6 +19,7 @@ import { finalize } from 'rxjs/operators';
 
 import { ApiService } from '../../../core/services/api.service';
 import { ProfessionalDialogComponent } from './professional-dialog/professional-dialog.component';
+import { Skeleton } from '../../../shared/skeleton/skeleton';
 
 @Component({
     selector: 'app-professionals',
@@ -35,10 +36,10 @@ import { ProfessionalDialogComponent } from './professional-dialog/professional-
         MatDialogModule,
         MatSnackBarModule,
         MatChipsModule,
-        MatProgressSpinnerModule,
         MatPaginatorModule,
         MatSortModule,
-        MatTooltipModule
+        MatTooltipModule,
+        Skeleton
     ],
     templateUrl: './professionals.component.html',
     styleUrl: './professionals.component.scss'
@@ -100,7 +101,9 @@ export class ProfessionalsComponent implements OnInit, AfterViewInit {
 
     openDialog(professional?: any): void {
         const dialogRef = this.dialog.open(ProfessionalDialogComponent, {
-            width: '800px',
+            width: '1200px',
+            height: '80vh',
+            maxWidth: '90vw',
             data: { professional },
             panelClass: 'glass-dialog-panel'
         });

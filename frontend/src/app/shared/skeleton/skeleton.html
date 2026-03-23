@@ -1,0 +1,11 @@
+<div class="skeleton" [ngClass]="type" *ngFor="let item of [].constructor(rows); track item">
+  <div class="skeleton-line" *ngIf="type === 'text'"></div>
+  <div class="skeleton-table-row" *ngIf="type === 'table'">
+    <div class="skeleton-cell" *ngFor="let cell of [].constructor(3); track cell"></div>
+  </div>
+  <div class="skeleton-card" *ngIf="type === 'card'">
+    <div class="skeleton-header"></div>
+    <div class="skeleton-body"></div>
+    <div class="skeleton-footer"></div>
+  </div>
+</div>

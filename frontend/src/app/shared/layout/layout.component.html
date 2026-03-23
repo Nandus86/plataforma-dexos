@@ -1,7 +1,8 @@
 <mat-sidenav-container class="layout-container">
   <!-- Sidebar -->
   <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile" class="sidebar"
-    [class.collapsed]="sidebarCollapsed && !isMobile">
+    [class.collapsed]="sidebarCollapsed && !isMobile"
+    [@sidebarCollapse]="(sidebarCollapsed && !isMobile) ? 'collapsed' : 'expanded'">
     <!-- Brand -->
     <div class="sidebar-brand" *ngIf="!sidebarCollapsed || isMobile">
       <div class="brand-icon">
@@ -48,7 +49,7 @@
         </button>
 
         <!-- Group Items -->
-        <div class="nav-group-items" *ngIf="group.expanded && (!sidebarCollapsed || isMobile)">
+        <div class="nav-group-items" *ngIf="group.expanded && (!sidebarCollapsed || isMobile)" @sidebarExpand>
           @for (item of getVisibleItems(group); track item.route) {
           <a class="nav-item sub-item" [routerLink]="item.route" routerLinkActive="active-link" (click)="onNavClick()">
             <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>

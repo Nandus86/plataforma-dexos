@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
@@ -14,6 +14,7 @@ import { AuthService, UserInfo } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { environment } from '../../../environments/environment';
+import { animate, state, style, transition, trigger, query, stagger } from '@angular/animations';
 
 interface NavItem {
     label: string;
@@ -42,6 +43,34 @@ interface NavGroup {
     ],
     templateUrl: './layout.component.html',
     styleUrls: ['./layout.component.scss'],
+    animations: [
+        trigger('sidebarCollapse', [
+            state('expanded', style({
+                width: '264px'
+            })),
+            state('collapsed', style({
+                width: '68px'
+            })),
+            transition('expanded <=> collapsed', [
+                animate('0.3s cubic-bezier(0.4, 0, 0.2, 1)')
+            ])
+        ]),
+        trigger('sidebarExpand', [
+            transition(':enter', [
+                style({ height: 0, opacity: 0 }),
+                animate('0.2s ease-out', style({ height: '*', opacity: 1 })),
+                query(':enter .nav-item', [
+                    style({ opacity: 0, transform: 'translateY(-8px)' }),
+                    stagger(50, [
+                        animate('0.2s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+                    ])
+                ], { optional: true })
+            ]),
+            transition(':leave', [
+                animate('0.2s ease-in', style({ height: 0, opacity: 0 }))
+            ])
+        ])
+    ]
 })
 export class LayoutComponent implements OnInit {
     @ViewChild('sidenav') sidenav!: MatSidenav;

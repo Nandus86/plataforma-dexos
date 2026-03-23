@@ -20,6 +20,7 @@ import { finalize } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
 import { StudentDialogComponent } from './student-dialog/student-dialog.component';
 import { StudentAcademicLifeComponent } from './student-academic-life/student-academic-life.component';
+import { Skeleton } from '../../../shared/skeleton/skeleton';
 
 @Component({
     selector: 'app-students',
@@ -36,10 +37,10 @@ import { StudentAcademicLifeComponent } from './student-academic-life/student-ac
         MatDialogModule,
         MatSnackBarModule,
         MatChipsModule,
-        MatProgressSpinnerModule,
         MatPaginatorModule,
         MatSortModule,
-        MatTooltipModule
+        MatTooltipModule,
+        Skeleton
     ],
     templateUrl: './students.component.html',
     styleUrl: './students.component.scss'
@@ -99,7 +100,9 @@ export class StudentsComponent implements OnInit, AfterViewInit {
 
     openDialog(student?: any): void {
         const dialogRef = this.dialog.open(StudentDialogComponent, {
-            width: '800px',
+            width: '1200px',
+            height: '80vh',
+            maxWidth: '90vw',
             data: { student },
             panelClass: 'glass-dialog-panel'
         });
@@ -113,7 +116,9 @@ export class StudentsComponent implements OnInit, AfterViewInit {
 
     openHistoryDialog(student: any): void {
         this.dialog.open(StudentAcademicLifeComponent, {
-            width: '800px',
+            width: '1200px',
+            height: '80vh',
+            maxWidth: '90vw',
             data: { user: student },
             panelClass: 'glass-dialog-panel'
         });
