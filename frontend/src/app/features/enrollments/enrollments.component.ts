@@ -133,6 +133,7 @@ import { AuthService } from '../../core/services/auth.service';
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Ações</th>
               <td mat-cell *matCellDef="let e">
+                @if (canManage) {
                   <div style="display:flex; align-items:center; gap:8px">
                     <mat-form-field appearance="outline" style="width:140px;margin:0">
                       <mat-select [value]="e.status" (selectionChange)="updateStatus(e.id, $event.value)">
@@ -150,6 +151,7 @@ import { AuthService } from '../../core/services/auth.service';
                   </div>
                 }
               </td>
+
 
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="cols"></tr>
