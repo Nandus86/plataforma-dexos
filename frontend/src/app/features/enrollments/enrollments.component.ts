@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -13,6 +13,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
@@ -28,6 +29,7 @@ import { AuthService } from '../../core/services/auth.service';
     MatSelectModule, MatFormFieldModule, MatInputModule,
     MatDialogModule, MatSnackBarModule,
     MatAutocompleteModule, ReactiveFormsModule,
+    MatPaginatorModule,
   ],
   template: `
     <div class="page">
@@ -49,7 +51,7 @@ import { AuthService } from '../../core/services/auth.service';
         <div class="form-card glass-card animate-fade-in">
           <h3><mat-icon class="text-gold">assignment_ind</mat-icon> Nova Matrícula</h3>
           <div class="form-grid">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" style="grid-column: 1 / -1;">
               <mat-label>Estudante</mat-label>
               <input type="text" matInput [matAutocomplete]="autoStudent" [formControl]="studentCtrl" placeholder="Pesquisar estudante" (input)="newEnrollment.student_id = ''">
               <mat-autocomplete #autoStudent="matAutocomplete" [displayWith]="displayStudentFn" (optionSelected)="onStudentSelected($event)">
@@ -111,7 +113,7 @@ import { AuthService } from '../../core/services/auth.service';
       @if (loading) { <div class="loading-center"><mat-spinner diameter="40"></mat-spinner></div> }
       @else {
         <div class="table-card glass-card">
-          <table mat-table [dataSource]="enrollments" class="dark-table">
+          <table mat-table [dataSource]="dataSource" class="dark-table">
             <ng-container matColumnDef="student">
               <th mat-header-cell *matHeaderCellDef>Estudante</th>
               <td mat-cell *matCellDef="let e">{{ e.student_name || e.student_id }}</td>
@@ -157,17 +159,19 @@ import { AuthService } from '../../core/services/auth.service';
             <tr mat-header-row *matHeaderRowDef="cols"></tr>
             <tr mat-row *matRowDef="let row; columns: cols;"></tr>
           </table>
-          @if (enrollments.length === 0) {
+          @if (dataSource.data.length === 0) {
             <div class="empty-state"><mat-icon>how_to_reg</mat-icon><p>Nenhuma matrícula encontrada</p></div>
           }
+          <mat-paginator [pageSizeOptions]="[25, 50, 100]" showFirstLastButtons aria-label="Selecione a página"></mat-paginator>
         </div>
       }
     </div>
   `,
   styleUrls: [],
 })
-export class EnrollmentsComponent implements OnInit {
-  enrollments: any[] = [];
+export class EnrollmentsComponent implements OnInit, AfterViewInit {
+  dataSource = new MatTableDataSource<any>([]);
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   students: any[] = [];
   courses: any[] = [];
   academicPeriods: any[] = [];
@@ -201,14 +205,19 @@ export class EnrollmentsComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
+
   loadEnrollments() {
     this.loading = true;
     this.api.get<any[]>('/academic/enrollments/').subscribe({
       next: (data) => {
-        this.enrollments = data;
+        let filtered = data;
         if (this.filterStatus) {
-          this.enrollments = this.enrollments.filter(e => e.status === this.filterStatus);
+          filtered = filtered.filter(e => e.status === this.filterStatus);
         }
+        this.dataSource.data = filtered;
         this.loading = false;
       },
       error: () => this.loading = false,
