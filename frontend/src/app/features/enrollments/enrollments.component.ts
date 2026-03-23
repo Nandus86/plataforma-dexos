@@ -162,7 +162,7 @@ import { AuthService } from '../../core/services/auth.service';
           @if (dataSource.data.length === 0) {
             <div class="empty-state"><mat-icon>how_to_reg</mat-icon><p>Nenhuma matrícula encontrada</p></div>
           }
-          <mat-paginator [pageSizeOptions]="[25, 50, 100]" showFirstLastButtons aria-label="Selecione a página"></mat-paginator>
+          <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageSizeOptions]="[25, 50, 100]" (page)="onPageChange($event)" showFirstLastButtons aria-label="Selecione a página"></mat-paginator>
         </div>
       }
     </div>
@@ -172,6 +172,9 @@ import { AuthService } from '../../core/services/auth.service';
 export class EnrollmentsComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<any>([]);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  totalItems = 0;
+  pageSize = 25;
+  pageIndex = 0;
   students: any[] = [];
   courses: any[] = [];
   academicPeriods: any[] = [];
@@ -206,18 +209,29 @@ export class EnrollmentsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+    // For server-side pagination, paginator is handled manually via events
+  }
+
+  onPageChange(event: any) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadEnrollments();
   }
 
   loadEnrollments() {
     this.loading = true;
-    this.api.get<any[]>('/academic/enrollments/').subscribe({
+    const params: any = {
+      skip: this.pageIndex * this.pageSize,
+      limit: this.pageSize
+    };
+    if (this.filterStatus) {
+      params.status = this.filterStatus;
+    }
+
+    this.api.get<any>('/academic/enrollments/', params).subscribe({
       next: (data) => {
-        let filtered = data;
-        if (this.filterStatus) {
-          filtered = filtered.filter(e => e.status === this.filterStatus);
-        }
-        this.dataSource.data = filtered;
+        this.dataSource.data = data.items || [];
+        this.totalItems = data.total || 0;
         this.loading = false;
       },
       error: () => this.loading = false,

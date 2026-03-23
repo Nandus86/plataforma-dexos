@@ -46,6 +46,11 @@ class EnrollmentResponse(BaseModel):
         from_attributes = True
 
 
+class EnrollmentListResponse(BaseModel):
+    items: list[EnrollmentResponse]
+    total: int
+
+
 # --- Grade ---
 class GradeCreate(BaseModel):
     enrollment_id: UUID

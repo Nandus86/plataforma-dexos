@@ -18,40 +18,59 @@ from app.models.content import LessonPlan
 from app.models.class_group import ClassGroupStudent, ClassGroupStudentSubject, ClassGroup
 from app.models.course import Subject, MatrixSubject, CurriculumMatrix
 from app.schemas.academic import (
-    EnrollmentCreate, EnrollmentUpdate, EnrollmentResponse,
+    EnrollmentCreate, EnrollmentUpdate, EnrollmentResponse, EnrollmentListResponse,
     GradeCreate, GradeUpdate, GradeResponse,
     AttendanceCreate, AttendanceBulkCreate, AttendanceCheckin, AttendanceBiometricCheckin, AttendanceResponse,
     BoletimResponse, SubjectBoletim, GradeSummary
 )
 from app.auth.dependencies import get_current_user, require_role
+from sqlalchemy import func
 
 router = APIRouter()
 
 
 # ========== ENROLLMENTS ==========
 
-@router.get("/enrollments/", response_model=list[EnrollmentResponse])
+@router.get("/enrollments/", response_model=EnrollmentListResponse)
 async def list_enrollments(
     student_id: Optional[UUID] = None,
     course_id: Optional[UUID] = None,
+    status: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    # Base conditions
+    conditions = []
+    if current_user.role == UserRole.ESTUDANTE:
+        conditions.append(Enrollment.student_id == current_user.id)
+    elif student_id:
+        conditions.append(Enrollment.student_id == student_id)
+    if course_id:
+        conditions.append(Enrollment.course_id == course_id)
+    if status:
+        conditions.append(Enrollment.status == status)
+
+    # Count query
+    count_query = select(func.count(Enrollment.id))
+    if conditions:
+        count_query = count_query.where(*conditions)
+    total = await db.scalar(count_query)
+
     query = select(Enrollment).options(
         selectinload(Enrollment.student),
         selectinload(Enrollment.course),
         selectinload(Enrollment.academic_period),
         selectinload(Enrollment.period_breaks),
     )
-    if current_user.role == UserRole.ESTUDANTE:
-        query = query.where(Enrollment.student_id == current_user.id)
-    elif student_id:
-        query = query.where(Enrollment.student_id == student_id)
-    if course_id:
-        query = query.where(Enrollment.course_id == course_id)
-    result = await db.execute(query.order_by(Enrollment.created_at.desc()))
+    if conditions:
+        query = query.where(*conditions)
+        
+    result = await db.execute(query.order_by(Enrollment.created_at.desc()).offset(skip).limit(limit))
     enrollments = result.scalars().all()
-    return [
+    
+    items = [
         EnrollmentResponse(
             id=e.id, student_id=e.student_id, course_id=e.course_id,
             year=e.year, academic_period_id=e.academic_period_id,
@@ -65,6 +84,7 @@ async def list_enrollments(
         )
         for e in enrollments
     ]
+    return {"items": items, "total": total}
 
 
 @router.post("/enrollments/", response_model=EnrollmentResponse, status_code=status.HTTP_201_CREATED)
