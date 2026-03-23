@@ -172,3 +172,38 @@ async def update_student(
     await db.commit()
     result = await db.execute(select(User).options(selectinload(User.student_profile)).where(User.id == user.id))
     return result.scalar_one()
+
+
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_student(
+    user_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.SUPERADMIN, UserRole.ADMIN)),
+):
+    """Hard delete student if no enrollments exist"""
+    # 1. Fetch user
+    result = await db.execute(select(User).where(User.id == user_id, User.role == UserRole.ESTUDANTE))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Estudante não encontrado")
+
+    # 2. Check for enrollments (blocking condition)
+    from app.models.academic import Enrollment
+    enrollment_check = await db.execute(select(Enrollment).where(Enrollment.student_id == user_id))
+    if enrollment_check.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Não é possível excluir: o estudante possui matrículas ativas ou passadas."
+        )
+
+    # 3. Cleanup biometric data (manual cleanup as no CASCADE FK)
+    from app.models.biometric_data import BiometricData
+    from sqlalchemy import delete
+    await db.execute(delete(BiometricData).where(BiometricData.user_id == user_id))
+
+    # 4. Delete user (Profile and other cascade-enabled relations will follow)
+    await db.delete(user)
+    await db.commit()
+    
+    return None
+

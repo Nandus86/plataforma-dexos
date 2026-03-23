@@ -139,4 +139,25 @@ export class StudentsComponent implements OnInit, AfterViewInit {
                 }
             });
     }
+
+    deleteStudent(student: any): void {
+        if (!confirm(`Tem certeza que deseja excluir o estudante ${student.name}? Esta ação não pode ser desfeita.`)) {
+            return;
+        }
+
+        this.loading = true;
+        this.api.delete(`/students/${student.id}`)
+            .pipe(finalize(() => this.loading = false))
+            .subscribe({
+                next: () => {
+                    this.snackBar.open('Estudante excluído com sucesso!', 'OK', { duration: 3000 });
+                    this.loadStudents();
+                },
+                error: (err) => {
+                    const msg = err?.error?.detail || 'Erro ao excluir estudante';
+                    this.snackBar.open(msg, 'Fechar', { duration: 5000 });
+                }
+            });
+    }
 }
+

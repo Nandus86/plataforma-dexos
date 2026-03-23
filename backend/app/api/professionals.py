@@ -157,3 +157,47 @@ async def update_professional(
     await db.commit()
     result = await db.execute(select(User).options(selectinload(User.professional_profile)).where(User.id == user.id))
     return result.scalar_one()
+
+
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_professional(
+    user_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.SUPERADMIN, UserRole.ADMIN)),
+):
+    """Hard delete professional if not linked to any subjects or assignments"""
+    # 1. Fetch user
+    result = await db.execute(select(User).where(User.id == user_id, User.role != UserRole.ESTUDANTE))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Profissional não encontrado")
+
+    # 2. Check for MatrixSubject links (professor of a subject)
+    from app.models.course import MatrixSubject
+    ms_check = await db.execute(select(MatrixSubject).where(MatrixSubject.professor_id == user_id))
+    if ms_check.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Não é possível excluir: o profissional está vinculado como professor em uma ou mais disciplinas."
+        )
+
+    # 3. Check for Assignment links
+    from app.models.academic import Assignment
+    as_check = await db.execute(select(Assignment).where(Assignment.professor_id == user_id))
+    if as_check.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Não é possível excluir: o profissional possui tarefas/atividades cadastradas."
+        )
+
+    # 4. Cleanup biometric data
+    from app.models.biometric_data import BiometricData
+    from sqlalchemy import delete
+    await db.execute(delete(BiometricData).where(BiometricData.user_id == user_id))
+
+    # 5. Delete user
+    await db.delete(user)
+    await db.commit()
+    
+    return None
+

@@ -155,6 +155,43 @@ async def update_enrollment(
     return enrollment
 
 
+@router.delete("/enrollments/{enrollment_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_enrollment(
+    enrollment_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.SUPERADMIN, UserRole.ADMIN)),
+):
+    """Hard delete enrollment (unenroll) if no grades or attendance exist"""
+    # 1. Fetch enrollment
+    result = await db.execute(select(Enrollment).where(Enrollment.id == enrollment_id))
+    enrollment = result.scalar_one_or_none()
+    if not enrollment:
+        raise HTTPException(status_code=404, detail="Matrícula não encontrada")
+
+    # 2. Check for grades
+    grade_check = await db.execute(select(Grade).where(Grade.enrollment_id == enrollment_id))
+    if grade_check.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Não é possível descadastrar: o aluno já possui notas registradas nesta matrícula. Considere inativar ou trancar a matrícula."
+        )
+
+    # 3. Check for attendance
+    attendance_check = await db.execute(select(Attendance).where(Attendance.enrollment_id == enrollment_id))
+    if attendance_check.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Não é possível descadastrar: o aluno já possui registros de frequência nesta matrícula."
+        )
+
+    # 4. Delete enrollment (enrollment_period_breaks will be deleted via cascade in DB or model)
+    await db.delete(enrollment)
+    await db.commit()
+    
+    return None
+
+
+
 
 # ========== BOLETIM ==========
 

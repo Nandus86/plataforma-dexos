@@ -133,19 +133,24 @@ import { AuthService } from '../../core/services/auth.service';
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Ações</th>
               <td mat-cell *matCellDef="let e">
-                @if (canManage) {
-                  <mat-form-field appearance="outline" style="width:140px;margin:0">
-                    <mat-select [value]="e.status" (selectionChange)="updateStatus(e.id, $event.value)">
-                      <mat-option value="active">Ativo</mat-option>
-                      <mat-option value="completed">Concluído</mat-option>
-                      <mat-option value="failed">Reprovado</mat-option>
-                      <mat-option value="locked">Trancado</mat-option>
-                      <mat-option value="inactive">Inativo</mat-option>
-                      <mat-option value="transferred">Transferido</mat-option>
-                    </mat-select>
-                  </mat-form-field>
+                  <div style="display:flex; align-items:center; gap:8px">
+                    <mat-form-field appearance="outline" style="width:140px;margin:0">
+                      <mat-select [value]="e.status" (selectionChange)="updateStatus(e.id, $event.value)">
+                        <mat-option value="active">Ativo</mat-option>
+                        <mat-option value="completed">Concluído</mat-option>
+                        <mat-option value="failed">Reprovado</mat-option>
+                        <mat-option value="locked">Trancado</mat-option>
+                        <mat-option value="inactive">Inativo</mat-option>
+                        <mat-option value="transferred">Transferido</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <button mat-icon-button color="warn" (click)="unenroll(e)" matTooltip="Descadastrar Aluno">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
                 }
               </td>
+
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="cols"></tr>
             <tr mat-row *matRowDef="let row; columns: cols;"></tr>
@@ -299,4 +304,24 @@ export class EnrollmentsComponent implements OnInit {
     if (!breaks || breaks.length === 0) return 'Todo o Período';
     return breaks.map(b => b.name).join(', ');
   }
+  unenroll(enrollment: any): void {
+    const studentName = enrollment.student_name || 'o estudante';
+    const courseName = enrollment.course_name || 'o curso';
+    
+    if (!confirm(`Deseja realmente descadastrar ${studentName} do curso ${courseName}? Esta operação excluirá a matrícula se não houver notas ou frequências.`)) {
+      return;
+    }
+
+    this.api.delete(`/academic/enrollments/${enrollment.id}`).subscribe({
+      next: () => {
+        this.snack.open('Matrícula descadastrada com sucesso!', 'OK', { duration: 3000 });
+        this.loadEnrollments();
+      },
+      error: (err) => {
+        const msg = err?.error?.detail || 'Erro ao descadastrar matrícula';
+        this.snack.open(msg, 'Fechar', { duration: 5000 });
+      }
+    });
+  }
 }
+

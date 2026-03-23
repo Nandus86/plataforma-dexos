@@ -140,4 +140,25 @@ export class ProfessionalsComponent implements OnInit, AfterViewInit {
         };
         return labels[role] || role;
     }
+
+    deleteProfessional(professional: any): void {
+        if (!confirm(`Tem certeza que deseja excluir o profissional ${professional.name}? Esta ação não pode ser desfeita.`)) {
+            return;
+        }
+
+        this.loading = true;
+        this.api.delete(`/professionals/${professional.id}`)
+            .pipe(finalize(() => this.loading = false))
+            .subscribe({
+                next: () => {
+                    this.snackBar.open('Profissional excluído com sucesso!', 'OK', { duration: 3000 });
+                    this.loadProfessionals();
+                },
+                error: (err) => {
+                    const msg = err?.error?.detail || 'Erro ao excluir profissional';
+                    this.snackBar.open(msg, 'Fechar', { duration: 5000 });
+                }
+            });
+    }
 }
+

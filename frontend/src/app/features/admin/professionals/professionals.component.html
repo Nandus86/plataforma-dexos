@@ -70,7 +70,12 @@
                             {{ u.is_active ? 'block' : 'check_circle' }}
                         </mat-icon>
                     </button>
+                    <button mat-icon-button color="warn" (click)="deleteProfessional(u)"
+                        matTooltip="Excluir Permanentemente">
+                        <mat-icon>delete</mat-icon>
+                    </button>
                 </td>
+
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
