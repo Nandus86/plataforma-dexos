@@ -76,7 +76,7 @@ html:not(.theme-light) {
 
   // Text
   --text-primary: #F5F5F5;
-  --text-secondary: #B3B3B3;
+   --text-secondary: #CCCCCC;
   --text-muted: #808080;
   --text-inverse: #0A0A0A;
 
@@ -87,9 +87,10 @@ html:not(.theme-light) {
   --accent-gold-contrast: #0A0A0A;
 
   // Borders
-  --border-subtle: rgba(212, 175, 55, 0.12);
+   --border-subtle: rgba(212, 175, 55, 0.2);
   --border-strong: rgba(212, 175, 55, 0.3);
-  --border-default: rgba(255, 255, 255, 0.06);
+   --border-default: rgba(255, 255, 255, 0.15);
+   --border-focus: rgba(212, 175, 55, 0.5);
 
   // Navigation
   --nav-hover-bg: rgba(212, 175, 55, 0.08);
@@ -132,8 +133,8 @@ html.theme-light {
   --bg-toolbar: #FFFFFF;
   --bg-card: #FFFFFF;
   --bg-dialog: #FAFAFA;
-  --bg-input: #F5F5F5;
-  --bg-hover: rgba(212, 175, 55, 0.06);
+   --bg-input: #F5F5F5;
+   --bg-hover: rgba(212, 175, 55, 0.15);
 
   // Text
   --text-primary: #1A1A1A;
@@ -142,8 +143,8 @@ html.theme-light {
   --text-inverse: #FFFFFF;
 
   // Gold Accents
-  --accent-gold: #BF9200;
-  --accent-gold-light: #D4AF37;
+   --accent-gold: #D4AF37;
+   --accent-gold-light: #F0D97A;
   --accent-gold-dim: rgba(191, 146, 0, 0.3);
   --accent-gold-contrast: #FFFFFF;
 
@@ -163,7 +164,7 @@ html.theme-light {
   --scrollbar-thumb-hover: #D4AF37;
 
   // Misc
-  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.12);
   --shadow-card-hover: 0 8px 24px rgba(191, 146, 0, 0.1);
   --overlay-bg: rgba(0, 0, 0, 0.3);
   --table-header-bg: rgba(191, 146, 0, 0.06);
@@ -278,7 +279,19 @@ body {
 }
 
 .gold-gradient-bg {
-  background: linear-gradient(135deg, #D4AF37 0%, #F0D97A 50%, #997500 100%);
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-light) 50%, var(--accent-gold-dim) 100%);
+  position: relative;
+}
+
+.gold-gradient-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 70%, rgba(var(--accent-gold), 0.08) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 // ============================================================
@@ -413,7 +426,7 @@ body {
   overflow-x: auto;
   overflow-y: hidden;
 
-  .dark-table {
+  .theme-table {
     width: 100%;
     background: transparent;
 

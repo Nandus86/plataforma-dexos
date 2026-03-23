@@ -21,7 +21,7 @@
     <!-- Table -->
     <div class="table-card glass-card relative">
 
-        <table mat-table [dataSource]="dataSource" matSort class="dark-table">
+        <table mat-table [dataSource]="dataSource" matSort class="theme-table">
             <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
                 <td mat-cell *matCellDef="let u">{{ u.name }}</td>
@@ -44,7 +44,7 @@
             <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell *matCellDef="let u">
-                    <button mat-icon-button color="accent" (click)="openHistoryDialog(u)"
+                    <button mat-icon-button color="primary" (click)="openHistoryDialog(u)"
                         matTooltip="Vida Acadêmica"><mat-icon>history</mat-icon></button>
                     <button mat-icon-button (click)="openDialog(u)"
                         matTooltip="Editar"><mat-icon>edit</mat-icon></button>
