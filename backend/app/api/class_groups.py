@@ -255,23 +255,19 @@ async def delete_class_group(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.SUPERADMIN, UserRole.ADMIN)),
 ):
-    """Soft delete a class group if it's empty"""
+    """Hard delete a class group if it has no enrolled students"""
     result = await db.execute(select(ClassGroup).where(ClassGroup.id == group_id))
     group = result.scalar_one_or_none()
     if not group:
         raise HTTPException(status_code=404, detail="Turma não encontrada")
 
-    # Check for enrolled students
+    # Check for enrolled students — only block if students exist
     count_students_res = await db.execute(select(func.count(ClassGroupStudent.id)).where(ClassGroupStudent.class_group_id == group_id))
     if count_students_res.scalar() > 0:
         raise HTTPException(status_code=400, detail="Não é possível apagar uma turma que possui estudantes matriculados.")
 
-    # Check for linked subjects
-    count_subjects_res = await db.execute(select(func.count(ClassGroupSubject.id)).where(ClassGroupSubject.class_group_id == group_id))
-    if count_subjects_res.scalar() > 0:
-        raise HTTPException(status_code=400, detail="Não é possível apagar uma turma que possui disciplinas cadastradas.")
-
-    group.is_active = False
+    # Hard delete — cascade will remove subjects, schedules, grid entries, professor assignments
+    await db.delete(group)
     await db.commit()
 
 
