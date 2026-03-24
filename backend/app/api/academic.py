@@ -79,6 +79,7 @@ async def list_enrollments(
             status=e.status.value if hasattr(e.status, 'value') else e.status,
             created_at=e.created_at,
             student_name=e.student.name if e.student else None,
+            student_email=e.student.email if e.student else None,
             course_name=e.course.name if e.course else None,
             academic_period_name=e.academic_period.name if getattr(e, 'academic_period', None) else None,
         )
@@ -152,6 +153,7 @@ async def create_enrollment(
         status=enrollment.status.value if hasattr(enrollment.status, 'value') else enrollment.status,
         created_at=enrollment.created_at,
         student_name=student.name if student else None,
+        student_email=student.email if student else None,
         course_name=course.name,
         academic_period_name=enrollment.academic_period.name if getattr(enrollment, 'academic_period', None) else None,
     )

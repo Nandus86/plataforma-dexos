@@ -574,9 +574,10 @@ export class ClassGroupsComponent implements OnInit {
 
   loadAvailableEnrollments() {
     if (!this.selectedGroup?.course_id) return;
-    this.api.get<any[]>('/academic/enrollments/', { course_id: this.selectedGroup.course_id, status: 'active' }).subscribe({
+    this.api.get<any>('/academic/enrollments/', { course_id: this.selectedGroup.course_id, status: 'active' }).subscribe({
       next: d => {
-        this.availableEnrollments = d || [];
+        // Backend returns { items: [...], total: N }
+        this.availableEnrollments = (d?.items || d || []);
         this.setupStudentAutocomplete();
       },
     });

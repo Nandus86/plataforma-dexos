@@ -39,6 +39,7 @@ class EnrollmentResponse(BaseModel):
     status: str
     created_at: datetime
     student_name: Optional[str] = None
+    student_email: Optional[str] = None
     course_name: Optional[str] = None
     academic_period_name: Optional[str] = None
 
