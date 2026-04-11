@@ -162,7 +162,7 @@ import { AuthService } from '../../core/services/auth.service';
           @if (dataSource.data.length === 0) {
             <div class="empty-state"><mat-icon>how_to_reg</mat-icon><p>Nenhuma matrícula encontrada</p></div>
           }
-          <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageSizeOptions]="[25, 50, 100]" (page)="onPageChange($event)" showFirstLastButtons aria-label="Selecione a página"></mat-paginator>
+          <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageIndex]="pageIndex" [pageSizeOptions]="[25, 50, 100]" (page)="onPageChange($event)" showFirstLastButtons aria-label="Selecione a página"></mat-paginator>
         </div>
       }
     </div>
