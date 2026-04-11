@@ -97,6 +97,11 @@ import { AuthService } from '../../core/services/auth.service';
       <!-- Filters -->
       <div class="filters glass-card">
         <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Pesquisar aluno</mat-label>
+          <input matInput [(ngModel)]="searchText" (keyup.enter)="loadEnrollments()" placeholder="Nome ou email">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="filter-field">
           <mat-label>Filtrar por status</mat-label>
           <mat-select [(ngModel)]="filterStatus" (selectionChange)="loadEnrollments()">
             <mat-option value="">Todos</mat-option>
@@ -106,6 +111,16 @@ import { AuthService } from '../../core/services/auth.service';
             <mat-option value="locked">Trancado</mat-option>
             <mat-option value="inactive">Inativo</mat-option>
             <mat-option value="transferred">Transferido</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Ordenar por</mat-label>
+          <mat-select [(ngModel)]="sortBy" (selectionChange)="loadEnrollments()">
+            <mat-option value="created_at">Data (mais recente)</mat-option>
+            <mat-option value="student_name">Estudante (A-Z)</mat-option>
+            <mat-option value="course_name">Curso (A-Z)</mat-option>
+            <mat-option value="year">Ano</mat-option>
+            <mat-option value="status">Status</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -184,6 +199,8 @@ export class EnrollmentsComponent implements OnInit, AfterViewInit {
   saving = false;
   showForm = false;
   filterStatus = '';
+  searchText = '';
+  sortBy = 'created_at';
   cols = ['student', 'course', 'period', 'status', 'actions'];
 
   newEnrollment: { student_id: string; course_id: string; year: number; academic_period_id: string; period_break_ids: string[] } = {
@@ -226,6 +243,12 @@ export class EnrollmentsComponent implements OnInit, AfterViewInit {
     };
     if (this.filterStatus) {
       params.status = this.filterStatus;
+    }
+    if (this.searchText) {
+      params.search = this.searchText;
+    }
+    if (this.sortBy) {
+      params.order_by = this.sortBy;
     }
 
     this.api.get<any>('/academic/enrollments/', params).subscribe({

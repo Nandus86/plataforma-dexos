@@ -24,7 +24,7 @@ from app.schemas.academic import (
     BoletimResponse, SubjectBoletim, GradeSummary
 )
 from app.auth.dependencies import get_current_user, require_role
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 router = APIRouter()
 
@@ -36,6 +36,8 @@ async def list_enrollments(
     student_id: Optional[UUID] = None,
     course_id: Optional[UUID] = None,
     status: Optional[str] = None,
+    search: Optional[str] = None,
+    order_by: Optional[str] = "created_at",
     skip: int = 0,
     limit: int = 100,
     db: AsyncSession = Depends(get_db),
@@ -51,6 +53,13 @@ async def list_enrollments(
         conditions.append(Enrollment.course_id == course_id)
     if status:
         conditions.append(Enrollment.status == status)
+    
+    # Search by student name or email
+    if search:
+        conditions.append(or_(
+            User.name.ilike(f"%{search}%"),
+            User.email.ilike(f"%{search}%")
+        ))
 
     # Count query
     count_query = select(func.count(Enrollment.id))
@@ -63,11 +72,34 @@ async def list_enrollments(
         selectinload(Enrollment.course),
         selectinload(Enrollment.academic_period),
         selectinload(Enrollment.period_breaks),
-    )
+    ).join(User, Enrollment.student_id == User.id)
     if conditions:
         query = query.where(*conditions)
+    
+    # Dynamic ordering
+    from sqlalchemy import asc, desc
+    order_column = Enrollment.created_at
+    order_direction = desc
+    if order_by == "student_name":
+        order_column = User.name
+        order_direction = asc
+    elif order_by == "course_name":
+        order_column = Course.name
+        query = query.join(Course, Enrollment.course_id == Course.id)
+        order_direction = asc
+    elif order_by == "year":
+        order_column = Enrollment.year
+        order_direction = desc
+    elif order_by == "status":
+        order_column = Enrollment.status
+        order_direction = asc
+    
+    if order_direction == asc:
+        query = query.order_by(asc(order_column))
+    else:
+        query = query.order_by(desc(order_column))
         
-    result = await db.execute(query.order_by(Enrollment.created_at.desc()).offset(skip).limit(limit))
+    result = await db.execute(query.offset(skip).limit(limit))
     enrollments = result.scalars().all()
     
     items = [
