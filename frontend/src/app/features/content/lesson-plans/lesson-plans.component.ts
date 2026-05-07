@@ -34,6 +34,9 @@ interface LessonPlan {
   class_order?: number;
   description?: string;
   class_orders?: number[];
+  // Details state
+  attendanceMatrix?: any[];
+  loadingDetails?: boolean;
 }
 
 interface Attendance {
@@ -232,9 +235,9 @@ interface Grade {
                          <!-- Attendance Tab -->
                          <mat-tab label="Frequência">
                             <div class="tab-content">
-                               <div *ngIf="loadingDetails" class="spinner-sm"><mat-spinner diameter="20"></mat-spinner></div>
-                               <div *ngIf="!loadingDetails">
-                                  <table class="simple-table" *ngIf="attendanceMatrix.length > 0">
+                               <div *ngIf="l.loadingDetails" class="spinner-sm"><mat-spinner diameter="20"></mat-spinner></div>
+                               <div *ngIf="!l.loadingDetails">
+                                  <table class="simple-table" *ngIf="(l.attendanceMatrix || []).length > 0">
                                      <thead>
                                         <tr>
                                            <th>Estudante</th>
@@ -244,7 +247,7 @@ interface Grade {
                                         </tr>
                                      </thead>
                                      <tbody>
-                                        @for (row of attendanceMatrix; track row.student_id) {
+                                        @for (row of l.attendanceMatrix; track row.student_id) {
                                            <tr>
                                               <td>{{ row.student_name }}
                                                   <div style="font-size: 0.8em; color: gray;" *ngIf="hasAbsences(row, l.class_orders)">
@@ -252,7 +255,7 @@ interface Grade {
                                                   </div>
                                               </td>
                                               @for (order of (l.class_orders?.length ? l.class_orders : [1]); track order) {
-                                                  <td class="text-center" [class.absent]="!row.attendances[order].present">
+                                                  <td class="text-center" [class.absent]="!row.attendances[order]?.present">
                                                       <mat-slide-toggle 
                                                           [(ngModel)]="row.attendances[order].present" 
                                                           (change)="updateAttendance(row.attendances[order], l.id, order)">
@@ -268,7 +271,7 @@ interface Grade {
                                         }
                                      </tbody>
                                   </table>
-                                  <div *ngIf="attendanceMatrix.length === 0" class="empty-state">
+                                  <div *ngIf="(l.attendanceMatrix || []).length === 0" class="empty-state">
                                       Nenhum estudante matriculado nesta disciplina.
                                   </div>
                                </div>
@@ -278,8 +281,8 @@ interface Grade {
                          <!-- Grades Tab (if activity) -->
                          <mat-tab label="Notas" *ngIf="l.activity_type !== 'none'">
                             <div class="tab-content">
-                               <div *ngIf="loadingDetails" class="spinner-sm"><mat-spinner diameter="20"></mat-spinner></div>
-                               <div *ngIf="!loadingDetails">
+                               <div *ngIf="l.loadingDetails" class="spinner-sm"><mat-spinner diameter="20"></mat-spinner></div>
+                               <div *ngIf="!l.loadingDetails">
                                   <table class="simple-table">
                                      <thead>
                                         <tr>
@@ -289,7 +292,7 @@ interface Grade {
                                         </tr>
                                      </thead>
                                      <tbody>
-                                        @for (row of attendanceMatrix; track row.student_id) {
+                                        @for (row of l.attendanceMatrix; track row.student_id) {
                                            <tr *ngIf="row.grade">
                                               <td>{{ row.student_name }}</td>
                                               <td>
@@ -341,8 +344,7 @@ export class LessonPlansComponent implements OnInit {
   };
 
   // Details mapped into standard format
-  attendanceMatrix: any[] = [];
-  loadingDetails = false;
+
 
   constructor(
     private api: ApiService,
@@ -481,21 +483,14 @@ export class LessonPlansComponent implements OnInit {
   // Details Loading (Attendance / Grades)
   loadLessonDetails(l: LessonPlan) {
     if (!l.id) return;
-    this.loadingDetails = true;
+    l.loadingDetails = true;
 
-    // We need endpoints for fetching attendance/grades by lesson plan.
-    // I didn't create specifics in `lesson_plans.py` yet.
-    // I should assume backend endpoints exist or create them.
-    // I originally planned `lesson_plans.py` CRUD.
-    // I need to add `GET /lesson-plans/{id}/attendance` and `GET /lesson-plans/{id}/grades`.
-
-    // Let's implement them in frontend expecting them. I will add them to backend shortly.
     this.api.get<any>(`/lesson-plans/${l.id}/details`).subscribe({
       next: d => {
         const classOrders = l.class_orders && l.class_orders.length > 0 ? l.class_orders : [1];
 
         // Build matrix
-        this.attendanceMatrix = d.students.map((s: any) => {
+        l.attendanceMatrix = d.students.map((s: any) => {
           const row: any = {
             student_id: s.id,
             student_name: s.name,
@@ -524,9 +519,9 @@ export class LessonPlansComponent implements OnInit {
           return row;
         });
 
-        this.loadingDetails = false;
+        l.loadingDetails = false;
       },
-      error: () => this.loadingDetails = false
+      error: () => l.loadingDetails = false
     });
   }
 
