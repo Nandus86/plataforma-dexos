@@ -238,7 +238,7 @@ interface Grade {
                                      <thead>
                                         <tr>
                                            <th>Estudante</th>
-                                           @for (order of (l.class_orders || [1]); track order) {
+                                           @for (order of (l.class_orders?.length ? l.class_orders : [1]); track order) {
                                               <th class="text-center">{{ order }}ª Aula</th>
                                            }
                                         </tr>
@@ -251,7 +251,7 @@ interface Grade {
                                                       Falta Registrada
                                                   </div>
                                               </td>
-                                              @for (order of (l.class_orders || [1]); track order) {
+                                              @for (order of (l.class_orders?.length ? l.class_orders : [1]); track order) {
                                                   <td class="text-center" [class.absent]="!row.attendances[order].present">
                                                       <mat-slide-toggle 
                                                           [(ngModel)]="row.attendances[order].present" 
@@ -492,7 +492,7 @@ export class LessonPlansComponent implements OnInit {
     // Let's implement them in frontend expecting them. I will add them to backend shortly.
     this.api.get<any>(`/lesson-plans/${l.id}/details`).subscribe({
       next: d => {
-        const classOrders = l.class_orders || [1];
+        const classOrders = l.class_orders && l.class_orders.length > 0 ? l.class_orders : [1];
 
         // Build matrix
         this.attendanceMatrix = d.students.map((s: any) => {
@@ -531,7 +531,7 @@ export class LessonPlansComponent implements OnInit {
   }
 
   hasAbsences(row: any, orders: number[] | undefined): boolean {
-    const list = orders || [1];
+    const list = orders && orders.length > 0 ? orders : [1];
     return list.some(o => !row.attendances[o]?.present);
   }
 
