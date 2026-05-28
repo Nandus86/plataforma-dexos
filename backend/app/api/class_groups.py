@@ -99,6 +99,11 @@ async def list_class_groups(
         query = query.join(ClassGroupSubject, ClassGroup.id == ClassGroupSubject.class_group_id)\
                      .join(ClassGroupSubjectProfessor, ClassGroupSubject.id == ClassGroupSubjectProfessor.class_group_subject_id)\
                      .where(ClassGroupSubjectProfessor.professor_id == current_user.id)
+    elif current_user.role == UserRole.ESTUDANTE:
+        from app.models.academic import Enrollment
+        query = query.join(ClassGroupStudent, ClassGroup.id == ClassGroupStudent.class_group_id)\
+                     .join(Enrollment, ClassGroupStudent.enrollment_id == Enrollment.id)\
+                     .where(Enrollment.student_id == current_user.id)
 
     query = query.order_by(ClassGroup.year.desc(), ClassGroup.semester.desc(), ClassGroup.name)
     result = await db.execute(query)
@@ -435,6 +440,18 @@ async def list_class_group_subjects(
         )
         if prof_check.scalar() == 0:
             raise HTTPException(status_code=403, detail="Acesso negado: Você não leciona nesta turma.")
+    elif current_user.role == UserRole.ESTUDANTE:
+        from app.models.academic import Enrollment
+        student_check = await db.execute(
+            select(func.count(ClassGroupStudent.id))
+            .join(Enrollment, ClassGroupStudent.enrollment_id == Enrollment.id)
+            .where(
+                ClassGroupStudent.class_group_id == group_id,
+                Enrollment.student_id == current_user.id
+            )
+        )
+        if student_check.scalar() == 0:
+            raise HTTPException(status_code=403, detail="Acesso negado: Você não faz parte desta turma.")
 
     query = (
         select(ClassGroupSubject)

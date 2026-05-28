@@ -297,13 +297,17 @@ async def get_lesson_plan_details(
     
     if cg_subject:
         # Fetch all active students currently enrolled in this class group
-        enrolled_res = await db.execute(
+        stmt_enrolled = (
             select(ClassGroupStudent)
             .options(joinedload(ClassGroupStudent.enrollment).joinedload(Enrollment.student))
             .where(
                 ClassGroupStudent.class_group_id == cg_subject.class_group_id,
             )
         )
+        if current_user.role == UserRole.ESTUDANTE:
+            stmt_enrolled = stmt_enrolled.join(Enrollment, ClassGroupStudent.enrollment_id == Enrollment.id).where(Enrollment.student_id == current_user.id)
+
+        enrolled_res = await db.execute(stmt_enrolled)
         enrolled_students = enrolled_res.scalars().all()
         
         for e in enrolled_students:
@@ -317,15 +321,17 @@ async def get_lesson_plan_details(
                 }
     
     # Fetch attendances
-    att_result = await db.execute(
-        select(Attendance).options(joinedload(Attendance.enrollment).joinedload(Enrollment.student)).where(Attendance.lesson_plan_id == plan_id)
-    )
+    stmt_att = select(Attendance).options(joinedload(Attendance.enrollment).joinedload(Enrollment.student)).where(Attendance.lesson_plan_id == plan_id)
+    if current_user.role == UserRole.ESTUDANTE:
+        stmt_att = stmt_att.join(Enrollment, Attendance.enrollment_id == Enrollment.id).where(Enrollment.student_id == current_user.id)
+    att_result = await db.execute(stmt_att)
     attendances_db = att_result.scalars().all()
     
     # Fetch grades
-    grades_result = await db.execute(
-        select(Grade).options(joinedload(Grade.enrollment).joinedload(Enrollment.student)).where(Grade.lesson_plan_id == plan_id)
-    )
+    stmt_grades = select(Grade).options(joinedload(Grade.enrollment).joinedload(Enrollment.student)).where(Grade.lesson_plan_id == plan_id)
+    if current_user.role == UserRole.ESTUDANTE:
+        stmt_grades = stmt_grades.join(Enrollment, Grade.enrollment_id == Enrollment.id).where(Enrollment.student_id == current_user.id)
+    grades_result = await db.execute(stmt_grades)
     grades_db = grades_result.scalars().all()
 
     # Still add students from attendance/grades in case they were removed from the class group but have history in this plan

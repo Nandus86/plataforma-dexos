@@ -93,9 +93,11 @@
                                 <td class="text-center" *ngFor="let order of selectedLesson.class_orders">
                                     <div class="cell-content">
                                         <mat-slide-toggle [(ngModel)]="row.attendances[order].present"
+                                            [disabled]="isStudent"
                                             (change)="updateAttendance(row.attendances[order], order)">
                                         </mat-slide-toggle>
                                         <input type="text" class="obs-input" placeholder="Obs..."
+                                            [disabled]="isStudent"
                                             [(ngModel)]="row.attendances[order].observation"
                                             (blur)="updateAttendance(row.attendances[order], order)">
                                     </div>

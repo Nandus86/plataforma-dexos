@@ -11,6 +11,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../core/services/api.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 interface ClassGroup {
   id: string;
@@ -69,7 +70,15 @@ export class AttendanceComponent implements OnInit {
   loadingLessons = false;
   loadingDetails = false;
 
-  constructor(private api: ApiService, private snackBar: MatSnackBar) { }
+  constructor(
+    private api: ApiService, 
+    private snackBar: MatSnackBar,
+    public auth: AuthService
+  ) { }
+
+  get isStudent(): boolean {
+    return this.auth.userRole === 'estudante';
+  }
 
   ngOnInit() {
     this.loadGroups();
@@ -171,6 +180,7 @@ export class AttendanceComponent implements OnInit {
   }
 
   updateAttendance(att: any, order: number) {
+    if (this.isStudent) return;
     if (!this.selectedLesson) return;
 
     const payload = {
