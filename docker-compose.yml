@@ -74,6 +74,8 @@ services:
     restart: unless-stopped
     ports:
       - "4200:4200"
+    environment:
+      - API_URL=http://localhost:8010/api/v1
     volumes:
       - ./frontend/src:/app/src
     networks:
