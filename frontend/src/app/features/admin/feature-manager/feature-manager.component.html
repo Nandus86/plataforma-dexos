@@ -4,9 +4,14 @@
             <h1 class="page-title"><mat-icon>security</mat-icon> Gerenciar Permissões</h1>
             <p class="page-subtitle">Configure o acesso aos módulos do sistema por nível de usuário</p>
         </div>
-        <button mat-raised-button color="primary" (click)="save()" [disabled]="loading" class="btn-gold">
-            <mat-icon>save</mat-icon> Salvar Alterações
-        </button>
+        <div style="display: flex; gap: 12px;">
+            <button mat-button (click)="goBack()">
+                <mat-icon>arrow_back</mat-icon> Voltar
+            </button>
+            <button mat-raised-button color="primary" (click)="save()" [disabled]="loading" class="btn-gold">
+                <mat-icon>save</mat-icon> Salvar Alterações
+            </button>
+        </div>
     </div>
 
     @for (group of featureGroups; track group.name) {

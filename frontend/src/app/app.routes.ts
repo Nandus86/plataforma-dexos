@@ -41,7 +41,7 @@ export const routes: Routes = [
                 data: { roles: ['superadmin', 'admin'] },
             },
             {
-                path: 'features',
+                path: 'tenants/:id/features',
                 loadComponent: () => import('./features/admin/feature-manager/feature-manager.component').then(m => m.FeatureManagerComponent),
                 canActivate: [RoleGuard],
                 data: { roles: ['superadmin'] },

@@ -11,6 +11,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -154,59 +155,96 @@ import { AuthService } from '../../../core/services/auth.service';
         </div>
         
         <div class="content-row animate-fade-in-delay">
-          <mat-accordion multi>
-            @for (sub of boletim.subjects; track sub.subject_id) {
-              <mat-expansion-panel class="subject-panel glass-card" expanded="true" style="margin-bottom: 1rem; background: rgba(30, 30, 30, 0.6) !important;">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    <span style="font-size: 1.1rem; font-weight: 500;">{{ sub.subject_name }}</span>
-                  </mat-panel-title>
-                  <mat-panel-description style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px;">
-                    <span style="font-size: 0.9rem;">Freq: {{ sub.frequency_percentage }}% ({{sub.total_presences}}/{{sub.total_planned_classes}})</span>
-                    <mat-progress-bar mode="determinate" [value]="sub.frequency_percentage" 
-                        [color]="sub.frequency_percentage >= 75 ? 'primary' : 'warn'" style="width: 150px;">
-                    </mat-progress-bar>
-                  </mat-panel-description>
-                </mat-expansion-panel-header>
+          <table mat-table [dataSource]="boletim.subjects" multiTemplateDataRows class="theme-table" style="width: 100%;">
+            
+            <ng-container matColumnDef="subject_name">
+              <th mat-header-cell *matHeaderCellDef style="font-size: 1.1em; color: var(--gold-primary);"> Disciplina </th>
+              <td mat-cell *matCellDef="let element" style="font-weight: 500;"> {{element.subject_name}} </td>
+            </ng-container>
 
-                @if (sub.grades.length > 0) {
-                  <table class="simple-table" style="width: 100%; margin-top: 1rem; border-collapse: collapse;">
-                    <thead>
-                      <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left;">
-                        <th style="padding: 12px 8px;">Avaliação</th>
-                        <th style="padding: 12px 8px;">Data</th>
-                        <th style="padding: 12px 8px;">Nota Tirada</th>
-                        <th style="padding: 12px 8px;">Obs</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (g of sub.grades; track g.id) {
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                          <td style="padding: 12px 8px;">{{ g.evaluation_name }}</td>
-                          <td style="padding: 12px 8px;">{{ g.date ? (g.date | date:'dd/MM/yyyy') : '-' }}</td>
-                          <td style="padding: 12px 8px;">
-                            <strong style="color: var(--gold-primary); font-size: 1.1em;">{{ g.value }}</strong> 
-                            <span style="opacity: 0.7;">/ {{ g.max_value }}</span>
-                          </td>
-                          <td style="padding: 12px 8px; font-style: italic; opacity: 0.8;">{{ g.observations || '-' }}</td>
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
-                } @else {
-                  <div class="empty-state" style="padding: 1rem; opacity: 0.7;">
-                    <p style="margin:0;"><mat-icon style="vertical-align: middle; margin-right: 8px;">info</mat-icon>Nenhuma atividade avaliativa registrada nesta disciplina.</p>
+            <!-- Dynamic Evaluation Columns -->
+            @for (col of evaluationColumns; track col) {
+              <ng-container [matColumnDef]="col">
+                <th mat-header-cell *matHeaderCellDef style="text-align: center;"> {{col}} </th>
+                <td mat-cell *matCellDef="let element" style="text-align: center;">
+                  <strong style="color: var(--gold-primary); font-size: 1.1em;">{{ getGradeValue(element, col) }}</strong>
+                </td>
+              </ng-container>
+            }
+
+            <ng-container matColumnDef="faltas">
+              <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Faltas </th>
+              <td mat-cell *matCellDef="let element" style="text-align: center;">
+                <span [style.color]="element.frequency_percentage >= 75 ? '#4caf50' : '#f44336'">
+                  {{ element.total_planned_classes - element.total_presences }}/{{ element.total_planned_classes }} 
+                  <small>({{ element.frequency_percentage }}%)</small>
+                </span>
+              </td>
+            </ng-container>
+            
+            <ng-container matColumnDef="media">
+              <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Pontos </th>
+              <td mat-cell *matCellDef="let element" style="text-align: center;">
+                <strong style="color: var(--gold-primary); font-size: 1.1em;">{{ getTotalPoints(element) }}</strong>
+              </td>
+            </ng-container>
+
+            <!-- Expanded Detail Column -->
+            <ng-container matColumnDef="expandedDetail">
+              <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length" style="padding: 0;">
+                <div class="element-detail"
+                     [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                  <div class="inner-table-container glass-card" style="padding: 16px; margin: 8px 16px; width: calc(100% - 32px);">
+                    <h4 style="margin-top: 0; color: var(--gold-primary);">Detalhamento - {{element.subject_name}}</h4>
+                    @if (element.grades.length > 0) {
+                      <table class="simple-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                          <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left;">
+                            <th style="padding: 8px;">Avaliação</th>
+                            <th style="padding: 8px;">Data</th>
+                            <th style="padding: 8px;">Nota Tirada</th>
+                            <th style="padding: 8px;">Obs</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (g of element.grades; track g.id) {
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                              <td style="padding: 8px;">{{ g.evaluation_name }}</td>
+                              <td style="padding: 8px;">{{ g.date ? (g.date | date:'dd/MM/yyyy') : '-' }}</td>
+                              <td style="padding: 8px;">
+                                <strong style="color: var(--gold-primary);">{{ g.value }}</strong> 
+                                <span style="opacity: 0.7;">/ {{ g.max_value }}</span>
+                              </td>
+                              <td style="padding: 8px; font-style: italic; opacity: 0.8;">{{ g.observations || '-' }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    } @else {
+                      <div class="empty-state" style="padding: 1rem; opacity: 0.7;">
+                        <p style="margin:0;"><mat-icon style="vertical-align: middle; margin-right: 8px;">info</mat-icon>Nenhuma atividade avaliativa registrada nesta disciplina.</p>
+                      </div>
+                    }
                   </div>
-                }
-              </mat-expansion-panel>
-            }
-            @if (boletim.subjects.length === 0) {
-              <div class="empty-state">
-                <mat-icon>info</mat-icon>
-                <p>Nenhuma disciplina encontrada no boletim do aluno.</p>
-              </div>
-            }
-          </mat-accordion>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+            <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
+                class="element-row"
+                [class.expanded-row]="expandedElement === element"
+                (click)="expandedElement = expandedElement === element ? null : element">
+            </tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+          </table>
+
+          @if (boletim.subjects.length === 0) {
+            <div class="empty-state">
+              <mat-icon>info</mat-icon>
+              <p>Nenhuma disciplina encontrada no boletim do aluno.</p>
+            </div>
+          }
         </div>
       }
     </div>
@@ -220,7 +258,22 @@ import { AuthService } from '../../../core/services/auth.service';
         background-color: rgba(255, 255, 255, 0.05);
     }
     .simple-table th { color: #B3B3B3; font-weight: 500; }
-  `]
+    
+    .theme-table { width: 100%; background: transparent; }
+    .element-row { cursor: pointer; transition: background-color 0.2s ease; }
+    .element-row:hover { background-color: rgba(255, 255, 255, 0.05); }
+    .detail-row { height: 0; min-height: 0; border: none; }
+    .element-detail { overflow: hidden; display: flex; }
+    .inner-table-container { box-sizing: border-box; }
+    .expanded-row { background-color: rgba(212, 175, 55, 0.05) !important; }
+  `],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class GradesComponent implements OnInit {
   boletim: any = null;
@@ -239,6 +292,11 @@ export class GradesComponent implements OnInit {
   // Matrículas selecionáveis (para pesquisa direta ou fluxo estudante)
   enrollments: any[] = [];
   selectedEnrollmentId: string = '';
+
+  // Boletim Tabela
+  expandedElement: any | null = null;
+  evaluationColumns: string[] = [];
+  columnsToDisplay: string[] = [];
 
   constructor(private api: ApiService, public auth: AuthService) { }
 
@@ -352,12 +410,52 @@ export class GradesComponent implements OnInit {
     this.api.get<any>(`/academic/boletim/${this.selectedEnrollmentId}`).subscribe({
       next: d => {
         this.boletim = d;
+        this.expandedElement = null;
+        
+        // Extract unique evaluation names
+        const evals = new Set<string>();
+        if (d.subjects) {
+          d.subjects.forEach((s: any) => {
+            if (s.grades) {
+              s.grades.forEach((g: any) => evals.add(g.evaluation_name));
+            }
+          });
+        }
+        
+        // Sort evaluation columns alphabetically or keep insertion order. 
+        // Insertion order usually depends on the first subject's grades, which is fine, 
+        // but sorting by name (e.g. "1º Bimestre", "2º Bimestre") is safer.
+        this.evaluationColumns = Array.from(evals).sort();
+        
+        // Define all columns to display in the main row
+        this.columnsToDisplay = ['subject_name', ...this.evaluationColumns, 'faltas', 'media'];
+
         this.loading = false;
       },
       error: () => {
         this.boletim = null;
         this.loading = false;
+        this.evaluationColumns = [];
+        this.columnsToDisplay = [];
       }
     });
+  }
+
+  getGradeValue(subject: any, evalName: string): string {
+    if (!subject.grades) return '-';
+    const grade = subject.grades.find((g: any) => g.evaluation_name === evalName);
+    return grade ? grade.value.toString() : '-';
+  }
+
+  getTotalPoints(subject: any): string {
+    if (!subject.grades || subject.grades.length === 0) return '-';
+    let total = 0;
+    let max = 0;
+    subject.grades.forEach((g: any) => {
+      total += g.value;
+      max += g.max_value;
+    });
+    // Format to 1 decimal place if needed
+    return max > 0 ? `${parseFloat(total.toFixed(1))} / ${parseFloat(max.toFixed(1))}` : '-';
   }
 }

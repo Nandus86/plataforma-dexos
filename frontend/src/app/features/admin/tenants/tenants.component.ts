@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApiService } from '../../../core/services/api.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-tenants',
@@ -42,7 +43,10 @@ import { ApiService } from '../../../core/services/api.service';
             <ng-container matColumnDef="slug"><th mat-header-cell *matHeaderCellDef>Slug</th><td mat-cell *matCellDef="let t">{{ t.slug }}</td></ng-container>
             <ng-container matColumnDef="domain"><th mat-header-cell *matHeaderCellDef>Domínio</th><td mat-cell *matCellDef="let t">{{ t.domain || '—' }}</td></ng-container>
             <ng-container matColumnDef="status"><th mat-header-cell *matHeaderCellDef>Status</th><td mat-cell *matCellDef="let t"><span [class]="t.is_active ? 'status-active' : 'status-inactive'">{{ t.is_active ? 'Ativa' : 'Inativa' }}</span></td></ng-container>
-            <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let t"><button mat-icon-button (click)="edit(t)"><mat-icon>edit</mat-icon></button></td></ng-container>
+            <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let t">
+              <button mat-icon-button (click)="manageAccess(t)" matTooltip="Gerenciar Acessos"><mat-icon>security</mat-icon></button>
+              <button mat-icon-button (click)="edit(t)"><mat-icon>edit</mat-icon></button>
+            </td></ng-container>
             <tr mat-header-row *matHeaderRowDef="cols"></tr>
             <tr mat-row *matRowDef="let row; columns: cols;"></tr>
           </table>
@@ -61,7 +65,7 @@ export class TenantsComponent implements OnInit {
     form = { name: '', slug: '', domain: '' };
     cols = ['name', 'slug', 'domain', 'status', 'actions'];
 
-    constructor(private api: ApiService, private snackBar: MatSnackBar) { }
+    constructor(private api: ApiService, private snackBar: MatSnackBar, private router: Router) { }
 
     ngOnInit() { this.load(); }
 
@@ -74,6 +78,8 @@ export class TenantsComponent implements OnInit {
     }
 
     edit(t: any) { this.editing = t; this.form = { name: t.name, slug: t.slug, domain: t.domain || '' }; this.showForm = true; }
+
+    manageAccess(t: any) { this.router.navigate(['/tenants', t.id, 'features']); }
 
     save() {
         const obs = this.editing
