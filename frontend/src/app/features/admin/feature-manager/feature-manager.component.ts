@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-feature-manager',
@@ -36,28 +37,23 @@ export class FeatureManagerComponent implements OnInit {
     constructor(
         private api: ApiService,
         private auth: AuthService,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
+        private route: ActivatedRoute,
+        private router: Router
     ) { }
 
     ngOnInit(): void {
-        const user = this.auth.currentUser;
-        if (user && user.tenant_id) {
-            this.tenantId = user.tenant_id;
-            this.loadFeatures();
-        } else {
-            this.loadFirstTenant();
-        }
-    }
-
-    loadFirstTenant() {
-        this.api.get<any[]>('/tenants/').subscribe(tenants => {
-            if (tenants.length > 0) {
-                this.tenantId = tenants[0].id;
+        this.route.params.subscribe(params => {
+            if (params['id']) {
+                this.tenantId = params['id'];
                 this.loadFeatures();
             }
         });
     }
 
+    goBack(): void {
+        this.router.navigate(['/tenants']);
+    }
 
     loadFeatures(): void {
         this.loading = true;

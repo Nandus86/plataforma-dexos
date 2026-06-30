@@ -151,7 +151,6 @@ export class LayoutComponent implements OnInit {
             items: [
                 { label: 'Minha Instituição', icon: 'account_balance', route: '/institution', roles: ['superadmin', 'admin'], featureKey: 'settings' },
                 { label: 'Instituições', icon: 'business', route: '/tenants', roles: ['superadmin'], featureKey: 'settings' },
-                { label: 'Gerenciar Acesso', icon: 'security', route: '/features', roles: ['superadmin'], featureKey: 'settings' },
             ],
         },
     ];

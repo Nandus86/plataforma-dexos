@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 
 from app.database import engine, Base
 from app.models import *  # noqa: F401, F403 - Import all models for table creation
-from app.api import health, auth, tenants, users, courses, academic, assignments, occurrences, content, dashboard, export, class_groups, academic_periods, lesson_plans, attendance_api, grades_api, students, professionals, institution, devices
+from app.api import health, auth, tenants, users, courses, academic, assignments, occurrences, content, dashboard, export, class_groups, academic_periods, lesson_plans, attendance_api, grades_api, students, professionals, institution, devices, backup
 from app.redis_client import redis_client
 from app.seed import seed_initial_data
 
@@ -101,6 +101,7 @@ app.include_router(lesson_plans.router, prefix="/lesson-plans", tags=["Lesson Pl
 app.include_router(attendance_api.router, prefix="/attendance", tags=["Attendance"])
 app.include_router(grades_api.router, prefix="/grades", tags=["Grades"])
 app.include_router(devices.router, prefix="/devices", tags=["Devices"])
+app.include_router(backup.router, tags=["Backup"])
 
 
 @app.get("/")
