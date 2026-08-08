@@ -182,14 +182,16 @@ import { ClassScheduleDialogComponent } from './class-schedule-dialog/class-sche
                   </button>
                 </div>
               </div>
-              <div class="chips-list">
+              <div class="students-grid">
                 @for (s of groupStudents; track s.id) {
-                  <mat-chip-row (removed)="removeStudent(s)">
-                    {{ s.student_name }}
-                    <button matChipRemove><mat-icon>cancel</mat-icon></button>
-                  </mat-chip-row>
+                  <div class="student-item">
+                    <span class="student-name">{{ s.student_name }}</span>
+                    <button mat-icon-button color="warn" (click)="removeStudent(s)" matTooltip="Remover da turma">
+                      <mat-icon>remove_circle</mat-icon>
+                    </button>
+                  </div>
                 }
-                @if (groupStudents.length === 0) { <p class="text-muted">Nenhum estudante adicionado</p> }
+                @if (groupStudents.length === 0) { <p class="text-muted" style="grid-column: 1 / -1;">Nenhum estudante adicionado</p> }
               </div>
             </div>
 
@@ -516,7 +518,10 @@ export class ClassGroupsComponent implements OnInit {
 
   loadGroupStudents() {
     this.api.get<any[]>(`/class-groups/${this.selectedGroup.id}/students/`).subscribe({
-      next: d => { this.groupStudents = d; this.buildGridMeta(); },
+      next: d => { 
+        this.groupStudents = d.sort((a, b) => a.student_name.localeCompare(b.student_name)); 
+        this.buildGridMeta(); 
+      },
     });
   }
 
