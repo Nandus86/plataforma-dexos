@@ -56,12 +56,10 @@ async def create_student(
     tenant_id: Optional[UUID] = Depends(get_current_tenant_id),
 ):
     """Create a new student with a detailed profile"""
-    # Check email uniqueness within tenant
+    # Check email uniqueness globally
     existing_query = select(User).where(User.email == data.email)
-    if tenant_id:
-        existing_query = existing_query.where(User.tenant_id == tenant_id)
     existing = await db.execute(existing_query)
-    if existing.scalar_one_or_none():
+    if existing.scalars().first():
         raise HTTPException(status_code=400, detail="Email já cadastrado")
 
     from app.core.registration import generate_registration_number

@@ -69,12 +69,10 @@ async def create_professional(
         if data.role == "superadmin":
             raise HTTPException(status_code=403, detail="Apenas superadmin pode criar outros superadmins")
 
-    # Check email uniqueness within tenant
+    # Check email uniqueness globally
     existing_query = select(User).where(User.email == data.email)
-    if tenant_id:
-        existing_query = existing_query.where(User.tenant_id == tenant_id)
     existing = await db.execute(existing_query)
-    if existing.scalar_one_or_none():
+    if existing.scalars().first():
         raise HTTPException(status_code=400, detail="Email já cadastrado")
 
     from app.core.registration import generate_registration_number

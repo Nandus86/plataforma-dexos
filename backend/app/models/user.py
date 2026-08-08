@@ -26,7 +26,7 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=True, index=True)
     name = Column(String(255), nullable=False)
-    email = Column(String(255), nullable=False, index=True)
+    email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
     role = Column(Enum(UserRole), nullable=False, default=UserRole.ESTUDANTE)
     registration_number = Column(String(50), nullable=True)  # Matrícula
