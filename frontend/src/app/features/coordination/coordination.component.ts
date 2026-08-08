@@ -11,6 +11,12 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/services/api.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartData, ChartType, ChartOptions } from 'chart.js';
+import { StudentDossierComponent } from './student-dossier/student-dossier.component';
+import { InterventionDialogComponent } from './intervention-dialog/intervention-dialog.component';
+import { NotifyDialogComponent } from './notify-dialog/notify-dialog.component';
 
 interface StatCard {
   label: string;
@@ -27,6 +33,7 @@ interface StatCard {
     MatCardModule, MatIconModule, MatButtonModule,
     MatTabsModule, MatTableModule, MatProgressSpinnerModule,
     MatChipsModule, MatExpansionModule, MatTooltipModule,
+    MatDialogModule, BaseChartDirective
   ],
   template: `
     <div class="page">
@@ -55,6 +62,33 @@ interface StatCard {
         </div>
       }
 
+      <!-- Charts Section -->
+      @if (loadingAnalytics) { <div class="loading-center"><mat-spinner diameter="40"></mat-spinner></div> }
+      @else {
+        <div class="charts-grid animate-fade-in-delay">
+          <div class="chart-card glass-card">
+            <h3>Ocorrências por Tipo</h3>
+            @if (pieChartData && pieChartData.datasets[0].data.length > 0) {
+              <div class="chart-container">
+                <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" type="pie"></canvas>
+              </div>
+            } @else {
+              <div class="empty-state" style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.6;">
+                <mat-icon style="font-size: 48px; width: 48px; height: 48px; margin-bottom: 16px;">pie_chart_outline</mat-icon>
+                <p>Nenhuma ocorrência registrada ainda.</p>
+              </div>
+            }
+          </div>
+          <div class="chart-card glass-card">
+            <h3>Média Geral da Instituição</h3>
+            <div class="avg-display">
+              <span class="avg-number text-gold">{{ generalAverage }}</span>
+              <span class="avg-subtitle">Média atual calculada</span>
+            </div>
+          </div>
+        </div>
+      }
+
       <!-- Tabbed Reports -->
       <mat-tab-group class="reports-tabs animate-fade-in-delay" animationDuration="300ms">
         <!-- Low Performance -->
@@ -72,6 +106,13 @@ interface StatCard {
                   <ng-container matColumnDef="registration_number"><th mat-header-cell *matHeaderCellDef>Matrícula</th><td mat-cell *matCellDef="let r">{{ r.registration_number || '—' }}</td></ng-container>
                   <ng-container matColumnDef="average_grade"><th mat-header-cell *matHeaderCellDef>Média</th><td mat-cell *matCellDef="let r"><span class="text-danger">{{ r.average_grade }}</span></td></ng-container>
                   <ng-container matColumnDef="total_evaluations"><th mat-header-cell *matHeaderCellDef>Avaliações</th><td mat-cell *matCellDef="let r">{{ r.total_evaluations }}</td></ng-container>
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Ações</th>
+                    <td mat-cell *matCellDef="let r">
+                      <button mat-icon-button matTooltip="Ver Dossiê" (click)="openDossier(r.student_id)"><mat-icon class="text-gold">account_box</mat-icon></button>
+                      <button mat-icon-button matTooltip="Intervir" (click)="openIntervention(r.student_id, r.student_name)"><mat-icon class="text-danger">healing</mat-icon></button>
+                    </td>
+                  </ng-container>
                   <tr mat-header-row *matHeaderRowDef="lpCols"></tr><tr mat-row *matRowDef="let row; columns: lpCols;"></tr>
                 </table>
                 @if (lowPerformance.length === 0) { <div class="empty-state"><mat-icon>check_circle</mat-icon><p>Nenhum estudante com baixo desempenho</p></div> }
@@ -119,6 +160,12 @@ interface StatCard {
                   <ng-container matColumnDef="total_enrollments"><th mat-header-cell *matHeaderCellDef>Matrículas</th><td mat-cell *matCellDef="let r">{{ r.total_enrollments }}</td></ng-container>
                   <ng-container matColumnDef="failure_rate"><th mat-header-cell *matHeaderCellDef>% Reprovação</th><td mat-cell *matCellDef="let r"><span [class]="r.failure_rate > 30 ? 'text-danger' : ''">{{ r.failure_rate }}%</span></td></ng-container>
                   <ng-container matColumnDef="average_grade"><th mat-header-cell *matHeaderCellDef>Média Geral</th><td mat-cell *matCellDef="let r">{{ r.average_grade ?? '—' }}</td></ng-container>
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Ações</th>
+                    <td mat-cell *matCellDef="let r">
+                      <button mat-icon-button matTooltip="Notificar Professor" (click)="notifyTeacher(r.professor_id, r.professor_name)"><mat-icon class="text-warning">notifications</mat-icon></button>
+                    </td>
+                  </ng-container>
                   <tr mat-header-row *matHeaderRowDef="csCols"></tr><tr mat-row *matRowDef="let row; columns: csCols;"></tr>
                 </table>
                 @if (criticalSubjects.length === 0) { <div class="empty-state"><mat-icon>check_circle</mat-icon><p>Nenhuma disciplina crítica identificada</p></div> }
@@ -210,6 +257,14 @@ interface StatCard {
         }
       }
 
+      .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+      .chart-card { padding: 20px; }
+      .chart-card h3 { margin: 0 0 16px 0; color: #D4AF37; font-weight: 600; }
+      .chart-container { height: 250px; display: flex; justify-content: center; }
+      .avg-display { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; }
+      .avg-number { font-size: 72px; font-weight: 900; }
+      .avg-subtitle { color: #B3B3B3; }
+
       .reports-tabs {
         ::ng-deep .mdc-tab { color: #B3B3B3 !important; }
         ::ng-deep .mdc-tab--active { color: #D4AF37 !important; }
@@ -233,6 +288,7 @@ interface StatCard {
 export class CoordinationComponent implements OnInit {
   loadingStats = false;
   loadingReports = false;
+  loadingAnalytics = false;
   overviewStats: StatCard[] = [];
 
   lowPerformance: any[] = [];
@@ -241,17 +297,27 @@ export class CoordinationComponent implements OnInit {
   professorActivity: any[] = [];
   recentOccurrences: any[] = [];
 
-  lpCols = ['student_name', 'registration_number', 'average_grade', 'total_evaluations'];
+  lpCols = ['student_name', 'registration_number', 'average_grade', 'total_evaluations', 'actions'];
   laCols = ['student_name', 'registration_number', 'attendance_percentage', 'total_classes'];
-  csCols = ['subject_name', 'subject_code', 'total_enrollments', 'failure_rate', 'average_grade'];
+  csCols = ['subject_name', 'subject_code', 'total_enrollments', 'failure_rate', 'average_grade', 'actions'];
   paCols = ['professor_name', 'subjects_count', 'lesson_plans_count', 'materials_count'];
   ocCols = ['date', 'type_label', 'title', 'student_name', 'author_name'];
 
-  constructor(private api: ApiService) { }
+  pieChartOptions: ChartOptions<'pie'> = {
+    responsive: true,
+    plugins: {
+      legend: { position: 'right', labels: { color: '#F5F5F5' } }
+    }
+  };
+  pieChartData: ChartData<'pie'> | null = null;
+  generalAverage: number = 0;
+
+  constructor(private api: ApiService, private dialog: MatDialog) { }
 
   ngOnInit() {
     this.loadStats();
     this.loadReports();
+    this.loadAnalytics();
   }
 
   loadStats() {
@@ -307,5 +373,61 @@ export class CoordinationComponent implements OnInit {
       case 'praise': return 'text-praise';
       default: return '';
     }
+  }
+
+  loadAnalytics() {
+    this.loadingAnalytics = true;
+    this.api.get<any>('/coordination/analytics').subscribe({
+      next: (res) => {
+        this.generalAverage = res.general_average;
+        
+        const labels = res.occurrences_distribution.map((d: any) => d.type.toUpperCase());
+        const data = res.occurrences_distribution.map((d: any) => d.count);
+        // Colors mapping: praise(green), warning(orange), complaint(red), observation(blue)
+        const bgColors = res.occurrences_distribution.map((d: any) => {
+          switch(d.type) {
+            case 'praise': return '#4CAF50';
+            case 'warning': return '#FF9800';
+            case 'complaint': return '#F44336';
+            case 'observation': return '#2196F3';
+            default: return '#D4AF37';
+          }
+        });
+
+        this.pieChartData = {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: bgColors,
+            borderColor: 'transparent'
+          }]
+        };
+        
+        this.loadingAnalytics = false;
+      },
+      error: () => this.loadingAnalytics = false
+    });
+  }
+
+  openDossier(studentId: string) {
+    this.dialog.open(StudentDossierComponent, {
+      width: '800px',
+      data: { studentId }
+    });
+  }
+
+  openIntervention(studentId: string, studentName: string) {
+    this.dialog.open(InterventionDialogComponent, {
+      width: '500px',
+      data: { studentId, studentName }
+    });
+  }
+
+  notifyTeacher(professorId: string, professorName: string) {
+    if (!professorId) return; // In case the mock report doesn't have it
+    this.dialog.open(NotifyDialogComponent, {
+      width: '500px',
+      data: { recipientId: professorId, recipientName: professorName, recipientRole: 'Professor' }
+    });
   }
 }

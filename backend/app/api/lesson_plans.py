@@ -23,7 +23,7 @@ router = APIRouter()
 async def create_lesson_plan(
     data: LessonPlanCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN, UserRole.SUPERADMIN)),
+    current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN, UserRole.SUPERADMIN, UserRole.COORDENACAO)),
 ):
     """
     Create a Lesson Plan.
@@ -197,7 +197,7 @@ async def update_lesson_plan(
     plan_id: UUID,
     data: LessonPlanUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN, UserRole.SUPERADMIN)),
+    current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN, UserRole.SUPERADMIN, UserRole.COORDENACAO)),
 ):
     result = await db.execute(select(LessonPlan).where(LessonPlan.id == plan_id))
     plan = result.scalar_one_or_none()
@@ -227,7 +227,7 @@ async def update_lesson_plan(
 async def delete_lesson_plan(
     plan_id: UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN, UserRole.SUPERADMIN)),
+    current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN, UserRole.SUPERADMIN, UserRole.COORDENACAO)),
 ):
     result = await db.execute(select(LessonPlan).where(LessonPlan.id == plan_id))
     plan = result.scalar_one_or_none()

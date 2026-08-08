@@ -1,0 +1,85 @@
+<div class="page animate-fade-in" style="height: 100%; display: flex; flex-direction: column;">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><mat-icon>account_tree</mat-icon> Explorador de Turmas</h1>
+      <p class="page-subtitle">Árvore Pedagógica e Raio-X dos Estudantes</p>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="search-container">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Pesquisar Aluno (Nome ou RA)</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [(ngModel)]="searchQuery" (ngModelChange)="searchStudent()" placeholder="Digite para buscar...">
+      </mat-form-field>
+      
+      <div class="search-results glass-card" *ngIf="searchResults.length > 0">
+        <button mat-button *ngFor="let s of searchResults" (click)="selectStudent(s.id); searchResults = []; searchQuery = ''" class="search-item">
+          <div style="display: flex; flex-direction: column; text-align: left; line-height: 1.2;">
+            <strong>{{ s.name }}</strong>
+            <small style="color: var(--text-secondary)">RA: {{ s.registration_number || 'S/ RA' }}</small>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+  } @else {
+    <div class="split-pane">
+      <!-- Left Pane: Tree -->
+      <div class="tree-pane glass-card">
+        <h3 class="pane-title"><mat-icon>school</mat-icon> Estrutura Acadêmica</h3>
+        
+        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="academic-tree">
+          <!-- Leaf node -->
+          <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
+            <button mat-button class="tree-node-btn" 
+                    [class.student-node]="node.type === 'student'"
+                    [class.active-node]="selectedStudentId === node.id"
+                    (click)="selectStudent(node.id)"
+                    [disabled]="node.id.startsWith('loading-') || node.id.startsWith('empty-')">
+              <mat-icon *ngIf="node.type === 'student'" class="node-icon">person</mat-icon>
+              <mat-spinner *ngIf="node.loading" diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+              <span class="node-label">{{ node.name }}</span>
+            </button>
+          </mat-tree-node>
+
+          <!-- Expandable node -->
+          <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+            <div class="mat-tree-node">
+              <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name" (click)="onNodeExpand(node)">
+                <mat-icon class="mat-icon-rtl-mirror">
+                  {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+                </mat-icon>
+              </button>
+              <div class="node-content" [class.course-node]="node.type === 'course'" [class.group-node]="node.type === 'group'">
+                <mat-icon class="node-icon text-gold" *ngIf="node.type === 'course'">menu_book</mat-icon>
+                <mat-icon class="node-icon text-gold" *ngIf="node.type === 'group'">groups</mat-icon>
+                <span class="node-label">{{ node.name }}</span>
+              </div>
+            </div>
+            
+            <div [class.tree-invisible]="!treeControl.isExpanded(node)" role="group" class="node-children">
+              <ng-container matTreeNodeOutlet></ng-container>
+            </div>
+          </mat-nested-tree-node>
+        </mat-tree>
+      </div>
+
+      <!-- Right Pane: Dossier -->
+      <div class="detail-pane glass-card">
+        @if (selectedStudentId) {
+          <app-student-dossier [studentId]="selectedStudentId"></app-student-dossier>
+        } @else {
+          <div class="empty-dossier">
+            <mat-icon class="large-icon text-gold">person_search</mat-icon>
+            <h2>Selecione um Aluno</h2>
+            <p>Navegue na árvore ao lado ou utilize a barra de pesquisa para visualizar o Raio-X completo do aluno.</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -87,7 +87,7 @@ async def export_tenant(
         data["extra_school_days"] = []
 
     # Curriculum Matrices
-    course_ids = [c.id for c in data["courses"]]
+    course_ids = [c["id"] for c in data["courses"]]
     if course_ids:
         res = await db.execute(select(CurriculumMatrix).where(CurriculumMatrix.course_id.in_(course_ids)))
         matrices = res.scalars().all()
@@ -140,7 +140,7 @@ async def export_tenant(
         lesson_plan_ids = []
 
     # Enrollments
-    user_ids = [u.id for u in data["users"]]
+    user_ids = [u["id"] for u in data["users"]]
     if user_ids and course_ids:
         res = await db.execute(select(Enrollment).where(Enrollment.student_id.in_(user_ids), Enrollment.course_id.in_(course_ids)))
         enrollments = res.scalars().all()

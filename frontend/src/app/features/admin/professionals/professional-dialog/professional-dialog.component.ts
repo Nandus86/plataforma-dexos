@@ -107,7 +107,7 @@ export class ProfessionalDialogComponent implements OnInit {
             // Base User Fields
             name: ['', [Validators.required]],
             email: ['', [Validators.required, Validators.email]],
-            password: ['', this.isEditing ? [] : [Validators.required, Validators.minLength(6)]],
+
             role: [this.data.professional?.role || 'professor', [Validators.required]],
             registration_number: [''],
             phone: [''],
@@ -146,7 +146,7 @@ export class ProfessionalDialogComponent implements OnInit {
             role: fullData.role,
             registration_number: fullData.registration_number,
             phone: fullData.phone,
-            password: '',
+
             tenant_id: fullData.tenant_id || null,
         });
 
@@ -182,10 +182,6 @@ export class ProfessionalDialogComponent implements OnInit {
         this.loading = true;
         const formData = this.form.value;
 
-        if (this.isEditing && !formData.password) {
-            delete formData.password;
-        }
-
         // Clean up empty strings and format dates
         if (formData.profile) {
             Object.keys(formData.profile).forEach(key => {
@@ -217,13 +213,13 @@ export class ProfessionalDialogComponent implements OnInit {
             : this.api.post('/professionals/', formData);
 
         request$.subscribe({
-            next: () => {
+            next: (response) => {
                 this.snackBar.open(
                     `Profissional ${this.isEditing ? 'atualizado' : 'criado'} com sucesso!`,
                     'OK',
                     { duration: 3000 }
                 );
-                this.dialogRef.close(true);
+                this.dialogRef.close(response || true);
             },
             error: (err) => {
                 this.loading = false;

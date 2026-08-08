@@ -61,6 +61,8 @@
                 <td mat-cell *matCellDef="let u">
                     <button mat-icon-button (click)="openDialog(u)"
                         matTooltip="Editar"><mat-icon>edit</mat-icon></button>
+                    <button mat-icon-button color="primary" (click)="resetPassword(u)"
+                        matTooltip="Resetar Senha"><mat-icon>lock_reset</mat-icon></button>
                     <button mat-icon-button (click)="toggleActive(u)"
                         [matTooltip]="u.is_active ? 'Desativar' : 'Ativar'">
                         <mat-icon [class.text-danger]="u.is_active" [class.text-success]="!u.is_active">

@@ -43,7 +43,7 @@ class ProfessionalProfileData(ProfileBase):
 class BaseUserCreate(BaseModel):
     name: str
     email: str
-    password: str
+    password: Optional[str] = None
     phone: Optional[str] = None
     registration_number: Optional[str] = None
     tenant_id: Optional[UUID] = None
@@ -137,6 +137,14 @@ class ProfessionalResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class StudentCreateResponse(StudentResponse):
+    initial_password: Optional[str] = None
+
+
+class ProfessionalCreateResponse(ProfessionalResponse):
+    initial_password: Optional[str] = None
 
 
 class StudentListResponse(BaseModel):

@@ -102,4 +102,118 @@
             }
         </div>
     </div>
+
+    <!-- Student Performance Grid -->
+    <ng-container *ngIf="isStudent">
+        <div class="section animate-fade-in-delay">
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 class="section-title" style="margin: 0;">
+                    <mat-icon>insert_chart</mat-icon>
+                    Desempenho Atual
+                </h2>
+                
+                <mat-form-field appearance="outline" class="enrollment-select" *ngIf="enrollments.length > 1" style="width: 250px;">
+                    <mat-label>Matrícula</mat-label>
+                    <mat-select [(ngModel)]="selectedEnrollmentId" (selectionChange)="onEnrollmentChange()">
+                        @for (e of enrollments; track e.id) {
+                            <mat-option [value]="e.id">{{ e.course_name }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            @if (loadingBoletim || loadingAssignments) {
+                <div class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+            } @else if (boletim && boletim.subjects.length > 0) {
+                <div class="student-dashboard-content">
+                    
+                    <!-- Disciplinas Grid -->
+                    <div class="performance-grid">
+                        @for (subject of boletim.subjects; track subject.subject_id) {
+                            <div class="performance-card glass-card premium-card">
+                                <div class="card-header">
+                                    <div class="icon-bg"><mat-icon>school</mat-icon></div>
+                                    <h3 class="subject-title" [matTooltip]="subject.subject_name">{{ subject.subject_name }}</h3>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <div class="metrics-container">
+                                        <!-- Grade Metric -->
+                                        <div class="metric grade-metric">
+                                            <span class="metric-title">Média Final</span>
+                                            <div class="grade-circle"
+                                                [class.grade-success]="subject.final_grade >= 6" 
+                                                [class.grade-warning]="subject.final_grade > 0 && subject.final_grade < 6"
+                                                [class.grade-neutral]="subject.final_grade === 0">
+                                                {{ subject.final_grade ? (subject.final_grade | number:'1.1-1') : '-' }}
+                                            </div>
+                                        </div>
+
+                                        <!-- Attendance Metric (Circular Progress) -->
+                                        <div class="metric attendance-metric">
+                                            <span class="metric-title">Frequência</span>
+                                            <div class="progress-ring" 
+                                                 [class.danger]="subject.frequency_percentage < 75"
+                                                 [style.--progress]="subject.frequency_percentage + '%'">
+                                                <div class="progress-ring-inner">
+                                                    {{ subject.frequency_percentage }}%
+                                                </div>
+                                            </div>
+                                            <span class="attendance-details">
+                                                {{ subject.total_presences }}/{{ subject.total_planned_classes }} aulas
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-actions">
+                                    <a routerLink="/grades" class="premium-action-btn">
+                                        <mat-icon>visibility</mat-icon> Ver Notas
+                                    </a>
+                                    <a routerLink="/attendance" class="premium-action-btn secondary">
+                                        <mat-icon>event_available</mat-icon> Ver Faltas
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Sidebar: Upcoming Assignments -->
+                    <div class="assignments-sidebar glass-card">
+                        <div class="sidebar-header">
+                            <mat-icon>assignment_turned_in</mat-icon>
+                            <h3>Próximas Tarefas</h3>
+                        </div>
+                        
+                        <div class="assignments-list">
+                            @if (assignments.length === 0) {
+                                <div class="empty-state-mini">
+                                    <mat-icon>check_circle</mat-icon>
+                                    <p>Nenhuma tarefa pendente próxima!</p>
+                                </div>
+                            } @else {
+                                @for (assignment of assignments; track assignment.id) {
+                                    <a [routerLink]="'/assignments'" class="assignment-item">
+                                        <div class="assignment-icon"><mat-icon>assignment</mat-icon></div>
+                                        <div class="assignment-info">
+                                            <h4>{{ assignment.title }}</h4>
+                                            <span>{{ assignment.due_date | date:'dd/MM/yyyy HH:mm' }}</span>
+                                        </div>
+                                    </a>
+                                }
+                                <a routerLink="/assignments" class="view-all-link">Ver todas as tarefas</a>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            } @else {
+                <div class="empty-state glass-card">
+                    <mat-icon>school</mat-icon>
+                    <p>Nenhuma disciplina encontrada na sua matrícula ativa.</p>
+                </div>
+            }
+        </div>
+    </ng-container>
+
 </div>

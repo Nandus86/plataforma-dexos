@@ -110,6 +110,9 @@ export class ProfessionalsComponent implements OnInit, AfterViewInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
+                if (result.initial_password) {
+                    window.prompt(`Profissional criado com sucesso!\n\nCopie a senha provisória abaixo e envie para o profissional:`, result.initial_password);
+                }
                 this.loadProfessionals();
             }
         });
@@ -160,6 +163,24 @@ export class ProfessionalsComponent implements OnInit, AfterViewInit {
                 error: (err) => {
                     const msg = err?.error?.detail || 'Erro ao excluir profissional';
                     this.snackBar.open(msg, 'Fechar', { duration: 5000 });
+                }
+            });
+    }
+
+    resetPassword(professional: any): void {
+        if (!confirm(`Deseja realmente redefinir a senha de ${professional.name}?`)) {
+            return;
+        }
+
+        this.loading = true;
+        this.api.post(`/users/${professional.id}/reset-password`, {})
+            .pipe(finalize(() => this.loading = false))
+            .subscribe({
+                next: (res: any) => {
+                    window.prompt(`Senha de ${professional.name} redefinida com sucesso!\n\nCopie a nova senha provisória:`, res.new_password);
+                },
+                error: (err) => {
+                    this.snackBar.open('Erro ao redefinir senha', 'Fechar', { duration: 3000 });
                 }
             });
     }

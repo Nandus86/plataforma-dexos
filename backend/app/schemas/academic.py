@@ -170,10 +170,19 @@ AttendanceBulkCreate.model_rebuild()
 class GradeSummary(BaseModel):
     id: UUID
     evaluation_name: str
+    date: Optional[datetime] = None
     value: float
     max_value: float
-    date: Optional[datetime] = None
     lesson_plan_id: Optional[UUID] = None
+    observations: Optional[str] = None
+
+class AttendanceSummary(BaseModel):
+    id: Optional[UUID] = None
+    date: datetime
+    topic: str
+    content: Optional[str] = None
+    class_order: int
+    present: bool
     observations: Optional[str] = None
 
 class SubjectBoletim(BaseModel):
@@ -183,6 +192,7 @@ class SubjectBoletim(BaseModel):
     total_presences: int
     frequency_percentage: float
     grades: list[GradeSummary]
+    attendances: list[AttendanceSummary] = []
 
 class BoletimResponse(BaseModel):
     student_id: UUID

@@ -52,7 +52,7 @@ $transition-speed: 0.25s;
         height: 40px;
         min-width: 40px;
         border-radius: 10px;
-        background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+        background: var(--bg-card);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -60,6 +60,13 @@ $transition-speed: 0.25s;
         .brand-logo {
             color: var(--accent-gold-contrast);
             font-size: 22px;
+        }
+
+        .brand-logo-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
         }
     }
 
@@ -95,7 +102,7 @@ $transition-speed: 0.25s;
         width: 36px;
         height: 36px;
         border-radius: 10px;
-        background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+        background: var(--bg-card);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -103,6 +110,13 @@ $transition-speed: 0.25s;
         .brand-logo {
             color: var(--accent-gold-contrast);
             font-size: 20px;
+        }
+
+        .brand-logo-img-small {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
         }
     }
 }

@@ -6,6 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService, UserInfo } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
 
@@ -20,7 +24,7 @@ interface StatCard {
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule, RouterModule, MatCardModule, MatIconModule, MatButtonModule, MatChipsModule, MatProgressSpinnerModule],
+    imports: [CommonModule, RouterModule, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatChipsModule, MatProgressSpinnerModule, MatFormFieldModule, MatSelectModule, MatTooltipModule],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss',
 })
@@ -30,12 +34,26 @@ export class DashboardComponent implements OnInit {
     stats: StatCard[] = [];
     loadingStats = true;
 
+    // Student specific
+    isStudent = false;
+    enrollments: any[] = [];
+    selectedEnrollmentId: string = '';
+    boletim: any = null;
+    loadingBoletim = false;
+    assignments: any[] = [];
+    loadingAssignments = false;
+
     constructor(private auth: AuthService, private api: ApiService) { }
 
     ngOnInit(): void {
         this.user = this.auth.currentUser;
+        this.isStudent = this.user?.role === 'estudante';
         this.setGreeting();
         this.loadStats();
+        
+        if (this.isStudent && this.user) {
+            this.loadStudentEnrollments(this.user.id);
+        }
     }
 
     private setGreeting(): void {
@@ -110,4 +128,66 @@ export class DashboardComponent implements OnInit {
         };
         return labels[this.user?.role || ''] || '';
     }
+
+    // --- Student Real Data Flow ---
+
+    private loadStudentEnrollments(studentId: string): void {
+        this.api.get<any>(`/academic/enrollments/?student_id=${studentId}`).subscribe({
+            next: data => {
+                this.enrollments = data.items || [];
+                if (this.enrollments.length > 0) {
+                    const active = this.enrollments.find(e => e.status === 'active') || this.enrollments[0];
+                    this.selectedEnrollmentId = active.id;
+                    this.loadBoletim();
+                    this.loadStudentAssignments(active.matrix_id);
+                }
+            }
+        });
+    }
+
+    onEnrollmentChange(): void {
+        if (this.selectedEnrollmentId) {
+            this.loadBoletim();
+            const enrollment = this.enrollments.find(e => e.id === this.selectedEnrollmentId);
+            if (enrollment) {
+                this.loadStudentAssignments(enrollment.matrix_id);
+            }
+        }
+    }
+
+    private loadStudentAssignments(matrixId: string): void {
+        if (!matrixId) return;
+        this.loadingAssignments = true;
+        this.api.get<any>(`/academic/assignments/`, { matrix_id: matrixId, limit: 5 }).subscribe({
+            next: (res) => {
+                // Filter to get only the nearest pending/upcoming assignments
+                const now = new Date();
+                this.assignments = (res.items || res || [])
+                    .filter((a: any) => new Date(a.due_date) >= now)
+                    .sort((a: any, b: any) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
+                    .slice(0, 5);
+                this.loadingAssignments = false;
+            },
+            error: () => {
+                this.assignments = [];
+                this.loadingAssignments = false;
+            }
+        });
+    }
+
+    private loadBoletim(): void {
+        if (!this.selectedEnrollmentId) return;
+        this.loadingBoletim = true;
+        this.api.get<any>(`/academic/boletim/${this.selectedEnrollmentId}`).subscribe({
+            next: d => {
+                this.boletim = d;
+                this.loadingBoletim = false;
+            },
+            error: () => {
+                this.boletim = null;
+                this.loadingBoletim = false;
+            }
+        });
+    }
 }
+

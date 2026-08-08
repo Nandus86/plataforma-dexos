@@ -109,6 +109,9 @@ export class StudentsComponent implements OnInit, AfterViewInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
+                if (result.initial_password) {
+                    window.prompt(`Estudante criado com sucesso!\n\nCopie a senha provisória abaixo e envie para o estudante:`, result.initial_password);
+                }
                 this.loadStudents();
             }
         });
@@ -161,6 +164,24 @@ export class StudentsComponent implements OnInit, AfterViewInit {
                 error: (err) => {
                     const msg = err?.error?.detail || 'Erro ao excluir estudante';
                     this.snackBar.open(msg, 'Fechar', { duration: 5000 });
+                }
+            });
+    }
+
+    resetPassword(student: any): void {
+        if (!confirm(`Deseja realmente redefinir a senha de ${student.name}?`)) {
+            return;
+        }
+
+        this.loading = true;
+        this.api.post(`/users/${student.id}/reset-password`, {})
+            .pipe(finalize(() => this.loading = false))
+            .subscribe({
+                next: (res: any) => {
+                    window.prompt(`Senha de ${student.name} redefinida com sucesso!\n\nCopie a nova senha provisória:`, res.new_password);
+                },
+                error: (err) => {
+                    this.snackBar.open('Erro ao redefinir senha', 'Fechar', { duration: 3000 });
                 }
             });
     }

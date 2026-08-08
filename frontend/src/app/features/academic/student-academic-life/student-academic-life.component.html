@@ -1,0 +1,52 @@
+<div class="academic-life-container">
+  <div class="header">
+    <h1 class="greeting">Minha Vida Acadêmica</h1>
+    <p class="subtitle">Acompanhe seu histórico de cursos e matrículas.</p>
+  </div>
+
+  <div class="content" *ngIf="!loading">
+    <div class="empty-state" *ngIf="enrollments.length === 0">
+      <mat-icon>school</mat-icon>
+      <p>Você ainda não possui matrículas registradas.</p>
+    </div>
+
+    <div class="enrollments-grid" *ngIf="enrollments.length > 0">
+      <div class="enrollment-card premium-card" *ngFor="let enrollment of enrollments">
+        <div class="card-header">
+          <div class="icon-bg">
+            <mat-icon>school</mat-icon>
+          </div>
+          <div class="header-info">
+            <h3 class="course-title">{{ enrollment.course?.name || 'Curso não especificado' }}</h3>
+            <span class="period-chip">{{ enrollment.academic_period_name || enrollment.year }}</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="info-row">
+            <span class="label">Status:</span>
+            <span class="value status-badge" [ngClass]="enrollment.status?.toLowerCase() || 'ativo'">
+              {{ enrollment.status || 'Ativo' }}
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="label">Data de Início:</span>
+            <span class="value">{{ enrollment.created_at ? (enrollment.created_at | date:'dd/MM/yyyy') : 'N/A' }}</span>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <a class="premium-action-btn" [routerLink]="['/grades']" [queryParams]="{ enrollment: enrollment.id }">
+            <mat-icon>grade</mat-icon>
+            Ver Boletim
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Carregando histórico acadêmico...</p>
+  </div>
+</div>

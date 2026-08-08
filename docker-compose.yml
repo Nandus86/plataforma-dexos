@@ -74,8 +74,11 @@ services:
     restart: unless-stopped
     ports:
       - "4200:4200"
+    environment:
+      - API_URL=http://localhost:8010
     volumes:
       - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
     networks:
       - exousia-network
 
