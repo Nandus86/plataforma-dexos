@@ -10,6 +10,7 @@ import { routes } from './app.routes';
 import { authInterceptor, errorInterceptor } from './core/interceptors/auth.interceptor';
 import { CustomDateAdapter } from './core/utils/custom-date-adapter';
 import { provideServiceWorker } from '@angular/service-worker';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 export const MY_FORMATS = {
   parse: {
@@ -39,5 +40,6 @@ export const appConfig: ApplicationConfig = {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
           }),
+    provideCharts(withDefaultRegisterables())
   ]
 };

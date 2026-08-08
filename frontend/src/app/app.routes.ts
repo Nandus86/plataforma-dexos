@@ -117,8 +117,20 @@ export const routes: Routes = [
                 data: { roles: ['superadmin', 'admin', 'coordenacao'] },
             },
             {
+                path: 'academic-life',
+                loadComponent: () => import('./features/academic/student-academic-life/student-academic-life.component').then(m => m.StudentAcademicLifeComponent),
+                canActivate: [RoleGuard],
+                data: { roles: ['superadmin', 'admin', 'estudante'] },
+            },
+            {
                 path: 'coordination',
                 loadComponent: () => import('./features/coordination/coordination.component').then(m => m.CoordinationComponent),
+                canActivate: [RoleGuard],
+                data: { roles: ['superadmin', 'admin', 'coordenacao'] },
+            },
+            {
+                path: 'class-explorer',
+                loadComponent: () => import('./features/coordination/class-explorer/class-explorer.component').then(m => m.ClassExplorerComponent),
                 canActivate: [RoleGuard],
                 data: { roles: ['superadmin', 'admin', 'coordenacao'] },
             },

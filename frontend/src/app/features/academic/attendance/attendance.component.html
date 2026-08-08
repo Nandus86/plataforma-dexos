@@ -6,8 +6,9 @@
         </div>
     </div>
 
-    <div class="filter-card glass-card">
-        <div class="filter-row">
+    <ng-container *ngIf="!isStudent">
+        <div class="filter-card glass-card">
+            <div class="filter-row">
             <mat-form-field appearance="outline" class="filter-field">
                 <mat-label>Turma</mat-label>
                 <mat-select [(ngModel)]="selectedGroupId" (selectionChange)="onGroupChange()">
@@ -108,6 +109,114 @@
                 </div>
             </div>
         </div>
-
     </div>
+</ng-container>
+
+    <!-- STUDENT VIEW -->
+    <ng-container *ngIf="isStudent">
+        <div class="filter-card glass-card">
+            <div class="filter-row" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                <mat-form-field appearance="outline" class="filter-field" *ngIf="enrollments.length > 0" style="flex: 1; margin: 0;">
+                    <mat-label>Minhas Matrículas</mat-label>
+                    <mat-select [(ngModel)]="selectedEnrollmentId" (selectionChange)="onEnrollmentChange()">
+                        @for (e of enrollments; track e.id) {
+                            <mat-option [value]="e.id">{{ e.course_name }} ({{ e.academic_period_name }}) - {{ e.enrollment_code || 'S/ Código' }} - {{ e.status }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <mat-spinner diameter="30" *ngIf="loadingGroups"></mat-spinner>
+            </div>
+        </div>
+
+        @if (loadingDetails) {
+            <div class="loading-center" style="margin-top: 2rem;"><mat-spinner diameter="40"></mat-spinner></div>
+        } @else if (boletim) {
+            <div class="boletim-header glass-card animate-fade-in" style="margin-bottom: 1rem; padding: 1.5rem; text-align: center;">
+                <h2 style="margin: 0; color: var(--gold-primary); font-size: 1.5rem;">Frequência Detalhada</h2>
+                <p style="margin: 0.5rem 0 0 0; font-size: 1.1rem;">
+                    <strong>{{ boletim.course_name }}</strong> &nbsp;|&nbsp; Período: {{ boletim.academic_period_name }}
+                </p>
+            </div>
+
+            <div class="content-row animate-fade-in-delay">
+                <table mat-table [dataSource]="boletim.subjects" multiTemplateDataRows class="theme-table" style="width: 100%;">
+                    
+                    <ng-container matColumnDef="subject_name">
+                        <th mat-header-cell *matHeaderCellDef style="font-size: 1.1em; color: var(--gold-primary);"> Disciplina </th>
+                        <td mat-cell *matCellDef="let element" style="font-weight: 500;"> {{element.subject_name}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="faltas">
+                        <th mat-header-cell *matHeaderCellDef style="text-align: right;"> Presença Geral </th>
+                        <td mat-cell *matCellDef="let element" style="text-align: right;">
+                            <span [style.color]="element.frequency_percentage >= 75 ? '#4caf50' : '#f44336'">
+                            {{ element.total_presences }}/{{ element.total_planned_classes }} 
+                            <small>({{ element.frequency_percentage }}%)</small>
+                            </span>
+                        </td>
+                    </ng-container>
+
+                    <!-- Expanded Detail Column -->
+                    <ng-container matColumnDef="expandedDetail">
+                        <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length" style="padding: 0;">
+                            <div class="element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                                <div class="inner-table-container glass-card" style="padding: 16px; margin: 8px 16px; width: calc(100% - 32px);">
+                                    <h4 style="margin-top: 0; margin-bottom: 16px; color: var(--gold-primary);">Registro de Aulas - {{element.subject_name}}</h4>
+                                    
+                                    @if (element.attendances && element.attendances.length > 0) {
+                                        <table class="simple-table" style="width: 100%; border-collapse: collapse;">
+                                            <thead>
+                                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left;">
+                                                    <th style="padding: 8px; width: 15%;">Data</th>
+                                                    <th style="padding: 8px; width: 40%;">Tópico / Conteúdo da Aula</th>
+                                                    <th style="padding: 8px; width: 15%;">Presença</th>
+                                                    <th style="padding: 8px; width: 30%;">Observações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (a of element.attendances; track a.id || a.topic + a.class_order) {
+                                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                                        <td style="padding: 8px;">{{ a.date | date:'dd/MM/yyyy' }}</td>
+                                                        <td style="padding: 8px;">
+                                                            <strong>{{ a.topic }}</strong>
+                                                            <div style="font-size: 0.85em; color: gray;" *ngIf="a.content">{{ a.content }}</div>
+                                                        </td>
+                                                        <td style="padding: 8px; font-weight: bold;">
+                                                            <span *ngIf="a.present" style="color: #4caf50;"><mat-icon style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle;">check_circle</mat-icon> Presente</span>
+                                                            <span *ngIf="!a.present" style="color: #f44336;"><mat-icon style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle;">cancel</mat-icon> Ausente</span>
+                                                        </td>
+                                                        <td style="padding: 8px; font-style: italic; opacity: 0.8;">{{ a.observations || '-' }}</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    } @else {
+                                        <div class="empty-state" style="padding: 1rem; opacity: 0.7;">
+                                            <p style="margin:0;"><mat-icon style="vertical-align: middle; margin-right: 8px;">info</mat-icon>Nenhuma aula registrada nesta disciplina.</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+                    <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
+                        class="element-row clickable-row"
+                        [class.expanded-row]="expandedElement === element"
+                        (click)="expandedElement = expandedElement === element ? null : element">
+                    </tr>
+                    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+                </table>
+
+                @if (boletim.subjects.length === 0) {
+                    <div class="empty-state">
+                        <mat-icon>info</mat-icon>
+                        <p>Nenhuma disciplina encontrada na sua matrícula.</p>
+                    </div>
+                }
+            </div>
+        }
+    </ng-container>
+
 </div>

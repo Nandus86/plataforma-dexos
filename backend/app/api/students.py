@@ -11,8 +11,8 @@ from sqlalchemy.orm import selectinload
 from app.database import get_db
 from app.models.user import User, UserRole
 from app.models.profiles import StudentProfile
-from app.schemas.profiles import StudentCreate, StudentUpdate, StudentResponse, StudentListResponse
-from app.auth.security import hash_password
+from app.schemas.profiles import StudentCreate, StudentUpdate, StudentResponse, StudentListResponse, StudentCreateResponse
+from app.auth.security import hash_password, generate_random_password
 from app.auth.dependencies import get_current_user, require_role, get_current_tenant_id
 
 router = APIRouter()
@@ -48,7 +48,7 @@ async def list_students(
     return StudentListResponse(users=users, total=total)
 
 
-@router.post("/", response_model=StudentResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=StudentCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_student(
     data: StudentCreate,
     db: AsyncSession = Depends(get_db),
@@ -72,11 +72,13 @@ async def create_student(
     except Exception as e:
         reg_number = None
 
+    initial_password = data.password or generate_random_password()
+
     # Create User
     user = User(
         name=data.name,
         email=data.email,
-        password_hash=hash_password(data.password),
+        password_hash=hash_password(initial_password),
         role=UserRole.ESTUDANTE,
         registration_number=reg_number,
         phone=data.phone,
@@ -93,6 +95,8 @@ async def create_student(
     await db.commit()
     result = await db.execute(select(User).options(selectinload(User.student_profile)).where(User.id == user.id))
     new_student = result.scalar_one()
+
+    new_student.initial_password = initial_password if not data.password else None
 
     # --- INÍCIO DA INTEGRAÇÃO BIOMETRIA ---
     try:

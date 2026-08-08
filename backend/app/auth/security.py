@@ -4,6 +4,8 @@ Security - Password hashing, JWT token management
 from datetime import datetime, timedelta
 from typing import Optional
 from uuid import UUID
+import secrets
+import string
 
 import bcrypt
 from jose import JWTError, jwt
@@ -50,3 +52,14 @@ def decode_access_token(token: str) -> Optional[dict]:
         return payload
     except JWTError:
         return None
+
+def generate_random_password(length: int = 10) -> str:
+    """Generate a secure random password"""
+    alphabet = string.ascii_letters + string.digits + "!@#$%&*?"
+    # Ensure at least one lowercase, one uppercase, one digit, one special
+    while True:
+        password = ''.join(secrets.choice(alphabet) for _ in range(length))
+        if (any(c.islower() for c in password)
+            and any(c.isupper() for c in password)
+            and sum(c.isdigit() for c in password) >= 2):
+            return password

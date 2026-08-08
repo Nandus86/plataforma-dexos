@@ -9,8 +9,8 @@ from sqlalchemy import select, func
 
 from app.database import get_db
 from app.models.user import User, UserRole
-from app.schemas.user import UserCreate, UserUpdate, UserResponse, UserListResponse
-from app.auth.security import hash_password
+from app.schemas.user import UserCreate, UserUpdate, UserResponse, UserListResponse, UserCreateResponse, PasswordChange, PasswordResetResponse
+from app.auth.security import hash_password, generate_random_password, verify_password
 from app.auth.dependencies import get_current_user, require_role, get_current_tenant_id
 
 router = APIRouter()
@@ -59,7 +59,7 @@ async def list_users(
     return UserListResponse(users=users, total=total)
 
 
-@router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=UserCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_user(
     data: UserCreate,
     db: AsyncSession = Depends(get_db),
@@ -88,10 +88,12 @@ async def create_user(
     except Exception as e:
         reg_number = None
 
+    initial_password = data.password or generate_random_password()
+
     user = User(
         name=data.name,
         email=data.email,
-        password_hash=hash_password(data.password),
+        password_hash=hash_password(initial_password),
         role=UserRole(data.role),
         registration_number=reg_number,
         phone=data.phone,
@@ -100,7 +102,26 @@ async def create_user(
     db.add(user)
     await db.commit()
     await db.refresh(user)
+    
+    # Attach initial_password so the schema response model includes it
+    user.initial_password = initial_password if not data.password else None
+    
     return user
+
+
+@router.post("/me/change-password")
+async def change_password(
+    data: PasswordChange,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Change logged-in user password"""
+    if not verify_password(data.old_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Senha atual incorreta")
+    
+    current_user.password_hash = hash_password(data.new_password)
+    await db.commit()
+    return {"message": "Senha alterada com sucesso"}
 
 
 @router.get("/{user_id}", response_model=UserResponse)
@@ -159,3 +180,23 @@ async def delete_user(
 
     user.is_active = False
     await db.commit()
+
+
+@router.post("/{user_id}/reset-password", response_model=PasswordResetResponse)
+async def reset_password(
+    user_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.SUPERADMIN, UserRole.ADMIN)),
+):
+    """Reset user password (Admin only)"""
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Generate new random password
+    new_password = generate_random_password()
+    user.password_hash = hash_password(new_password)
+    await db.commit()
+    
+    return {"message": "Senha redefinida com sucesso", "new_password": new_password}

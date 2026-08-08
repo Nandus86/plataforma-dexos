@@ -14,6 +14,9 @@ from app.models.academic_period import AcademicPeriod, PeriodBreak, NonSchoolDay
 from app.models.device import Device
 from app.models.biometric_data import BiometricData
 
+from app.models.intervention import PedagogicalIntervention, InterventionStatus
+from app.models.notification import Notification
+
 __all__ = [
     "Tenant", "Institution",
     "User", "UserRole",
@@ -25,4 +28,6 @@ __all__ = [
     "ClassGroup", "ClassGroupStudent", "ClassGroupSubject", "ClassGroupStudentSubject", "ClassGroupSubjectProfessor", "ShiftType",
     "AcademicPeriod", "PeriodBreak", "NonSchoolDay", "ClassSchedule", "ExtraSchoolDay", "BreakType", "NonSchoolDayReason",
     "Device", "BiometricData",
+    "PedagogicalIntervention", "InterventionStatus",
+    "Notification",
 ]

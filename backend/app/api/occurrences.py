@@ -57,7 +57,7 @@ async def create_occurrence(
         type=OccurrenceType(data.type),
         title=data.title,
         description=data.description,
-        date=data.date,
+        date=data.date.replace(tzinfo=None) if data.date else None,
     )
     db.add(occurrence)
     await db.commit()
@@ -96,6 +96,8 @@ async def update_occurrence(
     update_data = data.model_dump(exclude_unset=True)
     if "type" in update_data:
         update_data["type"] = OccurrenceType(update_data["type"])
+    if "date" in update_data and update_data["date"] is not None:
+        update_data["date"] = update_data["date"].replace(tzinfo=None)
 
     for key, value in update_data.items():
         setattr(occurrence, key, value)

@@ -78,6 +78,7 @@ services:
       - API_URL=http://localhost:8010
     volumes:
       - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
     networks:
       - exousia-network
 

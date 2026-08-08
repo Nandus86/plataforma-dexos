@@ -21,7 +21,7 @@ from app.schemas.academic import (
     EnrollmentCreate, EnrollmentUpdate, EnrollmentResponse, EnrollmentListResponse,
     GradeCreate, GradeUpdate, GradeResponse,
     AttendanceCreate, AttendanceBulkCreate, AttendanceCheckin, AttendanceBiometricCheckin, AttendanceResponse,
-    BoletimResponse, SubjectBoletim, GradeSummary
+    BoletimResponse, SubjectBoletim, GradeSummary, AttendanceSummary
 )
 from app.auth.dependencies import get_current_user, require_role
 from sqlalchemy import func, or_
@@ -295,10 +295,11 @@ async def get_boletim(
         total_planned_classes = 0
         total_presences = 0
         grades = []
+        attendances = []
 
         if matrix_subject:
             # Get LessonPlans for this matrix_subject
-            lp_query = select(LessonPlan).where(LessonPlan.matrix_subject_id == matrix_subject.id)
+            lp_query = select(LessonPlan).where(LessonPlan.matrix_subject_id == matrix_subject.id).order_by(LessonPlan.date.asc())
             lp_res = await db.execute(lp_query)
             lesson_plans = lp_res.scalars().all()
             
@@ -311,11 +312,38 @@ async def get_boletim(
                 # Get Attendances
                 att_query = select(Attendance).where(
                     Attendance.enrollment_id == enrollment.id,
-                    Attendance.lesson_plan_id.in_(lp_ids),
-                    Attendance.present == True
+                    Attendance.lesson_plan_id.in_(lp_ids)
                 )
                 att_res = await db.execute(att_query)
-                total_presences = len(att_res.scalars().all())
+                attendance_records = att_res.scalars().all()
+                
+                total_presences = sum(1 for a in attendance_records if a.present)
+                att_dict = {(a.lesson_plan_id, a.class_order_item or 1): a for a in attendance_records}
+
+                for lp in lesson_plans:
+                    orders = lp.class_orders if lp.class_orders else [1]
+                    for order in orders:
+                        att = att_dict.get((lp.id, order))
+                        if att:
+                            attendances.append(AttendanceSummary(
+                                id=att.id,
+                                date=att.class_date or lp.date,
+                                topic=lp.topic,
+                                content=lp.content,
+                                class_order=order,
+                                present=att.present,
+                                observations=att.observation
+                            ))
+                        else:
+                            attendances.append(AttendanceSummary(
+                                id=None,
+                                date=lp.date,
+                                topic=lp.topic,
+                                content=lp.content,
+                                class_order=order,
+                                present=False,
+                                observations="Não registrado"
+                            ))
 
                 # Get Grades
                 g_query = select(Grade).where(
@@ -343,7 +371,8 @@ async def get_boletim(
             total_planned_classes=total_planned_classes,
             total_presences=total_presences,
             frequency_percentage=round(freq, 2),
-            grades=grades
+            grades=grades,
+            attendances=attendances
         ))
         
     return BoletimResponse(

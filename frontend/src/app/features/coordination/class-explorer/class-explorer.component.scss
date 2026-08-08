@@ -1,0 +1,189 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  z-index: 10;
+  
+  .search-field {
+    width: 100%;
+    margin-bottom: -1.25em; /* remove mat-form-field bottom margin */
+  }
+
+  .search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 4px;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    
+    .search-item {
+      padding: 8px 16px;
+      height: auto;
+      border-radius: 0;
+      justify-content: flex-start;
+      
+      &:hover {
+        background: rgba(212, 175, 55, 0.1);
+      }
+    }
+  }
+}
+
+.split-pane {
+  display: flex;
+  gap: 1.5rem;
+  flex: 1;
+  min-height: 0; /* Important for scrollable children */
+  height: calc(100vh - 200px);
+
+  @media (max-width: 992px) {
+    flex-direction: column;
+    height: auto;
+  }
+}
+
+.tree-pane {
+  flex: 0 0 350px;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow-y: auto;
+  
+  .pane-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gold-primary);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+}
+
+.detail-pane {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  position: relative;
+  
+  /* Reset padding inside StudentDossier to make it fit nicely */
+  ::ng-deep .dossier-card {
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+}
+
+.empty-dossier {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 0.6;
+  padding: 2rem;
+  
+  .large-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+  }
+  
+  h2 {
+    margin: 0 0 0.5rem 0;
+  }
+  
+  p {
+    max-width: 400px;
+    margin: 0;
+  }
+}
+
+/* Tree Styles */
+.academic-tree {
+  background: transparent;
+  
+  .mat-tree-node, .mat-nested-tree-node {
+    background: transparent;
+    color: var(--text-primary);
+  }
+  
+  .tree-invisible {
+    display: none;
+  }
+  
+  .node-children {
+    padding-left: 24px;
+    border-left: 1px dashed rgba(255, 255, 255, 0.1);
+    margin-left: 19px;
+  }
+  
+  .node-content {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    
+    &.course-node {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+    
+    &.group-node {
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+  }
+  
+  .node-icon {
+    margin-right: 8px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .tree-node-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0 16px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 4px;
+    font-weight: normal;
+    color: var(--text-secondary);
+    
+    &.student-node {
+      font-size: 0.95rem;
+      padding-left: 8px;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      
+      &.active-node {
+        background: rgba(212, 175, 55, 0.15);
+        color: var(--gold-primary);
+        font-weight: 500;
+        
+        .node-icon {
+          color: var(--gold-primary);
+        }
+      }
+    }
+  }
+}

@@ -124,7 +124,7 @@ export class StudentDialogComponent implements OnInit {
             // Base User Fields
             name: ['', [Validators.required]],
             email: ['', [Validators.required, Validators.email]],
-            password: ['', this.isEditing ? [] : [Validators.required, Validators.minLength(6)]],
+
             registration_number: [''],
             phone: [''],
 
@@ -164,7 +164,7 @@ export class StudentDialogComponent implements OnInit {
             email: fullData.email,
             registration_number: fullData.registration_number,
             phone: fullData.phone,
-            password: '', // do not set password if editing
+
         });
 
         if (fullData.student_profile) {
@@ -203,10 +203,7 @@ export class StudentDialogComponent implements OnInit {
         this.loading = true;
         const formData = this.form.value;
 
-        // Clean up password if editing and empty
-        if (this.isEditing && !formData.password) {
-            delete formData.password;
-        }
+
 
         // Format dates and clean empty strings
         if (formData.profile) {
@@ -231,13 +228,13 @@ export class StudentDialogComponent implements OnInit {
             : this.api.post('/students/', formData);
 
         request$.subscribe({
-            next: () => {
+            next: (response) => {
                 this.snackBar.open(
                     `Estudante ${this.isEditing ? 'atualizado' : 'criado'} com sucesso!`,
                     'OK',
                     { duration: 3000 }
                 );
-                this.dialogRef.close(true);
+                this.dialogRef.close(response || true);
             },
             error: (err) => {
                 this.loading = false;

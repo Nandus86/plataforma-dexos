@@ -1,4 +1,4 @@
-<mat-sidenav-container class="layout-container">
+<mat-sidenav-container class="layout-container" autosize>
   <!-- Sidebar -->
   <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile" class="sidebar"
     [class.collapsed]="sidebarCollapsed && !isMobile"
@@ -6,7 +6,7 @@
     <!-- Brand -->
     <div class="sidebar-brand" *ngIf="!sidebarCollapsed || isMobile">
       <div class="brand-icon">
-        <mat-icon class="brand-logo">auto_stories</mat-icon>
+        <img class="brand-logo-img" src="/icons/icon-192x192.png" alt="Logo" />
       </div>
       <div class="brand-text">
         <span class="brand-name gold-gradient">{{ appName }}</span>
@@ -15,7 +15,7 @@
     </div>
     <div class="sidebar-brand-collapsed" *ngIf="sidebarCollapsed && !isMobile">
       <div class="brand-icon-small">
-        <mat-icon class="brand-logo">auto_stories</mat-icon>
+        <img class="brand-logo-img-small" src="/icons/icon-192x192.png" alt="Logo" />
       </div>
     </div>
 
@@ -95,6 +95,32 @@
       <span class="gold-gradient toolbar-title">{{ appName }}</span>
       <span class="spacer"></span>
 
+      <!-- Notifications -->
+      <button mat-icon-button [matMenuTriggerFor]="notifMenu" class="theme-toggle" matTooltip="Notificações">
+        <mat-icon [matBadge]="unreadCount" matBadgeColor="warn" [matBadgeHidden]="unreadCount === 0">notifications</mat-icon>
+      </button>
+      <mat-menu #notifMenu="matMenu" class="notif-menu">
+        <div class="notif-header" style="padding: 16px; outline: none;">
+          <h3 style="margin: 0; color: #D4AF37;">Notificações</h3>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="notif-list" style="max-height: 400px; overflow-y: auto;">
+          @if (notifications.length === 0) {
+            <div class="notif-empty" style="padding: 16px; text-align: center; color: #888;">Nenhuma notificação</div>
+          } @else {
+            @for (n of notifications; track n.id) {
+              <button mat-menu-item (click)="markAsRead(n)" [style.background]="!n.is_read ? 'rgba(212,175,55,0.1)' : 'transparent'" style="height: auto; padding: 12px 16px; line-height: 1.4;">
+                <div class="notif-item" style="display: flex; flex-direction: column;">
+                  <strong style="color: #F5F5F5; font-size: 13px;">{{ n.sender_name }}</strong>
+                  <span class="notif-title" style="white-space: normal; color: #B3B3B3; font-size: 14px; margin: 4px 0;">{{ n.title }}</span>
+                  <small style="color: #888; font-size: 11px;">{{ n.created_at | date:'short' }}</small>
+                </div>
+              </button>
+            }
+          }
+        </div>
+      </mat-menu>
+
       <!-- Theme Toggle -->
       <button mat-icon-button (click)="toggleTheme()" class="theme-toggle" matTooltip="Alternar tema">
         <mat-icon>{{ themeService.isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
@@ -118,6 +144,10 @@
   <button mat-menu-item disabled>
     <mat-icon>person</mat-icon>
     <span>{{ user?.email }}</span>
+  </button>
+  <button mat-menu-item (click)="changePassword()">
+    <mat-icon>password</mat-icon>
+    <span>Alterar Senha</span>
   </button>
   <mat-divider></mat-divider>
   <button mat-menu-item (click)="logout()">

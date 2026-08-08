@@ -264,3 +264,13 @@
         font-size: 16px;
     }
 }
+
+// Table Styles for Student View
+.theme-table { width: 100%; background: transparent; }
+.clickable-row { cursor: pointer; transition: background-color 0.2s ease; }
+.clickable-row:hover { background-color: rgba(255, 255, 255, 0.05); }
+.expanded-row { background-color: rgba(212, 175, 55, 0.05) !important; }
+.detail-row { height: 0; min-height: 0; border: none; }
+.element-detail { overflow: hidden; display: flex; }
+.inner-table-container { box-sizing: border-box; }
+.simple-table th { color: #B3B3B3; font-weight: 500; }

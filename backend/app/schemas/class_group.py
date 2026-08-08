@@ -68,6 +68,7 @@ class ClassGroupStudentResponse(BaseModel):
     id: UUID
     class_group_id: UUID
     enrollment_id: UUID
+    student_id: Optional[UUID] = None
     enrolled_at: datetime
     student_name: Optional[str] = None
     student_email: Optional[str] = None

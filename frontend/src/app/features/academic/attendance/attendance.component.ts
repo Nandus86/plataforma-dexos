@@ -10,6 +10,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTableModule } from '@angular/material/table';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -49,10 +52,19 @@ interface LessonPlan {
     MatIconModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatTableModule,
+    MatExpansionModule
   ],
   templateUrl: './attendance.component.html',
-  styleUrls: ['./attendance.component.scss']
+  styleUrls: ['./attendance.component.scss'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ]
 })
 export class AttendanceComponent implements OnInit {
   groups: ClassGroup[] = [];
@@ -70,6 +82,13 @@ export class AttendanceComponent implements OnInit {
   loadingLessons = false;
   loadingDetails = false;
 
+  // Student specific
+  enrollments: any[] = [];
+  selectedEnrollmentId: string = '';
+  boletim: any = null;
+  expandedElement: any | null = null;
+  columnsToDisplay: string[] = ['subject_name', 'faltas'];
+
   constructor(
     private api: ApiService, 
     private snackBar: MatSnackBar,
@@ -81,7 +100,13 @@ export class AttendanceComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadGroups();
+    if (!this.isStudent) {
+      this.loadGroups();
+    } else {
+      if (this.auth.currentUser) {
+        this.loadStudentEnrollments(this.auth.currentUser.id);
+      }
+    }
   }
 
   loadGroups() {
@@ -204,4 +229,44 @@ export class AttendanceComponent implements OnInit {
       });
     }
   }
+
+  // --- Student Flow ---
+
+  loadStudentEnrollments(studentId: string) {
+    this.loadingGroups = true;
+    this.api.get<any>(`/academic/enrollments/?student_id=${studentId}`).subscribe({
+      next: data => {
+        this.enrollments = data.items || [];
+        this.loadingGroups = false;
+
+        if (this.enrollments.length > 0) {
+          const active = this.enrollments.find(e => e.status === 'active') || this.enrollments[0];
+          this.selectedEnrollmentId = active.id;
+          this.loadBoletim();
+        }
+      },
+      error: () => this.loadingGroups = false
+    });
+  }
+
+  onEnrollmentChange() {
+    if (this.selectedEnrollmentId) this.loadBoletim();
+  }
+
+  loadBoletim() {
+    if (!this.selectedEnrollmentId) return;
+    this.loadingDetails = true;
+    this.api.get<any>(`/academic/boletim/${this.selectedEnrollmentId}`).subscribe({
+      next: d => {
+        this.boletim = d;
+        this.expandedElement = null;
+        this.loadingDetails = false;
+      },
+      error: () => {
+        this.boletim = null;
+        this.loadingDetails = false;
+      }
+    });
+  }
 }
+

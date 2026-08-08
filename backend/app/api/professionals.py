@@ -11,8 +11,8 @@ from sqlalchemy.orm import selectinload
 from app.database import get_db
 from app.models.user import User, UserRole
 from app.models.profiles import ProfessionalProfile
-from app.schemas.profiles import ProfessionalCreate, ProfessionalUpdate, ProfessionalResponse, ProfessionalListResponse
-from app.auth.security import hash_password
+from app.schemas.profiles import ProfessionalCreate, ProfessionalUpdate, ProfessionalResponse, ProfessionalListResponse, ProfessionalCreateResponse
+from app.auth.security import hash_password, generate_random_password
 from app.auth.dependencies import get_current_user, require_role, get_current_tenant_id
 
 router = APIRouter()
@@ -52,7 +52,7 @@ async def list_professionals(
     return ProfessionalListResponse(users=users, total=total)
 
 
-@router.post("/", response_model=ProfessionalResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ProfessionalCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_professional(
     data: ProfessionalCreate,
     db: AsyncSession = Depends(get_db),
@@ -85,11 +85,13 @@ async def create_professional(
     except Exception as e:
         reg_number = None
 
+    initial_password = data.password or generate_random_password()
+
     # Create User
     user = User(
         name=data.name,
         email=data.email,
-        password_hash=hash_password(data.password),
+        password_hash=hash_password(initial_password),
         role=UserRole(data.role),
         registration_number=reg_number,
         phone=data.phone,
@@ -105,7 +107,10 @@ async def create_professional(
 
     await db.commit()
     result = await db.execute(select(User).options(selectinload(User.professional_profile)).where(User.id == user.id))
-    return result.scalar_one()
+    created_user = result.scalar_one()
+    
+    created_user.initial_password = initial_password if not data.password else None
+    return created_user
 
 
 @router.get("/{user_id}", response_model=ProfessionalResponse)

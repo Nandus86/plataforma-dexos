@@ -11,9 +11,11 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ObservationDialogComponent } from './observation-dialog/observation-dialog.component';
 
 @Component({
   selector: 'app-grades',
@@ -30,7 +32,8 @@ import { AuthService } from '../../../core/services/auth.service';
     MatExpansionModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatDialogModule
   ],
   template: `
     <div class="page animate-fade-in">
@@ -110,8 +113,11 @@ import { AuthService } from '../../../core/services/auth.service';
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef style="text-align: right;">Ações</th>
               <td mat-cell *matCellDef="let s" style="text-align: right;">
-                 <button mat-icon-button color="primary" matTooltip="Ver Boletim do Aluno">
+                 <button mat-icon-button color="primary" matTooltip="Ver Boletim do Aluno" (click)="openBoletimFromGrid(s); $event.stopPropagation()">
                     <mat-icon>visibility</mat-icon>
+                 </button>
+                 <button mat-icon-button matTooltip="Anotar Observação" (click)="openObservationDialog(s); $event.stopPropagation()" style="color: var(--gold-primary);">
+                    <mat-icon>speaker_notes</mat-icon>
                  </button>
               </td>
             </ng-container>
@@ -165,7 +171,7 @@ import { AuthService } from '../../../core/services/auth.service';
             <!-- Dynamic Evaluation Columns -->
             @for (col of evaluationColumns; track col) {
               <ng-container [matColumnDef]="col">
-                <th mat-header-cell *matHeaderCellDef style="text-align: center;"> {{col}} </th>
+                <th mat-header-cell *matHeaderCellDef style="text-align: center;"> {{formatEvaluationName(col)}} </th>
                 <td mat-cell *matCellDef="let element" style="text-align: center;">
                   <strong style="color: var(--gold-primary); font-size: 1.1em;">{{ getGradeValue(element, col) }}</strong>
                 </td>
@@ -183,7 +189,7 @@ import { AuthService } from '../../../core/services/auth.service';
             </ng-container>
             
             <ng-container matColumnDef="media">
-              <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Pontos </th>
+              <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Média </th>
               <td mat-cell *matCellDef="let element" style="text-align: center;">
                 <strong style="color: var(--gold-primary); font-size: 1.1em;">{{ getTotalPoints(element) }}</strong>
               </td>
@@ -209,7 +215,7 @@ import { AuthService } from '../../../core/services/auth.service';
                         <tbody>
                           @for (g of element.grades; track g.id) {
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                              <td style="padding: 8px;">{{ g.evaluation_name }}</td>
+                              <td style="padding: 8px;">{{ formatEvaluationName(g.evaluation_name) }}</td>
                               <td style="padding: 8px;">{{ g.date ? (g.date | date:'dd/MM/yyyy') : '-' }}</td>
                               <td style="padding: 8px;">
                                 <strong style="color: var(--gold-primary);">{{ g.value }}</strong> 
@@ -298,7 +304,11 @@ export class GradesComponent implements OnInit {
   evaluationColumns: string[] = [];
   columnsToDisplay: string[] = [];
 
-  constructor(private api: ApiService, public auth: AuthService) { }
+  constructor(
+    private api: ApiService,
+    public auth: AuthService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     if (this.auth.userRole !== 'estudante') {
@@ -370,11 +380,15 @@ export class GradesComponent implements OnInit {
 
   closeBoletim() {
     this.boletim = null;
-    this.selectedEnrollmentId = '';
-    if (this.selectedDirectStudentId) {
-      // Mantém a pesquisa de estudante aberta, recarrega dropdown se necessário
-      this.loadStudentEnrollments(this.selectedDirectStudentId);
-    }
+    this.selectedDirectStudentId = '';
+    // do not reset enrollment id so if they close, they can pick another
+  }
+
+  openObservationDialog(student: any) {
+    this.dialog.open(ObservationDialogComponent, {
+      width: '500px',
+      data: { studentId: student.student_id, studentName: student.student_name }
+    });
   }
 
 
@@ -382,9 +396,9 @@ export class GradesComponent implements OnInit {
 
   loadStudentEnrollments(studentId: string) {
     this.loadingFilter = true;
-    this.api.get<any[]>(`/academic/enrollments/?student_id=${studentId}`).subscribe({
+    this.api.get<any>(`/academic/enrollments/?student_id=${studentId}`).subscribe({
       next: data => {
-        this.enrollments = data;
+        this.enrollments = data.items || [];
         this.loadingFilter = false;
 
         if (this.enrollments.length > 0) {
@@ -450,12 +464,20 @@ export class GradesComponent implements OnInit {
   getTotalPoints(subject: any): string {
     if (!subject.grades || subject.grades.length === 0) return '-';
     let total = 0;
-    let max = 0;
     subject.grades.forEach((g: any) => {
       total += g.value;
-      max += g.max_value;
     });
+    const media = total / subject.grades.length;
     // Format to 1 decimal place if needed
-    return max > 0 ? `${parseFloat(total.toFixed(1))} / ${parseFloat(max.toFixed(1))}` : '-';
+    return `${parseFloat(media.toFixed(1))}`;
+  }
+
+  formatEvaluationName(name: string): string {
+    if (!name) return name;
+    return name
+      .replace(/^Exam:\s*/i, 'Avaliação: ')
+      .replace(/^Work:\s*/i, 'Trabalho: ')
+      .replace(/^Other:\s*/i, 'Outros: ');
   }
 }
+

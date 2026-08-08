@@ -26,14 +26,7 @@
                             <mat-error *ngIf="form.get('email')?.hasError('email')">E-mail inválido</mat-error>
                         </mat-form-field>
 
-                        <mat-form-field appearance="outline">
-                            <mat-label>{{ isEditing ? 'Nova Senha (opcional)' : 'Senha' }}</mat-label>
-                            <input matInput type="password" formControlName="password">
-                            <mat-error *ngIf="form.get('password')?.hasError('required')">Senha é
-                                obrigatória</mat-error>
-                            <mat-error *ngIf="form.get('password')?.hasError('minlength')">Mínimo de 6
-                                caracteres</mat-error>
-                        </mat-form-field>
+
 
                         <mat-form-field appearance="outline" *ngIf="isEditing">
                             <mat-label>Registro Acadêmico (RA)</mat-label>

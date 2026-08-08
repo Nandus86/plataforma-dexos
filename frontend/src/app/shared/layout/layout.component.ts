@@ -14,7 +14,10 @@ import { AuthService, UserInfo } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { environment } from '../../../environments/environment';
+import { MatBadgeModule } from '@angular/material/badge';
 import { animate, state, style, transition, trigger, query, stagger } from '@angular/animations';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ChangePasswordDialogComponent } from '../components/change-password-dialog/change-password-dialog.component';
 
 interface NavItem {
     label: string;
@@ -39,7 +42,7 @@ interface NavGroup {
         CommonModule, RouterModule,
         MatSidenavModule, MatToolbarModule, MatListModule,
         MatIconModule, MatButtonModule, MatMenuModule,
-        MatDividerModule, MatTooltipModule,
+        MatDividerModule, MatTooltipModule, MatDialogModule, MatBadgeModule
     ],
     templateUrl: './layout.component.html',
     styleUrls: ['./layout.component.scss'],
@@ -111,6 +114,7 @@ export class LayoutComponent implements OnInit {
             label: 'Acadêmico', icon: 'cast_for_education', expanded: false,
             roles: ['superadmin', 'admin', 'coordenacao', 'professor', 'estudante'],
             items: [
+                { label: 'Minhas Matrículas', icon: 'history_edu', route: '/academic-life', roles: ['estudante'], featureKey: 'academic' },
                 { label: 'Matrículas', icon: 'how_to_reg', route: '/enrollments', roles: ['superadmin', 'admin', 'coordenacao'], featureKey: 'academic' },
                 { label: 'Matrizes Curriculares', icon: 'view_agenda', route: '/matrices', roles: ['superadmin', 'admin', 'coordenacao'], featureKey: 'academic' },
                 { label: 'Notas', icon: 'grade', route: '/grades', roles: ['superadmin', 'admin', 'coordenacao', 'professor', 'estudante'], featureKey: 'grades' },
@@ -133,6 +137,7 @@ export class LayoutComponent implements OnInit {
             roles: ['superadmin', 'admin', 'coordenacao'],
             items: [
                 { label: 'Coord. Pedagógica', icon: 'supervisor_account', route: '/coordination', roles: ['superadmin', 'admin', 'coordenacao'], featureKey: 'reports' },
+                { label: 'Árvore de Turmas', icon: 'account_tree', route: '/class-explorer', roles: ['superadmin', 'admin', 'coordenacao'], featureKey: 'reports' },
                 { label: 'Exportar Dados', icon: 'download', route: '/export', roles: ['superadmin', 'admin', 'coordenacao'], featureKey: 'export' },
             ],
         },
@@ -155,25 +160,26 @@ export class LayoutComponent implements OnInit {
         },
     ];
 
+    filteredNavGroups: NavGroup[] = [];
+    notifications: any[] = [];
+    unreadCount = 0;
+    notifInterval: any;
+
     constructor(
         public auth: AuthService,
         private api: ApiService,
         private router: Router,
         private breakpointObserver: BreakpointObserver,
         public themeService: ThemeService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private dialog: MatDialog
     ) {
-        // FIX: Immediately load user from auth service (synchronous from localStorage)
-        // This prevents the first-click loading issue where filteredNavGroups returns []
-        this.user = this.auth.currentUser;
-
-        // Restore collapsed state
         const collapsed = localStorage.getItem('sidebar_collapsed');
         this.sidebarCollapsed = collapsed === 'true';
+        this.user = this.auth.currentUser;
     }
 
     ngOnInit(): void {
-        // Fetch app version
         this.api.get<any>('/health/version').subscribe({
             next: (res) => {
                 if (res && res.version) {
@@ -182,11 +188,21 @@ export class LayoutComponent implements OnInit {
             }
         });
 
-        // Keep reactive subscription for updates (e.g., after login or refreshUser)
+        this.user = this.auth.currentUser;
+        if (this.user) {
+            this.updateNavVisibility();
+            this.loadFeatures();
+            this.loadNotifications();
+            this.notifInterval = setInterval(() => this.loadNotifications(), 60000);
+        }
+
         this.auth.currentUser$.subscribe(user => {
             this.user = user;
-            if (this.user?.tenant_id) {
+            if (this.user) {
+                this.updateNavVisibility();
                 this.loadFeatures();
+            } else {
+                this.router.navigate(['/login']);
             }
         });
 
@@ -199,6 +215,12 @@ export class LayoutComponent implements OnInit {
         });
     }
 
+    ngOnDestroy() {
+        if (this.notifInterval) {
+            clearInterval(this.notifInterval);
+        }
+    }
+
     loadFeatures() {
         if (!this.user?.tenant_id) return;
 
@@ -209,6 +231,7 @@ export class LayoutComponent implements OnInit {
                     this.features = res.features;
                 }
                 this.loadingFeatures = false;
+                this.updateNavVisibility();
             },
             error: () => {
                 this.loadingFeatures = false;
@@ -216,13 +239,33 @@ export class LayoutComponent implements OnInit {
         });
     }
 
-    get filteredNavGroups(): NavGroup[] {
-        if (!this.user) return [];
+    loadNotifications() {
+        this.api.get<any[]>('/notifications/my').subscribe({
+            next: (data) => {
+                this.notifications = data;
+                this.unreadCount = this.notifications.filter(n => !n.is_read).length;
+            },
+            error: () => {}
+        });
+    }
 
-        // Return original group references (not copies) to preserve expanded state
-        return this.navGroups.filter(group => {
+    markAsRead(notification: any) {
+        if (notification.is_read) return;
+        this.api.put(`/notifications/${notification.id}/read`, {}).subscribe({
+            next: () => {
+                notification.is_read = true;
+                this.unreadCount = Math.max(0, this.unreadCount - 1);
+            }
+        });
+    }
+
+    updateNavVisibility() {
+        if (!this.user) {
+            this.filteredNavGroups = [];
+            return;
+        }
+        this.filteredNavGroups = this.navGroups.filter(group => {
             if (!group.roles.some(r => r === this.user!.role)) return false;
-            // Check if at least one item is visible
             return group.items.some(item => this.isItemVisible(item));
         });
     }
@@ -298,5 +341,12 @@ export class LayoutComponent implements OnInit {
 
     logout(): void {
         this.auth.logout();
+    }
+
+    changePassword(): void {
+        this.dialog.open(ChangePasswordDialogComponent, {
+            width: '400px',
+            panelClass: 'glass-dialog-panel'
+        });
     }
 }

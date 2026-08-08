@@ -10,7 +10,7 @@ from datetime import datetime
 class UserCreate(BaseModel):
     name: str
     email: str
-    password: str
+    password: Optional[str] = None
     role: str = "estudante"
     registration_number: Optional[str] = None
     phone: Optional[str] = None
@@ -47,3 +47,14 @@ class UserResponse(BaseModel):
 class UserListResponse(BaseModel):
     users: list[UserResponse]
     total: int
+
+class UserCreateResponse(UserResponse):
+    initial_password: Optional[str] = None
+
+class PasswordChange(BaseModel):
+    old_password: str
+    new_password: str
+
+class PasswordResetResponse(BaseModel):
+    message: str
+    new_password: str
