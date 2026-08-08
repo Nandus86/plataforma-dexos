@@ -18,7 +18,7 @@ router = APIRouter()
 async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     """Authenticate user and return JWT token"""
     result = await db.execute(select(User).where(User.email == request.email))
-    user = result.scalar_one_or_none()
+    user = result.scalars().first()
 
     if not user or not verify_password(request.password, user.password_hash):
         raise HTTPException(
